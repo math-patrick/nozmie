@@ -11,7 +11,15 @@ local function GetAvailableTeleportsByCategory()
     local categories = {}
     
     for _, data in ipairs(EasyPort_DungeonData) do
-        if Helpers.CanPlayerUseTeleport(data) then
+        local isAvailable = false
+        
+        if data.itemID then
+            isAvailable = PlayerHasToy(data.itemID) or C_Item.GetItemCount(data.itemID) > 0
+        elseif data.spellID then
+            isAvailable = IsSpellKnown(data.spellID) or IsPlayerSpell(data.spellID)
+        end
+        
+        if isAvailable then
             local cat = data.category or "Other"
             if not categories[cat] then
                 categories[cat] = {}
@@ -23,96 +31,130 @@ local function GetAvailableTeleportsByCategory()
     return categories
 end
 
-local function UseTeleport(data)
-    if InCombatLockdown() then
-        print("|cff00ff00EasyPort:|r Cannot use teleports in combat")
-        return
-    end
+local function CreateTeleportButton(parent, data, column, yPos)
+    local button = CreateFrame("Button", nil, parent, "SecureActionButtonTemplate")
+    button:SetSize(190, 40)
     
-    if data.spellID then
-        CastSpellByID(data.spellID)
-    elseif data.itemID then
-        UseItemByName(data.itemID)
-    end
-end
-
-local function CreateTeleportButton(parent, data, index)
-    local button = CreateFrame("Button", nil, parent, "BackdropTemplate")
-    button:SetSize(200, 32)
-    button:SetPoint("TOPLEFT", 10, -10 - ((index - 1) * 36))
+    local xOffset = (column == 1) and 8 or 203
+    button:SetPoint("TOPLEFT", xOffset, yPos)
+    button:RegisterForClicks("AnyUp")
     
-    button:SetBackdrop({
-        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        tile = true,
-        tileSize = 16,
-        edgeSize = 12,
-        insets = {left = 3, right = 3, top = 3, bottom = 3}
-    })
-    button:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
-    button:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
+    local bg = button:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetColorTexture(0.08, 0.08, 0.08, 0.9)
+    button.bg = bg
+    
+    local border = button:CreateTexture(nil, "BORDER")
+    border:SetPoint("TOPLEFT", -1, 1)
+    border:SetPoint("BOTTOMRIGHT", 1, -1)
+    border:SetColorTexture(0.25, 0.25, 0.25, 1)
+    button.border = border
     
     local icon = button:CreateTexture(nil, "ARTWORK")
-    icon:SetSize(24, 24)
-    icon:SetPoint("LEFT", 6, 0)
+    icon:SetSize(32, 32)
+    icon:SetPoint("LEFT", 4, 0)
     
-    if data.spellID then
-        local iconTexture = C_Spell.GetSpellTexture(data.spellID)
-        if iconTexture then icon:SetTexture(iconTexture) end
-    elseif data.itemID then
+    if data.itemID then
         local iconTexture = C_Item.GetItemIconByID(data.itemID)
         if iconTexture then icon:SetTexture(iconTexture) end
+        -- Toys are used via their spell, not as items
+        if PlayerHasToy(data.itemID) and data.spellName then
+            button:SetAttribute("type", "spell")
+            button:SetAttribute("spell", data.spellName)
+        else
+            -- Regular items use item macro
+            -- For mounts, check if already mounted and add dismount logic
+            local isMountItem = data.keywords and (tContains(data.keywords, "mount") or 
+                                                    tContains(data.keywords, "mammoth") or 
+                                                    tContains(data.keywords, "yak") or 
+                                                    tContains(data.keywords, "brutosaur"))
+            
+            if isMountItem then
+                -- If mounted, dismount first, then use the mount
+                local macroText = "/dismount [mounted]\n/use item:" .. data.itemID
+                button:SetAttribute("type", "macro")
+                button:SetAttribute("macrotext", macroText)
+            else
+                button:SetAttribute("type", "macro")
+                button:SetAttribute("macrotext", "/use item:" .. data.itemID)
+            end
+        end
+    elseif data.spellID then
+        local iconTexture = C_Spell.GetSpellTexture(data.spellID)
+        if iconTexture then icon:SetTexture(iconTexture) end
+        button:SetAttribute("type", "spell")
+        button:SetAttribute("spell", data.spellName)
     end
-    icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    button.icon = icon
     
-    local name = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    name:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-    name:SetPoint("RIGHT", -8, 0)
+    local iconBorder = button:CreateTexture(nil, "OVERLAY")
+    iconBorder:SetPoint("TOPLEFT", icon, -1, 1)
+    iconBorder:SetPoint("BOTTOMRIGHT", icon, 1, -1)
+    iconBorder:SetColorTexture(0, 0, 0, 0.5)
+    
+    local name = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    name:SetPoint("LEFT", icon, "RIGHT", 8, 4)
+    name:SetPoint("RIGHT", -6, 0)
     name:SetJustifyH("LEFT")
     name:SetText(data.name)
+    button.nameText = name
+    
+    local cooldownText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalTiny")
+    cooldownText:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -2)
+    cooldownText:SetPoint("RIGHT", -6, 0)
+    cooldownText:SetJustifyH("LEFT")
+    cooldownText:SetTextColor(0.6, 0.6, 0.6)
+    if data.destination then
+        cooldownText:SetText(data.destination)
+    elseif data.cooldown then
+        cooldownText:SetText("CD: " .. data.cooldown)
+    end
+    button.cooldownText = cooldownText
     
     local cooldown = Helpers.GetCooldownRemaining(data)
     if cooldown > 0 then
         icon:SetDesaturated(true)
         name:SetTextColor(0.5, 0.5, 0.5)
-        button:SetBackdropColor(0.05, 0.05, 0.05, 0.8)
+        bg:SetColorTexture(0.05, 0.05, 0.05, 0.7)
     else
         icon:SetDesaturated(false)
         name:SetTextColor(1, 1, 1)
     end
     
-    button:SetScript("OnClick", function()
-        UseTeleport(data)
-    end)
-    
     button:SetScript("OnEnter", function(self)
-        self:SetBackdropBorderColor(0.8, 0.9, 1, 1)
-        self:SetBackdropColor(0.15, 0.15, 0.2, 0.9)
+        self.bg:SetColorTexture(0.15, 0.18, 0.25, 1)
+        self.border:SetColorTexture(0.4, 0.6, 1, 1)
+        
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText(data.name, 1, 1, 1)
+        GameTooltip:SetText(data.name, 1, 0.82, 0)
         
         if data.destination then
-            GameTooltip:AddLine("Destination: " .. data.destination, 0.7, 0.7, 0.7)
+            GameTooltip:AddLine(data.destination, 0.8, 0.8, 0.8, true)
         end
         
         local cd = Helpers.GetCooldownRemaining(data)
         if cd > 0 then
-            GameTooltip:AddLine("Cooldown: " .. Helpers.FormatCooldownTime(cd), 1, 0.3, 0.3)
+            GameTooltip:AddLine(" ", 1, 1, 1)
+            GameTooltip:AddLine("Ready in " .. Helpers.FormatCooldownTime(cd), 1, 0.3, 0.3)
         elseif data.cooldown then
+            GameTooltip:AddLine(" ", 1, 1, 1)
             GameTooltip:AddLine("Cooldown: " .. data.cooldown, 0.5, 0.5, 0.5)
         end
         
+        GameTooltip:AddLine(" ", 1, 1, 1)
+        GameTooltip:AddLine("Click to teleport", 0.3, 1, 0.3)
         GameTooltip:Show()
     end)
     
     button:SetScript("OnLeave", function(self)
-        self:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
         local cd = Helpers.GetCooldownRemaining(self.data)
         if cd > 0 then
-            self:SetBackdropColor(0.05, 0.05, 0.05, 0.8)
+            self.bg:SetColorTexture(0.05, 0.05, 0.05, 0.7)
         else
-            self:SetBackdropColor(0.1, 0.1, 0.1, 0.8)
+            self.bg:SetColorTexture(0.08, 0.08, 0.08, 0.9)
         end
+        self.border:SetColorTexture(0.25, 0.25, 0.25, 1)
         GameTooltip:Hide()
     end)
     
@@ -129,28 +171,40 @@ local function UpdateTeleportList()
     local categories = GetAvailableTeleportsByCategory()
     local yOffset = 0
     
-    local categoryOrder = {"M+ Dungeon", "Home", "Mage", "Druid", "Shaman", "Death Knight", "Monk"}
+    local categoryOrder = {"M+ Dungeon", "Raid", "Delve", "Home", "Mage", "Druid", "Shaman", "Death Knight", "Monk", "Demon Hunter", "Warlock", "Toy"}
     
     for _, categoryName in ipairs(categoryOrder) do
         local teleports = categories[categoryName]
         if teleports and #teleports > 0 then
-            local header = scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-            header:SetPoint("TOPLEFT", 10, -yOffset - 10)
+            local header = scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            header:SetPoint("TOPLEFT", 8, -yOffset - 8)
             header:SetText(categoryName)
             header:SetTextColor(1, 0.82, 0)
+            header:SetJustifyH("LEFT")
             table.insert(teleportButtons, header)
             
-            yOffset = yOffset + 35
+            local divider = scrollFrame.content:CreateTexture(nil, "ARTWORK")
+            divider:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -4)
+            divider:SetPoint("RIGHT", scrollFrame.content, "RIGHT", -8, 0)
+            divider:SetHeight(1)
+            divider:SetColorTexture(0.4, 0.4, 0.4, 0.5)
+            table.insert(teleportButtons, divider)
             
+            yOffset = yOffset + 32
+            
+            local currentRow = yOffset
             for i, data in ipairs(teleports) do
-                local btn = CreateTeleportButton(scrollFrame.content, data, 1)
-                btn:ClearAllPoints()
-                btn:SetPoint("TOPLEFT", 10, -yOffset - 10)
+                local column = ((i - 1) % 2) + 1
+                local btn = CreateTeleportButton(scrollFrame.content, data, column, -currentRow - 8)
+                
                 table.insert(teleportButtons, btn)
-                yOffset = yOffset + 36
+                
+                if i % 2 == 0 or i == #teleports then
+                    currentRow = currentRow + 44
+                end
             end
             
-            yOffset = yOffset + 10
+            yOffset = currentRow + 8
         end
     end
     
@@ -161,23 +215,35 @@ local function UpdateTeleportList()
         end
         
         if not found and #teleports > 0 then
-            local header = scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-            header:SetPoint("TOPLEFT", 10, -yOffset - 10)
+            local header = scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            header:SetPoint("TOPLEFT", 8, -yOffset - 8)
             header:SetText(categoryName)
             header:SetTextColor(1, 0.82, 0)
+            header:SetJustifyH("LEFT")
             table.insert(teleportButtons, header)
             
-            yOffset = yOffset + 35
+            local divider = scrollFrame.content:CreateTexture(nil, "ARTWORK")
+            divider:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -4)
+            divider:SetPoint("RIGHT", scrollFrame.content, "RIGHT", -8, 0)
+            divider:SetHeight(1)
+            divider:SetColorTexture(0.4, 0.4, 0.4, 0.5)
+            table.insert(teleportButtons, divider)
             
+            yOffset = yOffset + 32
+            
+            local currentRow = yOffset
             for i, data in ipairs(teleports) do
-                local btn = CreateTeleportButton(scrollFrame.content, data, 1)
-                btn:ClearAllPoints()
-                btn:SetPoint("TOPLEFT", 10, -yOffset - 10)
+                local column = ((i - 1) % 2) + 1
+                local btn = CreateTeleportButton(scrollFrame.content, data, column, -currentRow - 8)
+                
                 table.insert(teleportButtons, btn)
-                yOffset = yOffset + 36
+                
+                if i % 2 == 0 or i == #teleports then
+                    currentRow = currentRow + 44
+                end
             end
             
-            yOffset = yOffset + 10
+            yOffset = currentRow + 8
         end
     end
     
@@ -188,7 +254,7 @@ local function CreateContentFrame()
     if contentFrame then return end
     
     contentFrame = CreateFrame("Frame", "EasyPortSpellbookFrame", UIParent, "BasicFrameTemplateWithInset")
-    contentFrame:SetSize(300, 450)
+    contentFrame:SetSize(415, 540)
     contentFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     contentFrame:SetMovable(true)
     contentFrame:EnableMouse(true)
@@ -199,38 +265,31 @@ local function CreateContentFrame()
     contentFrame:Hide()
     
     scrollFrame = CreateFrame("ScrollFrame", nil, contentFrame, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 12, -32)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -28, 12)
+    scrollFrame:SetPoint("TOPLEFT", 10, -28)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -28, 10)
     
     scrollFrame.content = CreateFrame("Frame", nil, scrollFrame)
-    scrollFrame.content:SetSize(240, 400)
+    scrollFrame.content:SetSize(385, 400)
     scrollFrame:SetScrollChild(scrollFrame.content)
     
-    contentFrame.TitleText:SetText("Available Portals")
+    contentFrame.TitleText:SetText("Teleportation Compendium")
+    contentFrame.TitleText:SetTextColor(1, 0.82, 0)
     
     contentFrame.CloseButton:HookScript("OnClick", function() contentFrame:Hide() end)
     
     UpdateTeleportList()
-    C_Timer.NewTicker(1, UpdateTeleportList)
+    C_Timer.NewTicker(2, UpdateTeleportList)
 end
 
 local function ToggleEasyPortTab()
-    if not contentFrame then CreateContentFrame() end
-    
-    if contentFrame:IsShown() then
+    if not contentFrame then 
+        CreateContentFrame()
+        contentFrame:Show()
+        UpdateTeleportList()
+    elseif contentFrame:IsShown() then
         contentFrame:Hide()
     else
-        contentFrame:SetAlpha(0)
         contentFrame:Show()
-        
-        local fadeIn = contentFrame:CreateAnimationGroup()
-        local alpha = fadeIn:CreateAnimation("Alpha")
-        alpha:SetFromAlpha(0)
-        alpha:SetToAlpha(1)
-        alpha:SetDuration(0.15)
-        alpha:SetSmoothing("OUT")
-        fadeIn:Play()
-        
         UpdateTeleportList()
     end
 end

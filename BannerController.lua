@@ -49,8 +49,21 @@ local function UpdateBannerIcon(banner, data)
         local iconTexture = C_Item.GetItemIconByID(data.itemID)
         if iconTexture then banner.icon:SetTexture(iconTexture) end
         
-        banner:SetAttribute("type", "macro")
-        banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
+        -- For mounts, check if already mounted and add dismount logic
+        local isMountItem = data.keywords and (tContains(data.keywords, "mount") or 
+                                                tContains(data.keywords, "mammoth") or 
+                                                tContains(data.keywords, "yak") or 
+                                                tContains(data.keywords, "brutosaur"))
+        
+        if isMountItem then
+            -- If mounted, dismount first, then use the mount
+            local macroText = "/dismount [mounted]\n/use item:" .. data.itemID
+            banner:SetAttribute("type", "macro")
+            banner:SetAttribute("macrotext", macroText)
+        else
+            banner:SetAttribute("type", "macro")
+            banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
+        end
     end
 end
 

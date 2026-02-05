@@ -57,9 +57,59 @@ local function DetectDungeon(self, event, msg, ...)
         end
     end
     
+    -- Deduplicate by spell ID, prioritizing current season dungeons
+    local seenSpells = {}
+    local dedupedMatches = {}
+    
+    local function GetSeasonPriority(data)
+        -- Check which season/expansion the teleport belongs to
+        for categoryName, categoryData in pairs(EasyPort_Categories) do
+            for _, item in ipairs(categoryData) do
+                if item.name == data.name then
+                    if categoryName == "MidnightSeason1" then return 0
+                    elseif categoryName == "WarWithinSeason3" then return 1
+                    elseif categoryName == "WarWithinSeason2" then return 2
+                    elseif categoryName == "WarWithinSeason1" then return 3
+                    elseif categoryName == "DragonflightDungeons" then return 4
+                    elseif categoryName == "BfADungeons" then return 5
+                    elseif categoryName == "ShadowlandsDungeons" then return 6
+                    elseif categoryName == "RaidTeleports" then return 7
+                    else return 10
+                    end
+                end
+            end
+        end
+        return 999
+    end
+    
+    for _, teleport in ipairs(matches) do
+        if teleport.spellID then
+            local existing = seenSpells[teleport.spellID]
+            if existing then
+                -- Keep the one with higher priority (lower season number)
+                if GetSeasonPriority(teleport) < GetSeasonPriority(existing) then
+                    seenSpells[teleport.spellID] = teleport
+                    -- Replace in deduped list
+                    for i, t in ipairs(dedupedMatches) do
+                        if t.spellID == teleport.spellID then
+                            dedupedMatches[i] = teleport
+                            break
+                        end
+                    end
+                end
+            else
+                seenSpells[teleport.spellID] = teleport
+                table.insert(dedupedMatches, teleport)
+            end
+        else
+            -- Items without spellID - keep as is
+            table.insert(dedupedMatches, teleport)
+        end
+    end
+    
     -- Show banner if we found matching teleports
-    if #matches > 0 then
-        EasyPort_UI:ShowBanner(banner, matches)
+    if #dedupedMatches > 0 then
+        EasyPort_UI:ShowBanner(banner, dedupedMatches)
     end
     
     return false
