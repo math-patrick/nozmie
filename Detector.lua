@@ -74,11 +74,30 @@ function Detector.FindMatchingTeleports(message, sender)
     local matches = {}
     local hearthstones = {}
     local uniqueNames = {}
+    
+    -- Check blacklisted words
+    local Settings = Nozmie_Settings
+    if Settings then
+        local blacklist = Settings.Get("blacklistedWords") or ""
+        if blacklist ~= "" then
+            -- Split by comma and check each word
+            for word in blacklist:gmatch("([^,]+)") do
+                local trimmedWord = word:match("^%s*(.-)%s*$"):lower()  -- trim and lowercase
+                if trimmedWord ~= "" and lowerMessage:find(trimmedWord, 1, true) then
+                    return {}  -- Return empty if blacklisted word found
+                end
+            end
+        end
+    end
 
     -- Extract player name without realm suffix if present
     local targetPlayer = sender
     if targetPlayer then
         targetPlayer = targetPlayer:match("([^-]+)") or targetPlayer
+    end
+    local playerName = UnitName("player")
+    if playerName and targetPlayer == playerName then
+        targetPlayer = nil
     end
 
     for _, teleportData in ipairs(Nozmie_Data) do

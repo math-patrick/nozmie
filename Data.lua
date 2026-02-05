@@ -1114,6 +1114,15 @@ local ServiceToys = {{
     destination = "Repair",
     keywords = {"auto-hammer", "auto hammer", "repair"}
 }, {
+    name = "Alvin the Anvil",
+    itemID = 191886,
+    spellName = "Alvin the Anvil",
+    actionType = "item",
+    category = "Utility",
+    cooldown = "10 min",
+    destination = "Anvil",
+    keywords = {"alvin", "anvil", "repair"}
+}, {
     name = "MOLL-E",
     itemID = 40768,
     spellName = "MOLL-E",
@@ -1324,6 +1333,87 @@ local ServiceToys = {{
     cooldown = "10 min",
     destination = "Cooking Fire",
     keywords = {"wickerman", "wicker", "cooking", "fire"}
+}, {
+    name = "Sturdy Love Fool",
+    itemID = 144339,
+    spellName = "Sturdy Love Fool",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Training Dummy",
+    keywords = {"dummy", "training", "love fool", "sturdy"}
+}, {
+    name = "Turnip Punching Bag",
+    itemID = 88375,
+    spellName = "Turnip Punching Bag",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Training Dummy",
+    keywords = {"dummy", "training", "turnip", "punching bag"}
+}, {
+    name = "Rubbery Fish Head",
+    itemID = 199896,
+    spellName = "Rubbery Fish Head",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Training Dummy",
+    keywords = {"dummy", "training", "fish", "rubbery"}
+}, {
+    name = "Tuskarr Training Dummy",
+    itemID = 199830,
+    spellName = "Tuskarr Training Dummy",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Training Dummy",
+    keywords = {"dummy", "training", "tuskarr"}
+}, {
+    name = "Black Dragon's Challenge Dummy",
+    itemID = 201933,
+    spellName = "Black Dragon's Challenge Dummy",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Training Dummy",
+    keywords = {"dummy", "training", "black dragon", "challenge"}
+}, {
+    name = "Ancient Construct",
+    itemID = 225556,
+    spellName = "Ancient Construct",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Training Dummy",
+    keywords = {"dummy", "training", "ancient", "construct"}
+}, {
+    name = "Barrel of Fireworks",
+    itemID = 219387,
+    spellName = "Barrel of Fireworks",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Training Dummy",
+    keywords = {"dummy", "training", "barrel", "fireworks"}
+}, {
+    name = "Anatomical Dummy",
+    itemID = 89614,
+    spellName = "Anatomical Dummy",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Training Dummy",
+    keywords = {"dummy", "training", "anatomical"}
+}, {
+    name = "Gnoll Targeting Barrel",
+    itemID = 163201,
+    spellName = "Gnoll Targeting Barrel",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Training Dummy",
+    keywords = {"dummy", "training", "gnoll", "barrel"}
 }, {
     name = "Bright Campfire",
     itemID = 33278,

@@ -37,12 +37,34 @@ local function CreateBannerIcon(parent)
     local frame = CreateFrame("Frame", nil, parent)
     frame:SetSize(40, 40)
     frame:SetPoint("LEFT", 12, 0)
+    frame:EnableMouse(true)
     
     local texture = frame:CreateTexture(nil, "ARTWORK")
     texture:SetSize(36, 36)
     texture:SetPoint("CENTER")
     texture:SetTexture("Interface\\Icons\\Spell_Arcane_TeleportDalaran")
     texture:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+
+    frame:SetScript("OnEnter", function(self)
+        local banner = self:GetParent()
+        local data = banner and banner.activeData or nil
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        if data then
+            if data.spellID then
+                GameTooltip:SetSpellByID(data.spellID)
+            elseif data.itemID then
+                GameTooltip:SetItemByID(data.itemID)
+            else
+                GameTooltip:SetText(data.spellName or data.name or "Nozmie")
+            end
+        else
+            GameTooltip:SetText("Nozmie")
+        end
+        GameTooltip:Show()
+    end)
+    frame:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
     
     return texture, frame
 end
@@ -76,6 +98,7 @@ function BannerUI.CreateBanner()
     banner:SetFrameStrata("HIGH")
     banner:SetAttribute("type", "macro")
     banner:RegisterForClicks("AnyUp", "AnyDown")
+    banner:RegisterForDrag("LeftButton")
     banner:SetMovable(true)
     banner:SetClampedToScreen(true)
     banner:SetUserPlaced(true)
@@ -124,12 +147,36 @@ function BannerUI.CreateBanner()
     dragButton:RegisterForDrag("LeftButton")
     dragButton:SetScript("OnDragStart", function() if not InCombatLockdown() then banner:StartMoving() end end)
     dragButton:SetScript("OnDragStop", function() banner:StopMovingOrSizing(); Helpers.SaveBannerPosition(banner) end)
+    banner.dragButton = dragButton
     
     CreateButton(banner, 16, {"TOPRIGHT", -8, -8}, {
         normal = "Interface\\Buttons\\UI-Panel-MinimizeButton-Up",
         highlight = "Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight",
         pushed = "Interface\\Buttons\\UI-Panel-MinimizeButton-Down"
     }, "Close", function() banner:Hide() end)
+    
+    banner.isDragging = false
+    banner:SetScript("OnMouseDown", function(self, button)
+        if button == "LeftButton" and IsAltKeyDown() and not InCombatLockdown() then
+            self:StartMoving()
+            self.isDragging = true
+        end
+    end)
+    banner:SetScript("OnMouseUp", function(self, button)
+        if self.isDragging then
+            self:StopMovingOrSizing()
+            self.isDragging = false
+            Helpers.SaveBannerPosition(self)
+        end
+    end)
+    banner:SetScript("OnShow", function(self)
+        local Settings = Nozmie_Settings
+        if Settings and Settings.Get("hideDragIcon") then
+            if self.dragButton then self.dragButton:Hide() end
+        else
+            if self.dragButton then self.dragButton:Show() end
+        end
+    end)
     
     Helpers.LoadBannerPosition(banner)
     return banner

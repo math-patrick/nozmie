@@ -5,8 +5,117 @@
 
 local Config = Nozmie_Config
 local Helpers = Nozmie_Helpers
+local BannerUI = Nozmie_BannerUI
 
 local BannerController = {}
+local RefreshBannerDisplay
+
+local STACK_GAP = 8
+local lastOptions
+
+local function GetOptionKey(data)
+    if data.spellID then
+        return "spell:" .. data.spellID
+    end
+    if data.itemID then
+        return "item:" .. data.itemID
+    end
+    return "name:" .. tostring(data.name or data.spellName or "")
+end
+
+local function GetBaseAnchor(root)
+    if not root.baseAnchor then
+        local point, relativeTo, relativePoint, xOfs, yOfs = root:GetPoint()
+        root.baseAnchor = {
+            point = point or "BOTTOM",
+            relativeTo = relativeTo or UIParent,
+            relativePoint = relativePoint or "BOTTOM",
+            xOfs = xOfs or 0,
+            yOfs = yOfs or 0,
+        }
+    end
+    return root.baseAnchor
+end
+
+local function GetStackAnchor(root, index)
+    local base = GetBaseAnchor(root)
+    return {
+        point = base.point,
+        relativeTo = base.relativeTo,
+        relativePoint = base.relativePoint,
+        xOfs = base.xOfs,
+        yOfs = base.yOfs + (Config.BANNER.HEIGHT + STACK_GAP) * index,
+    }
+end
+
+local function ApplyAnchor(frame, anchor)
+    frame:ClearAllPoints()
+    frame:SetPoint(anchor.point, anchor.relativeTo, anchor.relativePoint, anchor.xOfs, anchor.yOfs)
+end
+
+local function SlideToAnchor(frame, anchor, duration, onFinished)
+    local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint()
+    relativeTo = relativeTo or UIParent
+    local dx = (anchor.xOfs or 0) - (xOfs or 0)
+    local dy = (anchor.yOfs or 0) - (yOfs or 0)
+
+    if dx == 0 and dy == 0 then
+        ApplyAnchor(frame, anchor)
+        if onFinished then onFinished() end
+        return
+    end
+
+    if frame.slideAnim then
+        frame.slideAnim:Stop()
+    end
+
+    frame.slideAnim = frame:CreateAnimationGroup()
+    local translate = frame.slideAnim:CreateAnimation("Translation")
+    translate:SetDuration(duration or 0.2)
+    translate:SetOffset(dx, dy)
+    frame.slideAnim:SetScript("OnFinished", function()
+        ApplyAnchor(frame, anchor)
+        if onFinished then onFinished() end
+    end)
+    frame.slideAnim:Play()
+end
+
+local function ReflowStack(root)
+    if not root.stack then return end
+    for index, frame in ipairs(root.stack) do
+        local anchor = GetStackAnchor(root, index)
+        SlideToAnchor(frame, anchor, 0.2)
+    end
+end
+
+local function PromoteNextBanner(root)
+    if not root.stack or #root.stack == 0 then
+        return
+    end
+
+    local nextBanner = table.remove(root.stack, 1)
+    local baseAnchor = GetBaseAnchor(root)
+
+    root.ignoreHide = true
+    root:SetAlpha(0)
+
+    SlideToAnchor(nextBanner, baseAnchor, 0.2, function()
+        root.options = nextBanner.options
+        root.currentIndex = nextBanner.currentIndex or 1
+        root.newItemUntil = nil
+        root.isOnCooldown = false
+        root.cooldownData = nil
+        RefreshBannerDisplay(root)
+        root:Show()
+        UIFrameFadeIn(root, 0.2, 0, 1)
+        nextBanner.ignoreHide = true
+        nextBanner:Hide()
+        nextBanner.ignoreHide = false
+        ReflowStack(root)
+        root.ignoreHide = false
+    end)
+end
+
 
 local function UpdateBannerForCooldown(banner, data, remaining)
     banner.icon:SetDesaturated(true)
@@ -37,8 +146,7 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     -- Context-aware action text based on category
     local actionVerb = "Use"
     if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Home" or
-        data.category == "Mage" or data.category == "Druid" or data.category == "Shaman" or data.category ==
-        "Death Knight" or data.category == "Monk" or data.category == "Demon Hunter" or data.category == "Toy" then
+        data.category == "Class" or data.category == "Toy" then
         actionVerb = "Teleport to"
     elseif data.category and data.category:find("Utility") then
         if data.destination and
@@ -71,7 +179,8 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
 
     -- Show target player if casting on someone specific
     local targetInfo = ""
-    if data.targetPlayer then
+    local playerName = UnitName("player")
+    if data.targetPlayer and data.targetPlayer ~= playerName then
         targetInfo = string.format(" |cff00ff00on %s|r", data.targetPlayer)
     end
 
@@ -90,7 +199,8 @@ local function UpdateBannerIcon(banner, data)
         if iconTexture then banner.icon:SetTexture(iconTexture) end
         
         -- Use macro targeting for buff spells when a target player is specified
-        if data.targetPlayer and (data.category and data.category:find("Utility")) then
+        local playerName = UnitName("player")
+        if data.targetPlayer and data.targetPlayer ~= playerName and (data.category and data.category:find("Utility")) then
             banner:SetAttribute("type", "macro")
             banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. data.spellName)
         else
@@ -105,9 +215,14 @@ local function UpdateBannerIcon(banner, data)
         banner:SetAttribute("type", "macro")
         banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
     end
+    -- Prevent right-click from triggering secure actions
+    banner:SetAttribute("type2", "none")
+    banner:SetAttribute("macrotext2", nil)
+    banner:SetAttribute("spell2", nil)
+    banner:SetAttribute("item2", nil)
 end
 
-local function RefreshBannerDisplay(banner)
+RefreshBannerDisplay = function(banner)
     local data = banner.options[banner.currentIndex]
     banner.activeData = data
     
@@ -149,15 +264,31 @@ local function CreateNavigationArrows(banner)
     end
 end
 
-function BannerController.ShowWithOptions(banner, teleportOptions)
+function BannerController.ShowWithOptions(banner, teleportOptions, isStacked)
+    lastOptions = teleportOptions
+    if not isStacked and banner:IsShown() then
+        banner.stack = banner.stack or {}
+        local stackedBanner = BannerUI.CreateBanner()
+        stackedBanner.stackRoot = banner
+        table.insert(banner.stack, stackedBanner)
+        BannerController.ShowWithOptions(stackedBanner, teleportOptions, true)
+        local anchor = GetStackAnchor(banner, #banner.stack)
+        ApplyAnchor(stackedBanner, anchor)
+        return
+    end
+
     if banner.updateTimer then
         banner.updateTimer:Cancel()
+    end
+    
+    if banner.autoHideTimer then
+        banner.autoHideTimer:Cancel()
     end
 
     banner.options = teleportOptions
     banner.currentIndex = 1
 
-    if #teleportOptions > 1 then
+    if #banner.options > 1 then
         CreateNavigationArrows(banner)
         banner.leftArrow:Show()
         banner.rightArrow:Show()
@@ -178,6 +309,11 @@ function BannerController.ShowWithOptions(banner, teleportOptions)
     banner.lastAnnounceTime = 0  -- Initialize announce debounce
     
     banner:SetScript("PostClick", function(self, button)
+        -- Cancel auto-hide timer when user interacts with banner
+        if self.autoHideTimer then
+            self.autoHideTimer:Cancel()
+        end
+        
         -- Handle right-click for announcements
         if button == "RightButton" then
             local data = self.options[self.currentIndex]
@@ -208,10 +344,64 @@ function BannerController.ShowWithOptions(banner, teleportOptions)
         end)
     end)
 
-    Helpers.LoadBannerPosition(banner)
+    banner:SetScript("OnHide", function(self)
+        if self.ignoreHide then return end
+        if self.updateTimer then
+            self.updateTimer:Cancel()
+            self.updateTimer = nil
+        end
+        if self.autoHideTimer then
+            self.autoHideTimer:Cancel()
+            self.autoHideTimer = nil
+        end
+        local root = self.stackRoot or self
+        if self ~= root then
+            if root.stack then
+                for index, frame in ipairs(root.stack) do
+                    if frame == self then
+                        table.remove(root.stack, index)
+                        break
+                    end
+                end
+            end
+            ReflowStack(root)
+            return
+        end
+
+        if root.stack and #root.stack > 0 then
+            PromoteNextBanner(root)
+        end
+    end)
+
+    if not banner.stackRoot then
+        Helpers.LoadBannerPosition(banner)
+        banner.baseAnchor = nil
+        GetBaseAnchor(banner)
+    end
     banner:SetAlpha(0)
     banner:Show()
     UIFrameFadeIn(banner, 0.4, 0, 1)
+    
+    -- Auto-hide banner if enabled
+    local Settings = Nozmie_Settings
+    if Settings.Get("autoHideBanner") then
+        local timeout = Settings.Get("bannerTimeout") or 10
+        banner.autoHideTimer = C_Timer.NewTimer(timeout, function()
+            if banner:IsShown() and not banner.isOnCooldown then
+                UIFrameFadeOut(banner, 0.3, 1, 0)
+                C_Timer.After(0.3, function()
+                    banner:Hide()
+                    if banner.updateTimer then
+                        banner.updateTimer:Cancel()
+                    end
+                end)
+            end
+        end)
+    end
+end
+
+function BannerController.GetLastOptions()
+    return lastOptions
 end
 
 _G.Nozmie_BannerController = BannerController

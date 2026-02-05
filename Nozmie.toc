@@ -4,7 +4,7 @@
 ## Author: YourName
 ## Version: 5.0.0
 ## SavedVariables: NozmieDB
-## IconTexture: Interface\AddOns\Nozmie\image
+## IconTexture: Interface\Icons\Spell_Holy_BorrowedTime
 
 Data.lua
 Config.lua
@@ -12,4 +12,6 @@ Helpers.lua
 Detector.lua
 BannerUI.lua
 BannerController.lua
+Minimap.lua
+Settings.lua
 Init.lua

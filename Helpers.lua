@@ -6,9 +6,13 @@
 local Helpers = {}
 
 function Helpers.SaveBannerPosition(banner)
-    local point, _, relativePoint, xOfs, yOfs = banner:GetPoint()
+    local root = banner.stackRoot or banner
+    local point, _, relativePoint, xOfs, yOfs = root:GetPoint()
     NozmieDB = NozmieDB or {}
     NozmieDB.position = {point = point, relativePoint = relativePoint, xOfs = xOfs, yOfs = yOfs}
+    if root.baseAnchor then
+        root.baseAnchor = nil
+    end
 end
 
 function Helpers.LoadBannerPosition(banner)
@@ -73,7 +77,7 @@ function Helpers.CreateAnnouncementMessage(data)
         -- Ready to use
         if nounForm == "portal" then
             return string.format("I can %s to %s!", actionVerb, data.destination or data.name)
-        elseif data.destination and (data.destination:find("Repair") or data.destination:find("Mailbox")) then
+        elseif data.destination and (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Anvil")) then
             return string.format("I can %s %s!", actionVerb, data.destination)
         else
             return string.format("I can %s %s!", actionVerb, data.name)
@@ -96,18 +100,28 @@ function Helpers.GetCooldownRemaining(data)
         local info = C_Spell.GetSpellCooldown(data.spellID)
         -- Check if info exists and values are not tainted/secret
         if info and info.startTime and info.duration and type(info.startTime) == "number" and type(info.duration) == "number" then
-            if info.startTime > 0 and info.duration > 0 then
-                local remaining = info.startTime + info.duration - GetTime()
-                if remaining > 0 then return remaining end
+            local ok, remaining = pcall(function()
+                if info.startTime > 0 and info.duration > 0 then
+                    return info.startTime + info.duration - GetTime()
+                end
+                return 0
+            end)
+            if ok and remaining and remaining > 0 then
+                return remaining
             end
         end
     elseif data.itemID then
         local start, duration = C_Item.GetItemCooldown(data.itemID)
         -- Check if values are not tainted/secret
         if start and duration and type(start) == "number" and type(duration) == "number" then
-            if start > 0 and duration > 0 then
-                local remaining = start + duration - GetTime()
-                if remaining > 0 then return remaining end
+            local ok, remaining = pcall(function()
+                if start > 0 and duration > 0 then
+                    return start + duration - GetTime()
+                end
+                return 0
+            end)
+            if ok and remaining and remaining > 0 then
+                return remaining
             end
         end
     end
