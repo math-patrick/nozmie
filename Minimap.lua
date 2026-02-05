@@ -6,40 +6,71 @@
 local MinimapModule = {}
 local minimapButton
 
+local Locale = _G.Nozmie_Locale
+local function Lstr(key, fallback)
+    if Locale and Locale.GetString then
+        return Locale.GetString(key, fallback)
+    end
+    return fallback or key
+end
+
+local function GetAngle()
+    if not NozmieDB then
+        return 225
+    end
+    return NozmieDB.minimapAngle or 225
+end
+
+local function SetAngle(angle)
+    NozmieDB = NozmieDB or {}
+    NozmieDB.minimapAngle = angle
+end
+
+local function UpdatePosition()
+    if not minimapButton then return end
+    local angle = math.rad(GetAngle())
+    local radius = (Minimap:GetWidth() / 2) + 5
+    local x = math.cos(angle) * radius
+    local y = math.sin(angle) * radius
+    minimapButton:SetPoint("CENTER", Minimap, "CENTER", x, y)
+end
+
 local function EnsureButton()
     if minimapButton then return minimapButton end
 
     minimapButton = CreateFrame("Button", "NozmieMinimapButton", Minimap)
     minimapButton:SetSize(32, 32)
     minimapButton:SetFrameStrata("MEDIUM")
-    minimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-    minimapButton:SetMovable(false)
     minimapButton:EnableMouse(true)
     minimapButton:RegisterForClicks("AnyUp")
+    minimapButton:RegisterForDrag("LeftButton")
 
     local bg = minimapButton:CreateTexture(nil, "BACKGROUND")
     bg:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
     bg:SetSize(56, 56)
-    bg:SetPoint("TOPLEFT", minimapButton, "TOPLEFT", -12, 12)
+    bg:SetPoint("CENTER", minimapButton, "CENTER", 0, 0)
 
     local icon = minimapButton:CreateTexture(nil, "ARTWORK")
     icon:SetTexture("Interface\\Icons\\Spell_Holy_BorrowedTime")
     icon:SetSize(18, 18)
     icon:SetPoint("CENTER", 0, 0)
+    icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
     minimapButton.icon = icon
 
     minimapButton:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:SetText("Nozmie")
+        GameTooltip:SetText(Lstr("minimap.title", "Nozmie"))
         local last = _G.Nozmie_BannerController and _G.Nozmie_BannerController.GetLastOptions and _G.Nozmie_BannerController.GetLastOptions()
         if last and last[1] then
-            local name = last[1].spellName or last[1].name or "Unknown"
-            GameTooltip:AddLine("Last banner: " .. name, 0.9, 0.9, 0.9)
+            local name = last[1].spellName or last[1].name or Lstr("minimap.unknown", "Unknown")
+            local lastLine = string.format(Lstr("minimap.lastBanner", "Last banner: %s"), name)
+            GameTooltip:AddLine(lastLine, 0.9, 0.9, 0.9)
         else
-            GameTooltip:AddLine("Last banner: (none)", 0.7, 0.7, 0.7)
+            GameTooltip:AddLine(Lstr("minimap.lastBannerNone", "Last banner: (none)"), 0.7, 0.7, 0.7)
         end
-        GameTooltip:AddLine("Left-click: Show last banner", 1, 1, 1)
-        GameTooltip:AddLine("Right-click: Open settings", 1, 1, 1)
+        GameTooltip:AddLine(Lstr("minimap.leftClick", "Left-click: Show last banner"), 1, 1, 1)
+        GameTooltip:AddLine(Lstr("minimap.rightClick", "Right-click: Open settings"), 1, 1, 1)
+        GameTooltip:AddLine(Lstr("minimap.drag", "Drag: Move minimap icon"), 1, 1, 1)
         GameTooltip:Show()
     end)
     minimapButton:SetScript("OnLeave", function()
@@ -58,6 +89,26 @@ local function EnsureButton()
         end
     end)
 
+    minimapButton:SetScript("OnDragStart", function(self)
+        self.isDragging = true
+        self:SetScript("OnUpdate", function()
+            local mx, my = Minimap:GetCenter()
+            local cx, cy = GetCursorPosition()
+            local scale = Minimap:GetEffectiveScale()
+            cx, cy = cx / scale, cy / scale
+            local angle = math.deg(math.atan2(cy - my, cx - mx))
+            SetAngle(angle)
+            UpdatePosition()
+        end)
+    end)
+
+    minimapButton:SetScript("OnDragStop", function(self)
+        self.isDragging = false
+        self:SetScript("OnUpdate", nil)
+        UpdatePosition()
+    end)
+
+    UpdatePosition()
     return minimapButton
 end
 
@@ -67,9 +118,7 @@ function MinimapModule.Initialize()
 end
 
 function MinimapModule.UpdateVisibility()
-    if not minimapButton then
-        EnsureButton()
-    end
+    EnsureButton()
     if NozmieDB and NozmieDB.minimapIcon then
         minimapButton:Show()
     else

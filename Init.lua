@@ -10,6 +10,14 @@ local BannerController = Nozmie_BannerController
 local Settings = Nozmie_Settings
 local Minimap = Nozmie_Minimap
 
+local Locale = _G.Nozmie_Locale
+local function Lstr(key, fallback)
+    if Locale and Locale.GetString then
+        return Locale.GetString(key, fallback)
+    end
+    return fallback or key
+end
+
 local addon = CreateFrame("Frame")
 local banner
 local pendingMatches = {}
@@ -36,7 +44,7 @@ _G.Nozmie_ShowLastBanner = function()
     if last and #last > 0 then
         _G.Nozmie_ShowOptions(last)
     else
-        print("|cff00ff00Nozmie:|r No recent banner to show.")
+        print("|cff00ff00Nozmie:|r " .. Lstr("banner.noRecent", "No recent banner to show."))
     end
 end
 
@@ -75,63 +83,48 @@ local function OnChatMessage(self, event, message, sender)
     return false
 end
 
-local function PrintStats()
-    print("|cff00ff00Nozmie:|r Loaded " .. #Nozmie_Data .. " teleport options")
-    local counts = {}
-    for _, data in ipairs(Nozmie_Data) do
-        counts[data.category] = (counts[data.category] or 0) + 1
-    end
-    for category, count in pairs(counts) do
-        print("  " .. category .. ": " .. count)
-    end
-end
-
 local function HandleCommand(args)
     local cmd = args:lower():trim()
     
-    if cmd == "debug" or cmd == "count" then
-        PrintStats()
-    elseif cmd == "settings" or cmd == "config" or cmd == "options" or cmd == "" then
+    if cmd == "settings" or cmd == "config" or cmd == "options" or cmd == "" then
         Settings.Show()
     elseif cmd:match("^blacklist%s+(.+)") then
         local words = args:match("^blacklist%s+(.+)")
         Settings.Set("blacklistedWords", words)
-        print("|cff00ff00Nozmie:|r Blacklist updated to: |cffFFFFFF" .. words)
+        local message = string.format(Lstr("cmd.blacklist.updated", "Blacklist updated to: %s"), "|cffFFFFFF" .. words .. "|r")
+        print("|cff00ff00Nozmie:|r " .. message)
     elseif cmd == "blacklist" then
         local current = Settings.Get("blacklistedWords") or ""
         if current == "" then
-            print("|cff00ff00Nozmie:|r No blacklisted words set.")
+            print("|cff00ff00Nozmie:|r " .. Lstr("cmd.blacklist.none", "No blacklisted words set."))
         else
-            print("|cff00ff00Nozmie:|r Current blacklist: |cffFFFFFF" .. current)
+            local message = string.format(Lstr("cmd.blacklist.current", "Current blacklist: %s"), "|cffFFFFFF" .. current .. "|r")
+            print("|cff00ff00Nozmie:|r " .. message)
         end
-        print("|cffFFFFFF  Usage: /noz blacklist <word1, word2, ...>")
-    elseif cmd:match("^test%s+(.+)") then
-        local testMessage = cmd:match("^test%s+(.+)")
-        print("|cff00ff00Nozmie:|r Testing: '" .. testMessage .. "'")
-        OnChatMessage(nil, nil, testMessage)
+        print("|cffFFFFFF" .. Lstr("cmd.blacklist.usage", "  Usage: /noz blacklist <word1, word2, ...>"))
     elseif cmd == "minimap" or cmd == "mm" then
         Settings.Set("minimapIcon", not Settings.Get("minimapIcon"))
         if Minimap then
             Minimap.UpdateVisibility()
         end
-        print("|cff00ff00Nozmie:|r Minimap icon " .. (Settings.Get("minimapIcon") and "enabled" or "disabled") .. ".")
+        local state = Settings.Get("minimapIcon") and Lstr("state.enabled", "enabled") or Lstr("state.disabled", "disabled")
+        local message = string.format(Lstr("cmd.minimap.toggled", "Minimap icon %s."), state)
+        print("|cff00ff00Nozmie:|r " .. message)
     elseif cmd == "last" then
         _G.Nozmie_ShowLastBanner()
     else
-        print("|cff00ff00Nozmie:|r Commands:")
-        print("  /noz - Open settings")
-        print("  /noz settings - Open settings")
-        print("  /noz debug - Show statistics")
-        print("  /noz minimap - Toggle minimap icon")
-        print("  /noz last - Show last banner")
-        print("  /noz blacklist - View current blacklist")
-        print("  /noz blacklist <words> - Set blacklisted words (comma-separated)")
-        print("  /noz test <keyword> - Test detection")
+        print("|cff00ff00Nozmie:|r " .. Lstr("cmd.title", "Commands:"))
+        print(Lstr("cmd.open", "  /noz - Open settings"))
+        print(Lstr("cmd.openAlt", "  /noz settings - Open settings"))
+        print(Lstr("cmd.minimap", "  /noz minimap - Toggle minimap icon"))
+        print(Lstr("cmd.last", "  /noz last - Show last banner"))
+        print(Lstr("cmd.blacklist", "  /noz blacklist - View current blacklist"))
+        print(Lstr("cmd.blacklistSet", "  /noz blacklist <words> - Set blacklisted words (comma-separated)"))
     end
 end
 
 local function Initialize()
-    print("|cff00ff00Nozmie:|r Initializing...")
+    print("|cff00ff00Nozmie:|r " .. Lstr("init.initializing", "Initializing..."))
     
     -- Initialize settings database
     Settings.InitializeDB()
@@ -156,7 +149,7 @@ local function Initialize()
     SLASH_NOZMIE2 = "/noz"
     SlashCmdList["NOZMIE"] = HandleCommand
     
-    print("|cff00ff00Nozmie|r loaded! Type |cff00ff00/noz|r for settings.")
+    print("|cff00ff00Nozmie|r " .. Lstr("init.loaded", "loaded! Type /noz for settings."))
 end
 
 addon:RegisterEvent("ADDON_LOADED")

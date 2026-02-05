@@ -10,6 +10,14 @@ local BannerUI = Nozmie_BannerUI
 local BannerController = {}
 local RefreshBannerDisplay
 
+local Locale = _G.Nozmie_Locale
+local function Lstr(key, fallback)
+    if Locale and Locale.GetString then
+        return Locale.GetString(key, fallback)
+    end
+    return fallback or key
+end
+
 local STACK_GAP = 8
 local lastOptions
 
@@ -127,11 +135,13 @@ local function UpdateBannerForCooldown(banner, data, remaining)
         data = data
     }
 
-    banner.title:SetText(string.format("%s is on Cooldown", data.spellName or data.name))
+    local cooldownTitle = string.format(Lstr("banner.cooldownTitle", "%s is on cooldown"), data.spellName or data.name)
+    banner.title:SetText(cooldownTitle)
 
     local timeText = Helpers.FormatCooldownTime(remaining)
     if Helpers.IsInAnyGroup() then
-        banner.subtitle:SetText("|cffff0000" .. timeText .. "|r |cff888888- Click to announce|r")
+        local suffix = Lstr("banner.cooldownSuffix", " - Click to announce")
+        banner.subtitle:SetText("|cffff0000" .. timeText .. "|r |cff888888" .. suffix .. "|r")
     else
         banner.subtitle:SetText("|cffff0000" .. timeText .. "|r")
     end
@@ -144,52 +154,54 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     banner.isOnCooldown = false
 
     -- Context-aware action text based on category
-    local actionVerb = "Use"
+    local actionVerb = Lstr("banner.action.use", "Use")
     if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Home" or
         data.category == "Class" or data.category == "Toy" then
-        actionVerb = "Teleport to"
+        actionVerb = Lstr("banner.action.teleport", "Teleport to")
     elseif data.category and data.category:find("Utility") then
         if data.destination and
             (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Transmog") or
                 data.destination:find("Anvil")) then
-            actionVerb = "Summon"
+            actionVerb = Lstr("banner.action.summon", "Summon")
         elseif data.keywords and
             (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or tContains(data.keywords, "motw") or
                 tContains(data.keywords, "intellect")) then
-            actionVerb = "Cast"
+            actionVerb = Lstr("banner.action.cast", "Cast")
         else
-            actionVerb = "Use"
+            actionVerb = Lstr("banner.action.use", "Use")
         end
     end
 
-    local text = data.destination and (actionVerb .. " " .. data.destination .. "?") or
-                     (actionVerb .. " " .. data.name .. "?")
+    local text = string.format(Lstr("banner.titleWithDestination", "%s %s?"), actionVerb, data.destination or data.name)
 
     banner.title:SetText(text)
 
     -- Context-aware subtitle
-    local actionText = "use"
-    if actionVerb == "Teleport to" then
-        actionText = "teleport"
-    elseif actionVerb == "Cast" then
-        actionText = "cast"
-    elseif actionVerb == "Summon" then
-        actionText = "summon"
+    local actionText = Lstr("banner.actionText.use", "use")
+    if actionVerb == Lstr("banner.action.teleport", "Teleport to") then
+        actionText = Lstr("banner.actionText.teleport", "teleport")
+    elseif actionVerb == Lstr("banner.action.cast", "Cast") then
+        actionText = Lstr("banner.actionText.cast", "cast")
+    elseif actionVerb == Lstr("banner.action.summon", "Summon") then
+        actionText = Lstr("banner.actionText.summon", "summon")
     end
 
     -- Show target player if casting on someone specific
     local targetInfo = ""
     local playerName = UnitName("player")
     if data.targetPlayer and data.targetPlayer ~= playerName then
-        targetInfo = string.format(" |cff00ff00on %s|r", data.targetPlayer)
+        targetInfo = string.format(" |cff00ff00" .. Lstr("banner.targetInfo", " on %s") .. "|r", data.targetPlayer)
     end
 
     if totalOptions > 1 then
-        banner.subtitle:SetText(string.format(
-            "|cff888888Click to %s%s • |r|cff00ff00%d/%d|r |cff888888• Right-click to announce|r", actionText,
-            targetInfo, currentIndex, totalOptions))
+        local prefix = string.format(Lstr("banner.subtitlePrefix", "Click to %s%s"), actionText, targetInfo)
+        local count = string.format(Lstr("banner.subtitleCount", "%d/%d"), currentIndex, totalOptions)
+        local suffix = Lstr("banner.subtitleSuffix", "Right-click to announce")
+        banner.subtitle:SetText("|cff888888" .. prefix .. " • |r|cff00ff00" .. count .. "|r |cff888888• " .. suffix .. "|r")
     else
-        banner.subtitle:SetText(string.format("|cff888888Click to %s%s • Right-click to announce|r", actionText, targetInfo))
+        local prefix = string.format(Lstr("banner.subtitlePrefix", "Click to %s%s"), actionText, targetInfo)
+        local suffix = Lstr("banner.subtitleSuffix", "Right-click to announce")
+        banner.subtitle:SetText("|cff888888" .. prefix .. " • " .. suffix .. "|r")
     end
 end
 
@@ -331,9 +343,9 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked)
         if self.isOnCooldown and Helpers.IsInAnyGroup() and self.cooldownData then
             local now = GetTime()
             if now - self.lastAnnounceTime > 1 then  -- 1 second debounce
-                local message = string.format("%s is on cooldown (%s)",
-                    self.cooldownData.data.spellName or self.cooldownData.data.name,
-                    Helpers.FormatCooldownTime(self.cooldownData.remaining))
+                    local message = string.format(Lstr("banner.cooldownAnnounce", "%s is on cooldown (%s)"),
+                        self.cooldownData.data.spellName or self.cooldownData.data.name,
+                        Helpers.FormatCooldownTime(self.cooldownData.remaining))
                 SendChatMessage(message, Helpers.GetGroupChatChannel())
                 self.lastAnnounceTime = now
             end

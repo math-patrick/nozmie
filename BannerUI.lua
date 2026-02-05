@@ -8,6 +8,14 @@ local Helpers = Nozmie_Helpers
 
 local BannerUI = {}
 
+local Locale = _G.Nozmie_Locale
+local function Lstr(key, fallback)
+    if Locale and Locale.GetString then
+        return Locale.GetString(key, fallback)
+    end
+    return fallback or key
+end
+
 local function CreateButton(parent, size, point, textures, tooltip, onClick)
     local btn = CreateFrame("Button", nil, parent)
     btn:SetSize(size, size)
@@ -55,10 +63,10 @@ local function CreateBannerIcon(parent)
             elseif data.itemID then
                 GameTooltip:SetItemByID(data.itemID)
             else
-                GameTooltip:SetText(data.spellName or data.name or "Nozmie")
+                GameTooltip:SetText(data.spellName or data.name or Lstr("minimap.title", "Nozmie"))
             end
         else
-            GameTooltip:SetText("Nozmie")
+            GameTooltip:SetText(Lstr("minimap.title", "Nozmie"))
         end
         GameTooltip:Show()
     end)
@@ -84,7 +92,7 @@ local function CreateBannerText(parent, iconFrame)
     subtitle:SetFontObject("GameFontHighlightSmall")
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
     subtitle:SetPoint("RIGHT", -40, 0)
-    subtitle:SetText("|cff999999Click to teleport|r")  -- Subtle gray
+    subtitle:SetText("|cff999999" .. Lstr("banner.clickToTeleport", "Click to teleport") .. "|r")  -- Subtle gray
     subtitle:SetJustifyH("LEFT")
     subtitle:SetShadowColor(0, 0, 0, 1)
     subtitle:SetShadowOffset(1, -1)
@@ -93,7 +101,7 @@ local function CreateBannerText(parent, iconFrame)
 end
 
 function BannerUI.CreateBanner()
-    local banner = CreateFrame("Button", "NozmieBanner", UIParent, "SecureActionButtonTemplate, BackdropTemplate")
+    local banner = CreateFrame("Button", nil, UIParent, "SecureActionButtonTemplate, BackdropTemplate")
     banner:SetSize(Config.BANNER.WIDTH, Config.BANNER.HEIGHT)
     banner:SetFrameStrata("HIGH")
     banner:SetAttribute("type", "macro")
@@ -139,7 +147,7 @@ function BannerUI.CreateBanner()
     local dragButton = CreateButton(banner, 16, {"BOTTOMRIGHT", -8, 8}, {
         normal = "Interface\\Cursor\\UI-Cursor-Move",
         highlight = "Interface\\Cursor\\UI-Cursor-Move"
-    }, "Drag to move")
+    }, Lstr("ui.dragToMove", "Drag to move"))
     if dragButton:GetHighlightTexture() then
         dragButton:GetHighlightTexture():SetAlpha(0.5)
     end
@@ -153,7 +161,7 @@ function BannerUI.CreateBanner()
         normal = "Interface\\Buttons\\UI-Panel-MinimizeButton-Up",
         highlight = "Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight",
         pushed = "Interface\\Buttons\\UI-Panel-MinimizeButton-Down"
-    }, "Close", function() banner:Hide() end)
+    }, Lstr("ui.close", "Close"), function() banner:Hide() end)
     
     banner.isDragging = false
     banner:SetScript("OnMouseDown", function(self, button)

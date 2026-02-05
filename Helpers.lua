@@ -5,6 +5,14 @@
 
 local Helpers = {}
 
+local Locale = _G.Nozmie_Locale
+local function Lstr(key, fallback)
+    if Locale and Locale.GetString then
+        return Locale.GetString(key, fallback)
+    end
+    return fallback or key
+end
+
 function Helpers.SaveBannerPosition(banner)
     local root = banner.stackRoot or banner
     local point, _, relativePoint, xOfs, yOfs = root:GetPoint()
@@ -46,21 +54,21 @@ function Helpers.CreateAnnouncementMessage(data)
     local cooldown = Helpers.GetCooldownRemaining(data)
     
     -- Determine action verb based on category
-    local actionVerb = "use"
+    local actionVerb = Lstr("announce.action.use", "use")
     local nounForm = "utility"
     
     if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or 
        data.category == "Home" or data.category == "Class" or data.category == "Toy" then
-        actionVerb = "teleport"
+        actionVerb = Lstr("announce.action.teleport", "teleport")
         nounForm = "portal"
     elseif data.category and data.category:find("Utility") then
         if data.destination and (data.destination:find("Repair") or data.destination:find("Mailbox") or 
            data.destination:find("Transmog") or data.destination:find("Anvil")) then
-            actionVerb = "summon"
+            actionVerb = Lstr("announce.action.summon", "summon")
             nounForm = data.name
         elseif data.keywords and (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or 
                 tContains(data.keywords, "motw") or tContains(data.keywords, "intellect")) then
-            actionVerb = "cast"
+            actionVerb = Lstr("announce.action.cast", "cast")
             nounForm = data.name
         end
     end
@@ -69,18 +77,21 @@ function Helpers.CreateAnnouncementMessage(data)
         -- On cooldown
         local timeText = Helpers.FormatCooldownTime(cooldown)
         if nounForm == "portal" then
-            return string.format("%s to %s ready in %s", nounForm:sub(1,1):upper()..nounForm:sub(2), data.destination or data.name, timeText)
+            local portalNoun = Lstr("announce.noun.portal", "Portal")
+            return string.format(Lstr("announce.portalReadyIn", "%s to %s ready in %s"), portalNoun,
+                data.destination or data.name, timeText)
         else
-            return string.format("%s ready in %s", data.name, timeText)
+            return string.format(Lstr("announce.readyIn", "%s ready in %s"), data.name, timeText)
         end
     else
         -- Ready to use
         if nounForm == "portal" then
-            return string.format("I can %s to %s!", actionVerb, data.destination or data.name)
+            return string.format(Lstr("announce.canTeleport", "I can %s to %s!"), actionVerb,
+                data.destination or data.name)
         elseif data.destination and (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Anvil")) then
-            return string.format("I can %s %s!", actionVerb, data.destination)
+            return string.format(Lstr("announce.canUseDestination", "I can %s %s!"), actionVerb, data.destination)
         else
-            return string.format("I can %s %s!", actionVerb, data.name)
+            return string.format(Lstr("announce.canUseName", "I can %s %s!"), actionVerb, data.name)
         end
     end
 end

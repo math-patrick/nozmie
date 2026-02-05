@@ -6,38 +6,284 @@
 -- ============================================================================
 -- MYTHIC+ DUNGEONS
 -- ============================================================================
+-- Battle for Azeroth Dungeons
+local BfADungeons = {{
+    name = "Operation: Mechagon",
+    spellID = 373274,
+    spellName = "Path of the Scrappy Prince",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"mechagon", "operation mechagon"}
+}, {
+    name = "Freehold",
+    spellID = 410071,
+    spellName = "Path of the Freebooter",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"freehold", "free hold", "freebooter"}
+}, {
+    name = "The Underrot",
+    spellID = 410074,
+    spellName = "Path of Festering Rot",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"underrot", "under rot", "ur"}
+}, {
+    name = "Atal'Dazar",
+    spellID = 424187,
+    spellName = "Path of the Golden Tomb",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"atal'dazar", "ataldazar", "atal", "ad"}
+}, {
+    name = "Waycrest Manor",
+    spellID = 424167,
+    spellName = "Path of Heart's Bane",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"waycrest", "manor", "waycrest manor", "wm"}
+}, {
+    name = "The MOTHERLODE!!",
+    spellID = 467553,
+    spellName = "Path of the Azerite Refinery",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"motherlode", "mother lode", "mld", "azerite"}
+}, {
+    name = "The MOTHERLODE!!",
+    spellID = 467555,
+    spellName = "Path of the Azerite Refinery",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"motherlode", "mother lode", "mld", "azerite"}
+}}
+
+-- Shadowlands Dungeons
+local ShadowlandsDungeons = {{
+    name = "Halls of Atonement",
+    spellID = 354465,
+    spellName = "Path of the Sinful Soul",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"halls", "halls of atonement", "hoa", "atonement"}
+}, {
+    name = "Plaguefall",
+    spellID = 354463,
+    spellName = "Path of the Plagued",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"plaguefall", "plague fall", "pf"}
+}, {
+    name = "Mists of Tirna Scithe",
+    spellID = 354464,
+    spellName = "Path of the Misty Forest",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"mists", "tirna scithe", "tirna", "mots"}
+}, {
+    name = "The Necrotic Wake",
+    spellID = 354462,
+    spellName = "Path of the Courageous",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"necrotic", "necrotic wake", "nw", "wake"}
+}, {
+    name = "Sanguine Depths",
+    spellID = 354469,
+    spellName = "Path of the Stone Warden",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"sanguine", "sanguine depths", "sd", "depths"}
+}, {
+    name = "Spires of Ascension",
+    spellID = 354466,
+    spellName = "Path of the Ascended",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"spires", "spires of ascension", "soa", "ascension"}
+}, {
+    name = "Theater of Pain",
+    spellID = 354467,
+    spellName = "Path of the Undefeated",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"theater", "theater of pain", "top", "pain"}
+}, {
+    name = "De Other Side",
+    spellID = 354468,
+    spellName = "Path of the Scheming Loa",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"de other side", "dos", "other side"}
+}, {
+    name = "Tazavesh, the Veiled Market",
+    spellID = 367416,
+    spellName = "Path of the Streetwise Merchant",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"tazavesh", "taza", "veiled market"}
+}}
+
+-- Legion Dungeons
+local LegionDungeons = {{
+    name = "Halls of Valor",
+    spellID = 393764,
+    spellName = "Path of Proven Worth",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"halls of valor", "valor", "hov"}
+}, {
+    name = "Court of Stars",
+    spellID = 393766,
+    spellName = "Path of the Grand Magistrix",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"court of stars", "court", "cos"}
+}, {
+    name = "Darkheart Thicket",
+    spellID = 424163,
+    spellName = "Path of the Nightmare Lord",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"darkheart", "thicket", "dht"}
+}, {
+    name = "Black Rook Hold",
+    spellID = 424153,
+    spellName = "Path of Ancient Horrors",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"black rook", "rook hold", "brh"}
+}, {
+    name = "Neltharion's Lair",
+    spellID = 410078,
+    spellName = "Path of the Earth-Warder",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"neltharion", "lair", "nl"}
+}, {
+    name = "Karazhan",
+    spellID = 373262,
+    spellName = "Path of the Fallen Guardian",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"karazhan", "kara"}
+}}
+
+-- Cataclysm Dungeons
+local CataclysmDungeons = {{
+    name = "Vortex Pinnacle",
+    spellID = 410080,
+    spellName = "Path of Wind's Domain",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"vortex", "pinnacle", "vp"}
+}, {
+    name = "Throne of the Tides",
+    spellID = 424142,
+    spellName = "Path of the Tidehunter",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"throne", "tides", "tot"}
+}}
+
+-- Dragonflight Dungeons
+local DragonflightDungeons = {{
+    name = "Uldaman: Legacy of Tyr",
+    spellID = 393222,
+    spellName = "Path of the Watcher's Legacy",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"uldaman", "legacy of tyr", "u"}
+}, {
+    name = "Ruby Life Pools",
+    spellID = 393256,
+    spellName = "Path of the Clutch Defender",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"ruby", "ruby life pools", "rlp", "life pools"}
+}, {
+    name = "The Nokhud Offensive",
+    spellID = 393262,
+    spellName = "Path of the Windswept Plains",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"nokhud", "nokhud offensive", "no"}
+}, {
+    name = "The Azure Vault",
+    spellID = 393279,
+    spellName = "Path of Arcane Secrets",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"azure", "azure vault", "av"}
+}, {
+    name = "Algeth'ar Academy",
+    spellID = 393273,
+    spellName = "Path of the Draconic Diploma",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"algethar", "algeth'ar", "academy", "aa"}
+}, {
+    name = "Neltharus",
+    spellID = 393276,
+    spellName = "Path of the Obsidian Hoard",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"neltharus", "nelth", "obsidian"}
+}, {
+    name = "Brackenhide Hollow",
+    spellID = 393267,
+    spellName = "Path of the Rotting Woods",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"brackenhide", "bracken", "hollow", "bhh"}
+}, {
+    name = "Halls of Infusion",
+    spellID = 393283,
+    spellName = "Path of the Titanic Reservoir",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"halls", "infusion", "halls of infusion", "hoi"}
+}, {
+    name = "Dawn of the Infinite",
+    spellID = 424197,
+    spellName = "Path of Twisted Time",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"dawn", "dawn of the infinite", "doti"}
+}}
+
 -- The War Within Season 1
 local WarWithinSeason1 = {{
     name = "Ara-Kara, City of Echoes",
-    spellID = 445424,
+    spellID = 445417,
     spellName = "Path of the Ruined City",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"ara-kara", "ara kara", "arakara", "city of echoes"}
+    keywords = {"ara-kara", "ara kara", "arakara", "city of echoes", "ara"}
 }, {
     name = "City of Threads",
-    spellID = 445414,
-    spellName = "Path of the Nerub-ar City",
+    spellID = 445416,
+    spellName = "Path of Nerubian Ascension",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"city of threads", "threads", "nerub-ar city", "nerubar"}
 }, {
     name = "The Stonevault",
-    spellID = 445418,
-    spellName = "Path of the Earthen Vault",
+    spellID = 445269,
+    spellName = "Path of the Corrupted Foundry",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"stonevault", "stone vault", "earthen vault"}
+    keywords = {"stonevault", "stone vault", "corrupted foundry"}
 }, {
     name = "The Dawnbreaker",
-    spellID = 445417,
+    spellID = 445414,
     spellName = "Path of the Arathi Flagship",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"dawnbreaker", "dawn breaker", "arathi flagship"}
 }, {
     name = "Priory of the Sacred Flame",
-    spellID = 445269,
+    spellID = 445444,
     spellName = "Path of the Light's Reverence",
     actionType = "spell",
     category = "M+ Dungeon",
@@ -45,21 +291,28 @@ local WarWithinSeason1 = {{
 }, {
     name = "The Rookery",
     spellID = 445443,
-    spellName = "Path of the Darkflame",
+    spellName = "Path of the Fallen Stormriders",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"rookery", "darkflame"}
+    keywords = {"rookery", "fallen stormriders"}
 }, {
     name = "Siege of Boralus",
-    spellID = 410074,
-    spellName = "Path of Boralus Harbor",
+    spellID = 445418,
+    spellName = "Path of the Besieged Harbor",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"siege", "boralus", "siege of boralus", "sob"}
+}, {
+    name = "Siege of Boralus",
+    spellID = 464256,
+    spellName = "Path of the Besieged Harbor",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"siege", "boralus", "siege of boralus", "sob"}
 }, {
     name = "Grim Batol",
-    spellID = 424142,
-    spellName = "Path of the Twilight Citadel",
+    spellID = 445424,
+    spellName = "Path of the Twilight Fortress",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"grim batol", "grim", "batol", "gb"}
@@ -68,15 +321,22 @@ local WarWithinSeason1 = {{
 -- The War Within Season 2
 local WarWithinSeason2 = {{
     name = "Cinderbrew Meadery",
-    spellID = 470709,
-    spellName = "Path of the Meadery",
+    spellID = 445440,
+    spellName = "Path of the Flaming Brewery",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"cinderbrew", "meadery", "cinder brew"}
 }, {
+    name = "Cinderbrew Meadery",
+    spellID = 467546,
+    spellName = "Path of the Waterworks",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"cinderbrew", "meadery", "cinder brew", "waterworks"}
+}, {
     name = "Darkflame Cleft",
-    spellID = 445262,
-    spellName = "Path of the Darkflame Cleft",
+    spellID = 445441,
+    spellName = "Path of the Warding Candles",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"darkflame", "cleft", "darkflame cleft"}
@@ -85,32 +345,18 @@ local WarWithinSeason2 = {{
 -- The War Within Season 3 (Current)
 local WarWithinSeason3 = {{
     name = "Floodgate",
-    spellID = 445444,
+    spellID = 1216786,
     spellName = "Path of Circuit Breaker",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"floodgate", "flood gate", "circuit breaker"}
 }, {
     name = "Eco-Dome Al'dani",
-    spellID = 445416,
+    spellID = 1237215,
     spellName = "Path of the Eco-Dome",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"eco-dome", "eco dome", "ecodome", "aldani"}
-}, {
-    name = "Undermine",
-    spellID = 470711,
-    spellName = "Path of the Full House",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"undermine", "full house"}
-}, {
-    name = "Manaforge Omega",
-    spellID = 470710,
-    spellName = "Path of the All-Devouring",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"manaforge", "omega", "k'aresh", "karesh", "all-devouring"}
 }}
 
 -- Midnight Season 1 (Future)
@@ -135,13 +381,6 @@ local MidnightSeason1 = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"seat", "triumvirate", "seat of the triumvirate", "sott"}
-}, {
-    name = "Algeth'ar Academy",
-    spellID = 393273,
-    spellName = "Path of the Draconic Diploma",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"algethar", "algeth'ar", "academy", "aa"}
 }, {
     name = "Magisters' Terrace",
     spellID = 999004, -- Placeholder - update when available
@@ -172,217 +411,27 @@ local MidnightSeason1 = {{
     keywords = {"windrunner", "spire", "windrunner spire"}
 }}
 
--- Battle for Azeroth Dungeons
-local BfADungeons = {{
-    name = "Operation: Mechagon",
-    spellID = 373190,
-    spellName = "Path of the Mechagone",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"mechagon", "operation mechagon"}
-}, {
-    name = "Siege of Boralus",
-    spellID = 410074,
-    spellName = "Path of Boralus Harbor",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"siege", "boralus", "siege of boralus", "sob"}
-}, {
-    name = "Freehold",
-    spellID = 410071,
-    spellName = "Path of the Freebooter",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"freehold", "free hold", "freebooter"}
-}, {
-    name = "The Underrot",
-    spellID = 410074,
-    spellName = "Path of the Underrot",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"underrot", "under rot", "ur"}
-}, {
-    name = "Atal'Dazar",
-    spellID = 410080,
-    spellName = "Path of the Golden Serpent",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"atal'dazar", "ataldazar", "atal", "ad"}
-}, {
-    name = "Waycrest Manor",
-    spellID = 424187,
-    spellName = "Path of Drustvar",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"waycrest", "manor", "waycrest manor", "wm"}
-}}
+local DungeonSeasonPriorityNames = {
+    MidnightSeason1 = {"Pit of Saron", "Skyreach", "Seat of the Triumvirate", "Magisters' Terrace", "Maisara Caverns",
+                       "Nexus-Point Xenas", "Windrunner Spire"},
+    WarWithinSeason3 = {"Eco-Dome Al'dani", "Ara-Kara, City of Echoes", "The Dawnbreaker", "Priory of the Sacred Flame", "Floodgate", "Halls of Atonement", "Tazavesh, the Veiled Market"}
+}
 
--- Dragonflight Dungeons
-local DragonflightDungeons = {{
-    name = "Ruby Life Pools",
-    spellID = 393256,
-    spellName = "Path of the Obsidian Hoard",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"ruby", "ruby life pools", "rlp", "life pools"}
-}, {
-    name = "The Nokhud Offensive",
-    spellID = 393262,
-    spellName = "Path of the Windswept Plains",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"nokhud", "nokhud offensive", "no"}
-}, {
-    name = "The Azure Vault",
-    spellID = 393279,
-    spellName = "Path of the Arcane Secrets",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"azure", "azure vault", "av"}
-}, {
-    name = "Algeth'ar Academy",
-    spellID = 393273,
-    spellName = "Path of Mastery",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"algethar", "algeth'ar", "academy", "aa"}
-}, {
-    name = "Brackenhide Hollow",
-    spellID = 393267,
-    spellName = "Path of the Rotting Woods",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"brackenhide", "bracken", "hollow", "bhh"}
-}, {
-    name = "Halls of Infusion",
-    spellID = 393256,
-    spellName = "Path of the Primal Prison",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"halls", "infusion", "halls of infusion", "hoi"}
-}, {
-    name = "Neltharus",
-    spellID = 393222,
-    spellName = "Path of the Obsidian Citadel",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"neltharus", "nelt"}
-}, {
-    name = "Uldaman: Legacy of Tyr",
-    spellID = 393283,
-    spellName = "Path of the Titan Halls",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"uldaman", "legacy of tyr", "uld"}
-}, {
-    name = "Neltharion's Lair",
-    spellID = 410078,
-    spellName = "Path of Huln's Mountain",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"neltharion", "neltharion's lair", "nl", "lair"}
-}, {
-    name = "Vortex Pinnacle",
-    spellID = 393222,
-    spellName = "Path of the Djinn",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"vortex", "pinnacle", "vortex pinnacle", "vp"}
-}, {
-    name = "Dawn of the Infinite",
-    spellID = 424197,
-    spellName = "Path of the Infinite",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"dawn", "infinite", "dawn of the infinite", "doti"}
-}, {
-    name = "Throne of the Tides",
-    spellID = 424163,
-    spellName = "Path of the Abyssal Maw",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"throne", "tides", "throne of the tides", "tot"}
-}, {
-    name = "Black Rook Hold",
-    spellID = 424142,
-    spellName = "Path of the Black Rook",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"black rook", "brh", "rook hold"}
-}, {
-    name = "Darkheart Thicket",
-    spellID = 424153,
-    spellName = "Path of Nightmare",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"darkheart", "thicket", "darkheart thicket", "dht"}
-}}
-
--- Shadowlands Dungeons
-local ShadowlandsDungeons = {{
-    name = "Halls of Atonement",
-    spellID = 354464,
-    spellName = "Path of the Sinful Soul",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"halls", "halls of atonement", "hoa", "atonement"}
-}, {
-    name = "Plaguefall",
-    spellID = 354462,
-    spellName = "Path of the Plagued",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"plaguefall", "plague fall", "pf"}
-}, {
-    name = "Mists of Tirna Scithe",
-    spellID = 354463,
-    spellName = "Path of the Misty Forest",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"mists", "tirna scithe", "tirna", "mots"}
-}, {
-    name = "The Necrotic Wake",
-    spellID = 354465,
-    spellName = "Path of the Courageous",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"necrotic", "necrotic wake", "nw", "wake"}
-}, {
-    name = "Sanguine Depths",
-    spellID = 354469,
-    spellName = "Path of the Stone Warden",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"sanguine", "sanguine depths", "sd", "depths"}
-}, {
-    name = "Spires of Ascension",
-    spellID = 354468,
-    spellName = "Path of the Ascended",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"spires", "spires of ascension", "soa", "ascension"}
-}, {
-    name = "Theater of Pain",
-    spellID = 354467,
-    spellName = "Path of the Undefeated",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"theater", "theater of pain", "top", "pain"}
-}, {
-    name = "De Other Side",
-    spellID = 354468,
-    spellName = "Path of the Scheming Loa",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"de other side", "dos", "other side"}
-}, {
-    name = "Tazavesh, the Veiled Market",
-    spellID = 367416,
-    spellName = "Path of the Streetwise Merchant",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"tazavesh", "taza", "veiled market"}
-}}
+local DungeonsByExpansion = {
+    WarWithin = {
+        Season1 = WarWithinSeason1,
+        Season2 = WarWithinSeason2,
+        Season3 = WarWithinSeason3
+    },
+    Midnight = {
+        Season1 = MidnightSeason1
+    },
+    Dragonflight = DragonflightDungeons,
+    Shadowlands = ShadowlandsDungeons,
+    BattleForAzeroth = BfADungeons,
+    Legion = LegionDungeons,
+    Cataclysm = CataclysmDungeons
+}
 
 -- ============================================================================
 -- HEARTHSTONES & HOME TELEPORTS
@@ -406,6 +455,70 @@ local Hearthstones = {{
     category = "Home",
     cooldown = "20 min",
     keywords = {"garrison", "garrison hearth"}
+}, {
+    name = "Dark Portal",
+    itemID = 93672,
+    spellName = "Dark Portal",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"dark portal", "portal"}
+}, {
+    name = "Ethereal Portal",
+    itemID = 54452,
+    spellName = "Ethereal Portal",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"ethereal", "portal"}
+}, {
+    name = "Scroll of Recall",
+    itemID = 37118,
+    spellName = "Scroll of Recall",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"scroll of recall", "recall"}
+}, {
+    name = "Scroll of Recall II",
+    itemID = 44314,
+    spellName = "Scroll of Recall II",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"scroll of recall", "recall"}
+}, {
+    name = "Scroll of Recall III",
+    itemID = 44315,
+    spellName = "Scroll of Recall III",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"scroll of recall", "recall"}
+}, {
+    name = "Astonishingly Scarlet Slippers",
+    itemID = 142298,
+    spellName = "Astonishingly Scarlet Slippers",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"scarlet slippers", "slippers"}
+}, {
+    name = "Scroll of Town Portal",
+    itemID = 142543,
+    spellName = "Scroll of Town Portal",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"town portal", "portal scroll"}
+}, {
+    name = "Tome of Town Portal",
+    itemID = 142542,
+    spellName = "Tome of Town Portal",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"tome", "town portal"}
 }, {
     name = "Dalaran Hearthstone",
     itemID = 140192,
@@ -454,7 +567,7 @@ local Hearthstones = {{
     keywords = {"hearthstone", "hearth", "home", "inn", "lunar"}
 }, {
     name = "Peddlefeet's Lovely Hearthstone",
-    itemID = 165802,
+    itemID = 165670,
     spellID = 278880,
     spellName = "Peddlefeet's Lovely Hearthstone",
     actionType = "toy",
@@ -526,7 +639,7 @@ local Hearthstones = {{
     keywords = {"hearthstone", "hearth", "home", "inn", "broker"}
 }, {
     name = "Deepdweller's Earthen Hearthstone",
-    itemID = 209035,
+    itemID = 208704,
     spellID = 422284,
     spellName = "Deepdweller's Earthen Hearthstone",
     actionType = "toy",
@@ -534,9 +647,24 @@ local Hearthstones = {{
     cooldown = "30 min",
     keywords = {"hearthstone", "hearth", "home", "inn", "earthen"}
 }, {
-    name = "Stone of the Hearth",
+    name = "Hearthstone of the Flame",
+    itemID = 209035,
+    spellName = "Hearthstone of the Flame",
+    actionType = "toy",
+    category = "Home",
+    cooldown = "30 min",
+    keywords = {"hearthstone", "hearth", "home", "inn", "flame"}
+}, {
+    name = "Draenic Hologem",
     itemID = 210455,
-    spellID = 424163,
+    spellName = "Draenic Hologem",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"hologem", "draenic", "draenei"}
+}, {
+    name = "Stone of the Hearth",
+    itemID = 212337,
     spellName = "Stone of the Hearth",
     actionType = "toy",
     category = "Home",
@@ -544,13 +672,85 @@ local Hearthstones = {{
     keywords = {"hearthstone", "hearth", "home", "inn", "stone"}
 }, {
     name = "Timewalker's Hearthstone",
-    itemID = 212337,
+    itemID = 193588,
     spellID = 427335,
     spellName = "Timewalker's Hearthstone",
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
     keywords = {"hearthstone", "hearth", "home", "inn", "timewalker"}
+}, {
+    name = "Ohn'ir Windsage's Hearthstone",
+    itemID = 200630,
+    spellName = "Ohn'ir Windsage's Hearthstone",
+    actionType = "toy",
+    category = "Home",
+    cooldown = "30 min",
+    keywords = {"hearthstone", "hearth", "home", "inn", "ohn'ir"}
+}, {
+    name = "Path of the Naaru",
+    itemID = 206195,
+    spellName = "Path of the Naaru",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"naaru", "path"}
+}, {
+    name = "Notorious Thread's Hearthstone",
+    itemID = 228940,
+    spellName = "Notorious Thread's Hearthstone",
+    actionType = "toy",
+    category = "Home",
+    cooldown = "30 min",
+    keywords = {"hearthstone", "hearth", "home", "inn", "thread"}
+}, {
+    name = "Redeployment Module",
+    itemID = 235016,
+    spellName = "Redeployment Module",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"redeployment", "module"}
+}, {
+    name = "Explosive Hearthstone",
+    itemID = 236687,
+    spellName = "Explosive Hearthstone",
+    actionType = "toy",
+    category = "Home",
+    cooldown = "30 min",
+    keywords = {"hearthstone", "hearth", "home", "inn", "explosive"}
+}, {
+    name = "P.O.S.T. Master's Express Hearthstone",
+    itemID = 245970,
+    spellName = "P.O.S.T. Master's Express Hearthstone",
+    actionType = "toy",
+    category = "Home",
+    cooldown = "30 min",
+    keywords = {"hearthstone", "hearth", "home", "inn", "post"}
+}, {
+    name = "Cosmic Hearthstone",
+    itemID = 246565,
+    spellName = "Cosmic Hearthstone",
+    actionType = "toy",
+    category = "Home",
+    cooldown = "30 min",
+    keywords = {"hearthstone", "hearth", "home", "inn", "cosmic"}
+}, {
+    name = "Timerunner's Hearthstone",
+    itemID = 250411,
+    spellName = "Timerunner's Hearthstone",
+    actionType = "toy",
+    category = "Home",
+    cooldown = "30 min",
+    keywords = {"hearthstone", "hearth", "home", "inn", "timerunner"}
+}, {
+    name = "Naaru's Enfold",
+    itemID = 263489,
+    spellName = "Naaru's Enfold",
+    actionType = "item",
+    category = "Home",
+    cooldown = "No CD",
+    keywords = {"naaru", "enfold"}
 }}
 
 -- ============================================================================
@@ -674,7 +874,7 @@ local MageTeleports = { -- Alliance Cities
     keywords = {"vale", "vale of eternal blossoms"}
 }, {
     name = "Oribos",
-    spellID = 344597,
+    spellID = 344587,
     spellName = "Teleport: Oribos",
     actionType = "spell",
     category = "Class",
@@ -688,6 +888,310 @@ local MageTeleports = { -- Alliance Cities
     category = "Class",
     faction = "Neutral",
     keywords = {"valdrakken", "vald"}
+}, {
+    name = "Dornogal",
+    spellID = 446540,
+    spellName = "Teleport: Dornogal",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"dornogal"}
+}, {
+    name = "Stormshield",
+    spellID = 176248,
+    spellName = "Teleport: Stormshield",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"stormshield", "ashran"}
+}, {
+    name = "Warspear",
+    spellID = 176242,
+    spellName = "Teleport: Warspear",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"warspear", "ashran"}
+}, {
+    name = "Theramore",
+    spellID = 49359,
+    spellName = "Teleport: Theramore",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"theramore"}
+}, {
+    name = "Stonard",
+    spellID = 49358,
+    spellName = "Teleport: Stonard",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"stonard"}
+}, {
+    name = "Tol Barad",
+    spellID = 88342,
+    spellName = "Teleport: Tol Barad",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"tol barad", "tb"}
+}, {
+    name = "Tol Barad",
+    spellID = 88344,
+    spellName = "Teleport: Tol Barad",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"tol barad", "tb"}
+}, {
+    name = "Dalaran (Crater)",
+    spellID = 120145,
+    spellName = "Ancient Teleport: Dalaran",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"dalaran", "crater", "ancient"}
+}, {
+    name = "Dalaran (Northrend)",
+    spellID = 53142,
+    spellName = "Portal: Dalaran",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"dalaran", "portal", "northrend"}
+}, {
+    name = "Dalaran (Broken Isles)",
+    spellID = 224871,
+    spellName = "Portal: Dalaran - Broken Isles",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"dalaran", "portal", "broken isles", "legion"}
+}, {
+    name = "Stormwind",
+    spellID = 10059,
+    spellName = "Portal: Stormwind",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"stormwind", "portal", "sw"}
+}, {
+    name = "Ironforge",
+    spellID = 11416,
+    spellName = "Portal: Ironforge",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"ironforge", "portal"}
+}, {
+    name = "Darnassus",
+    spellID = 11419,
+    spellName = "Portal: Darnassus",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"darnassus", "portal"}
+}, {
+    name = "Exodar",
+    spellID = 32266,
+    spellName = "Portal: Exodar",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"exodar", "portal"}
+}, {
+    name = "Boralus",
+    spellID = 281400,
+    spellName = "Portal: Boralus",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"boralus", "portal"}
+}, {
+    name = "Orgrimmar",
+    spellID = 11417,
+    spellName = "Portal: Orgrimmar",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"orgrimmar", "portal", "org"}
+}, {
+    name = "Undercity",
+    spellID = 11418,
+    spellName = "Portal: Undercity",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"undercity", "portal", "uc"}
+}, {
+    name = "Thunder Bluff",
+    spellID = 11420,
+    spellName = "Portal: Thunder Bluff",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"thunder bluff", "portal", "tb"}
+}, {
+    name = "Silvermoon",
+    spellID = 32267,
+    spellName = "Portal: Silvermoon",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"silvermoon", "portal"}
+}, {
+    name = "Dazar'alor",
+    spellID = 281402,
+    spellName = "Portal: Dazar'alor",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"dazar'alor", "portal", "dazar"}
+}, {
+    name = "Shattrath",
+    spellID = 35715,
+    spellName = "Teleport: Shattrath",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"shattrath", "shatt"}
+}, {
+    name = "Shattrath",
+    spellID = 33691,
+    spellName = "Portal: Shattrath",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"shattrath", "portal"}
+}, {
+    name = "Shattrath",
+    spellID = 35717,
+    spellName = "Portal: Shattrath",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"shattrath", "portal"}
+}, {
+    name = "Vale of Eternal Blossoms",
+    spellID = 132627,
+    spellName = "Teleport: Vale of Eternal Blossoms",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"vale", "vale of eternal blossoms"}
+}, {
+    name = "Vale of Eternal Blossoms",
+    spellID = 132620,
+    spellName = "Portal: Vale of Eternal Blossoms",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"vale", "portal"}
+}, {
+    name = "Vale of Eternal Blossoms",
+    spellID = 132622,
+    spellName = "Portal: Vale of Eternal Blossoms",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"vale", "portal"}
+}, {
+    name = "Vale of Eternal Blossoms",
+    spellID = 132624,
+    spellName = "Portal: Vale of Eternal Blossoms",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"vale", "portal"}
+}, {
+    name = "Vale of Eternal Blossoms",
+    spellID = 132626,
+    spellName = "Portal: Vale of Eternal Blossoms",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"vale", "portal"}
+}, {
+    name = "Oribos",
+    spellID = 344597,
+    spellName = "Portal: Oribos",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"oribos", "portal"}
+}, {
+    name = "Valdrakken",
+    spellID = 395289,
+    spellName = "Portal: Valdrakken",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"valdrakken", "portal"}
+}, {
+    name = "Dornogal",
+    spellID = 446534,
+    spellName = "Portal: Dornogal",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"dornogal", "portal"}
+}, {
+    name = "Stormshield",
+    spellID = 176246,
+    spellName = "Portal: Stormshield",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"stormshield", "portal", "ashran"}
+}, {
+    name = "Warspear",
+    spellID = 176244,
+    spellName = "Portal: Warspear",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"warspear", "portal", "ashran"}
+}, {
+    name = "Theramore",
+    spellID = 49360,
+    spellName = "Portal: Theramore",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"theramore", "portal"}
+}, {
+    name = "Stonard",
+    spellID = 49361,
+    spellName = "Portal: Stonard",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"stonard", "portal"}
+}, {
+    name = "Tol Barad",
+    spellID = 88345,
+    spellName = "Portal: Tol Barad",
+    actionType = "spell",
+    category = "Class",
+    faction = "Alliance",
+    keywords = {"tol barad", "portal", "tb"}
+}, {
+    name = "Tol Barad",
+    spellID = 88346,
+    spellName = "Portal: Tol Barad",
+    actionType = "spell",
+    category = "Class",
+    faction = "Horde",
+    keywords = {"tol barad", "portal", "tb"}
+}, {
+    name = "Dalaran (Crater)",
+    spellID = 120146,
+    spellName = "Ancient Portal: Dalaran",
+    actionType = "spell",
+    category = "Class",
+    faction = "Neutral",
+    keywords = {"dalaran", "portal", "crater", "ancient"}
 }}
 
 -- ============================================================================
@@ -742,6 +1246,13 @@ local ClassTeleports = { -- Druid
     actionType = "spell",
     category = "Class",
     keywords = {"fel hammer", "dh class hall"}
+}, {
+    name = "Hall of the Guardian",
+    spellID = 193759,
+    spellName = "Teleport: Hall of the Guardian",
+    actionType = "spell",
+    category = "Class",
+    keywords = {"hall of the guardian", "guardian", "mage class hall"}
 }}
 
 -- ============================================================================
@@ -749,54 +1260,61 @@ local ClassTeleports = { -- Druid
 -- ============================================================================
 
 local RaidTeleports = {{
-    name = "Nerub-ar Palace",
-    spellID = 445440,
-    spellName = "Path of the Forgotten Kingdom",
-    actionType = "spell",
-    category = "Raid",
-    keywords = {"nerub-ar", "nerubar", "palace", "raid"}
-}, {
     name = "Castle Nathria",
-    spellID = 354464,
-    spellName = "Path of the Sinful Soul",
+    spellID = 373190,
+    spellName = "Path of the Sire",
     actionType = "spell",
     category = "Raid",
-    keywords = {"nathria", "castle nathria", "raid"}
+    keywords = {"nathria", "castle nathria"}
 }, {
     name = "Sanctum of Domination",
-    spellID = 354467,
+    spellID = 373191,
+    spellName = "Path of the Tormented Soul",
+    actionType = "spell",
+    category = "Raid",
+    keywords = {"sanctum", "domination"}
+}, {
+    name = "Sepulcher of the First Ones",
+    spellID = 373192,
     spellName = "Path of the First Ones",
     actionType = "spell",
     category = "Raid",
-    keywords = {"sanctum", "domination", "raid"}
-}, {
-    name = "Sepulcher of the First Ones",
-    spellID = 373262,
-    spellName = "Path of the Progenitor",
-    actionType = "spell",
-    category = "Raid",
-    keywords = {"sepulcher", "first ones", "raid"}
+    keywords = {"sepulcher", "first ones"}
 }, {
     name = "Vault of the Incarnates",
-    spellID = 393276,
+    spellID = 432254,
     spellName = "Path of the Primal Prison",
     actionType = "spell",
     category = "Raid",
-    keywords = {"vault", "incarnates", "raid", "voti"}
+    keywords = {"vault", "incarnates", "voti"}
 }, {
     name = "Aberrus, the Shadowed Crucible",
-    spellID = 410078,
+    spellID = 432257,
     spellName = "Path of the Bitter Legacy",
     actionType = "spell",
     category = "Raid",
-    keywords = {"aberrus", "shadowed crucible", "raid"}
+    keywords = {"aberrus", "shadowed crucible"}
 }, {
     name = "Amirdrassil, the Dream's Hope",
-    spellID = 424142,
-    spellName = "Path of the Dreamwalker",
+    spellID = 432258,
+    spellName = "Path of the Scorching Dream",
     actionType = "spell",
     category = "Raid",
-    keywords = {"amirdrassil", "dream's hope", "dreams hope", "raid"}
+    keywords = {"amirdrassil", "dream's hope", "dreams hope"}
+}, {
+    name = "Manaforge Omega",
+    spellID = 1239155,
+    spellName = "Path of the All-Devouring",
+    actionType = "spell",
+    category = "Raid",
+    keywords = {"manaforge", "omega", "k'aresh", "karesh"}
+}, {
+    name = "Liberation of Undermine",
+    spellID = 1226482,
+    spellName = "Path of the Full House",
+    actionType = "spell",
+    category = "Raid",
+    keywords = {"undermine", "liberation"}
 }}
 
 -- ============================================================================
@@ -1028,7 +1546,7 @@ local TeleportToys = {{
     keywords = {"timeless isle", "timeless"}
 }, {
     name = "Ultrasafe Transporter: Mechagon",
-    itemID = 168807,
+    itemID = 167075,
     spellName = "Ultrasafe Transporter: Mechagon",
     actionType = "toy",
     category = "Toy",
@@ -1054,17 +1572,8 @@ local TeleportToys = {{
     destination = "Karazhan",
     keywords = {"karazhan", "kara", "violet seal"}
 }, {
-    name = "Dalaran Hearthstone",
-    itemID = 140192,
-    spellName = "Dalaran Hearthstone",
-    actionType = "toy",
-    category = "Toy",
-    cooldown = "20 min",
-    destination = "Dalaran (Broken Isles)",
-    keywords = {"dalaran", "dal", "legion"}
-}, {
     name = "Fractured Necrolyte Skull",
-    itemID = 32757,
+    itemID = 151016,
     spellName = "Fractured Necrolyte Skull",
     actionType = "toy",
     category = "Toy",
@@ -1080,15 +1589,6 @@ local TeleportToys = {{
     cooldown = "30 min",
     destination = "Random",
     keywords = {"portal", "emitter", "unstable", "random"}
-}, {
-    name = "Rechargable Reaves Battery",
-    itemID = 132523,
-    spellName = "Rechargable Reaves Battery",
-    actionType = "toy",
-    category = "Toy",
-    cooldown = "1 hour",
-    destination = "Broken Isles",
-    keywords = {"reaves", "battery", "broken isles", "legion", "repair"}
 }}
 
 -- ============================================================================
@@ -1159,9 +1659,9 @@ local ServiceToys = {{
     destination = "Mailbox",
     keywords = {"mail", "mailbox"}
 }, {
-    name = "Rechargable Reaves Battery",
-    itemID = 132523,
-    spellName = "Rechargable Reaves Battery",
+    name = "Rechargeable Reaves Battery",
+    itemID = 144341,
+    spellName = "Rechargeable Reaves Battery",
     actionType = "toy",
     category = "Utility",
     cooldown = "1 hour",
@@ -1171,7 +1671,7 @@ local ServiceToys = {{
     name = "Reaves Battery",
     itemID = 132523,
     spellName = "Reaves Module: Repair Mode",
-    actionType = "toy",
+    actionType = "item",
     category = "Utility",
     cooldown = "1 hour",
     destination = "Repair & More",
@@ -1199,7 +1699,7 @@ local ServiceToys = {{
 }, {
     name = "Mighty Caravan Brutosaur",
     itemID = 163042,
-    spellID = 163042,
+    spellID = 264058,
     spellName = "Mighty Caravan Brutosaur",
     actionType = "item",
     category = "Utility",
@@ -1209,7 +1709,7 @@ local ServiceToys = {{
 }, {
     name = "Trader's Gilded Brutosaur",
     itemID = 229418,
-    spellID = 229418,
+    spellID = 465235,
     spellName = "Trader's Gilded Brutosaur",
     actionType = "item",
     category = "Utility",
@@ -1449,51 +1949,80 @@ local ServiceToys = {{
 
 Nozmie_Data = {}
 
+local function GetDataKey(item)
+    if item.spellID then
+        return "spell:" .. item.spellID
+    end
+    if item.itemID then
+        return "item:" .. item.itemID
+    end
+    return "name:" .. tostring(item.name or item.spellName or "")
+end
+
+local seenData = {}
+local function AddUnique(item)
+    local key = GetDataKey(item)
+    if not seenData[key] then
+        table.insert(Nozmie_Data, item)
+        seenData[key] = true
+    end
+end
+
 -- Merge all tables into one flat array
 for _, v in ipairs(MidnightSeason1) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(WarWithinSeason1) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(WarWithinSeason2) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(WarWithinSeason3) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(DragonflightDungeons) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(BfADungeons) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(ShadowlandsDungeons) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
+end
+for _, v in ipairs(LegionDungeons) do
+    AddUnique(v)
+end
+for _, v in ipairs(CataclysmDungeons) do
+    AddUnique(v)
 end
 for _, v in ipairs(RaidTeleports) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(DelveTeleports) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(Hearthstones) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(MageTeleports) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(ClassTeleports) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(ClassUtilities) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(TeleportToys) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
 end
 for _, v in ipairs(ServiceToys) do
-    table.insert(Nozmie_Data, v)
+    AddUnique(v)
+end
+
+if _G.Nozmie_Locale and _G.Nozmie_Locale.ApplyKeywordAliases then
+    _G.Nozmie_Locale.ApplyKeywordAliases(Nozmie_Data)
 end
 
 -- Export category tables for potential future use
@@ -1505,6 +2034,8 @@ _G.Nozmie_Categories = {
     DragonflightDungeons = DragonflightDungeons,
     BfADungeons = BfADungeons,
     ShadowlandsDungeons = ShadowlandsDungeons,
+    LegionDungeons = LegionDungeons,
+    CataclysmDungeons = CataclysmDungeons,
     RaidTeleports = RaidTeleports,
     DelveTeleports = DelveTeleports,
     Hearthstones = Hearthstones,
@@ -1514,3 +2045,6 @@ _G.Nozmie_Categories = {
     TeleportToys = TeleportToys,
     ServiceToys = ServiceToys
 }
+
+_G.Nozmie_DungeonSeasonPriorityNames = DungeonSeasonPriorityNames
+_G.Nozmie_DungeonsByExpansion = DungeonsByExpansion

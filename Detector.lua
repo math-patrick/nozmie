@@ -5,6 +5,27 @@
 local Helpers = Nozmie_Helpers
 local Detector = {}
 
+local seasonNamePriority = {
+    MidnightSeason1 = 0,
+    WarWithinSeason3 = 1
+}
+
+local function GetSeasonPriorityByName(name)
+    if not _G.Nozmie_DungeonSeasonPriorityNames or not name then
+        return nil
+    end
+    for seasonKey, names in pairs(_G.Nozmie_DungeonSeasonPriorityNames) do
+        if seasonNamePriority[seasonKey] then
+            for _, dungeonName in ipairs(names) do
+                if dungeonName == name then
+                    return seasonNamePriority[seasonKey]
+                end
+            end
+        end
+    end
+    return nil
+end
+
 local function GetCategoryPriority(teleportData)
     -- Define priority order for categories (lower number = higher priority)
     local categoryPriority = {
@@ -17,8 +38,9 @@ local function GetCategoryPriority(teleportData)
     }
 
     -- Check which season/expansion the teleport belongs to
-    local seasonPriority = 999
-    for categoryName, categoryData in pairs(Nozmie_Categories) do
+    local seasonPriority = GetSeasonPriorityByName(teleportData.name) or 999
+    if seasonPriority == 999 then
+        for categoryName, categoryData in pairs(Nozmie_Categories) do
         for _, item in ipairs(categoryData) do
             if item.name == teleportData.name then
                 if categoryName == "MidnightSeason1" then
@@ -42,6 +64,7 @@ local function GetCategoryPriority(teleportData)
                 end
                 break
             end
+        end
         end
     end
 
@@ -69,11 +92,35 @@ local function IsHearthstone(teleportData)
     return false
 end
 
+local function IsPortalSpell(teleportData)
+    local spellName = teleportData.spellName or ""
+    return spellName:find("^Portal:") or spellName:find("^Ancient Portal:")
+end
+
+local function ChoosePreferredMatch(existing, candidate, preferPortals)
+    if not existing then
+        return candidate
+    end
+    if preferPortals then
+        local existingPortal = IsPortalSpell(existing)
+        local candidatePortal = IsPortalSpell(candidate)
+        if existingPortal ~= candidatePortal then
+            return candidatePortal and candidate or existing
+        end
+    end
+    local existingPriority = GetCategoryPriority(existing)
+    local candidatePriority = GetCategoryPriority(candidate)
+    if candidatePriority < existingPriority then
+        return candidate
+    end
+    return existing
+end
+
 function Detector.FindMatchingTeleports(message, sender)
     local lowerMessage = message:lower()
     local matches = {}
     local hearthstones = {}
-    local uniqueNames = {}
+    local preferPortals = Nozmie_Settings and Nozmie_Settings.Get and Nozmie_Settings.Get("preferPortals")
     
     -- Check blacklisted words
     local Settings = Nozmie_Settings
@@ -101,7 +148,7 @@ function Detector.FindMatchingTeleports(message, sender)
     end
 
     for _, teleportData in ipairs(Nozmie_Data) do
-        if not uniqueNames[teleportData.name] and teleportData.keywords then
+        if teleportData.keywords then
             local shouldMatch = false
 
             for _, keyword in ipairs(teleportData.keywords) do
@@ -130,8 +177,19 @@ function Detector.FindMatchingTeleports(message, sender)
                 else
                     table.insert(matches, teleportCopy)
                 end
-                uniqueNames[teleportData.name] = true
             end
+        end
+    end
+
+    if #matches > 1 then
+        local byName = {}
+        for _, teleport in ipairs(matches) do
+            local key = teleport.name or teleport.spellName or ""
+            byName[key] = ChoosePreferredMatch(byName[key], teleport, preferPortals)
+        end
+        matches = {}
+        for _, teleport in pairs(byName) do
+            table.insert(matches, teleport)
         end
     end
 
@@ -142,18 +200,20 @@ function Detector.FindMatchingTeleports(message, sender)
         end
     end
 
-    -- Sort: items without cooldowns first, then items with cooldowns
     table.sort(matches, function(a, b)
-        local aCooldown = Helpers.GetCooldownRemaining(a)
-        local bCooldown = Helpers.GetCooldownRemaining(b)
-
-        -- If one has cooldown and other doesn't, prioritize the one without
-        if (aCooldown > 0) ~= (bCooldown > 0) then
-            return aCooldown == 0 -- true if a has no cooldown
+        local aPriority = GetCategoryPriority(a)
+        local bPriority = GetCategoryPriority(b)
+        if aPriority ~= bPriority then
+            return aPriority < bPriority
         end
 
-        -- Both have same cooldown status, maintain original order
-        return false
+        local aCooldown = Helpers.GetCooldownRemaining(a)
+        local bCooldown = Helpers.GetCooldownRemaining(b)
+        if (aCooldown > 0) ~= (bCooldown > 0) then
+            return aCooldown == 0
+        end
+
+        return (a.name or a.spellName or "") < (b.name or b.spellName or "")
     end)
 
     -- Deduplicate by spell ID, keeping highest priority (current season) version
