@@ -98,6 +98,7 @@ local ShadowlandsDungeons = {
 local Hearthstones = {
     {
         name = "Hearthstone",
+        itemID = 6948,
         spellID = 8690,
         spellName = "Hearthstone",
         category = "Home",
@@ -106,6 +107,7 @@ local Hearthstones = {
     },
     {
         name = "Garrison Hearthstone",
+        itemID = 110560,
         spellID = 171253,
         spellName = "Garrison Hearthstone",
         category = "Home",
@@ -114,11 +116,148 @@ local Hearthstones = {
     },
     {
         name = "Dalaran Hearthstone",
-        spellID = 140192,
+        itemID = 140192,
+        spellID = 193759,
         spellName = "Dalaran Hearthstone",
         category = "Home",
         cooldown = "20 min",
         keywords = {"dalaran", "dal", "dalaran hearth"}
+    },
+    -- Hearthstone Toys (cosmetic variants)
+    {
+        name = "Eternal Traveler's Hearthstone",
+        itemID = 172179,
+        spellID = 308742,
+        spellName = "Eternal Traveler's Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "eternal"}
+    },
+    {
+        name = "Brewfest Reveler's Hearthstone",
+        itemID = 166747,
+        spellID = 286331,
+        spellName = "Brewfest Reveler's Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "brewfest"}
+    },
+    {
+        name = "Headless Horseman's Hearthstone",
+        itemID = 163045,
+        spellID = 278559,
+        spellName = "Headless Horseman's Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "horseman"}
+    },
+    {
+        name = "Lunar Elder's Hearthstone",
+        itemID = 165669,
+        spellID = 278244,
+        spellName = "Lunar Elder's Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "lunar"}
+    },
+    {
+        name = "Peddlefeet's Lovely Hearthstone",
+        itemID = 165802,
+        spellID = 278880,
+        spellName = "Peddlefeet's Lovely Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "peddlefeet"}
+    },
+    {
+        name = "Noble Gardener's Hearthstone",
+        itemID = 165802,
+        spellID = 278559,
+        spellName = "Noble Gardener's Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "noble"}
+    },
+    {
+        name = "Fire Eater's Hearthstone",
+        itemID = 166746,
+        spellID = 286353,
+        spellName = "Fire Eater's Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "fire eater"}
+    },
+    {
+        name = "Greatfather Winter's Hearthstone",
+        itemID = 162973,
+        spellID = 278853,
+        spellName = "Greatfather Winter's Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "winter"}
+    },
+    {
+        name = "Holographic Digitalization Hearthstone",
+        itemID = 168907,
+        spellID = 298068,
+        spellName = "Holographic Digitalization Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "holo"}
+    },
+    {
+        name = "Dominated Hearthstone",
+        itemID = 188952,
+        spellID = 356389,
+        spellName = "Dominated Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "dominated"}
+    },
+    {
+        name = "Enlightened Hearthstone",
+        itemID = 190237,
+        spellID = 363799,
+        spellName = "Enlightened Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "enlightened"}
+    },
+    {
+        name = "Broker Translocation Matrix",
+        itemID = 190196,
+        spellID = 367013,
+        spellName = "Broker Translocation Matrix",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "broker"}
+    },
+    {
+        name = "Deepdweller's Earthen Hearthstone",
+        itemID = 209035,
+        spellID = 422284,
+        spellName = "Deepdweller's Earthen Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "earthen"}
+    },
+    {
+        name = "Stone of the Hearth",
+        itemID = 210455,
+        spellID = 424163,
+        spellName = "Stone of the Hearth",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "stone"}
+    },
+    {
+        name = "Timewalker's Hearthstone",
+        itemID = 212337,
+        spellID = 427335,
+        spellName = "Timewalker's Hearthstone",
+        category = "Home",
+        cooldown = "30 min",
+        keywords = {"hearthstone", "hearth", "home", "inn", "timewalker"}
     }
 }
 

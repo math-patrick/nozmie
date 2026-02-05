@@ -34,11 +34,15 @@ local function DetectDungeon(self, event, msg, ...)
                     -- For toys, check if player has it
                     if PlayerHasToy(data.itemID) then
                         canUse = true
-                    -- For items, check if player has it in bags
-                    elseif C_Item.GetItemCount(data.itemID, false, false, false) > 0 then
+                    -- For items (including hearthstones), check if player has it
+                    -- includeBank=true, includeUses=false, includeReagentBank=false
+                    elseif C_Item.GetItemCount(data.itemID, true, false, false) > 0 then
                         canUse = true
                     end
-                elseif data.spellID then
+                end
+                
+                -- If no itemID, or item not found, check for spell
+                if not canUse and data.spellID then
                     -- Check if it's a spell (either known or granted by item)
                     if IsSpellKnown(data.spellID) or IsPlayerSpell(data.spellID) then
                         canUse = true

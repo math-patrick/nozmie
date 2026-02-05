@@ -18,7 +18,7 @@ function EasyPort_UI:CreateBanner()
     banner:SetClampedToScreen(true)
     banner:SetUserPlaced(true)
     banner:EnableMouse(true)
-    banner:RegisterForDrag("LeftButton")
+    -- Note: drag handling is done via dragHandle, not the banner itself
     
     -- Backdrop
     banner:SetBackdrop({
@@ -81,6 +81,39 @@ function EasyPort_UI:CreateBanner()
     subtext:SetShadowOffset(1, -1)
     banner.subtext = subtext
     
+    -- Drag button
+    local dragBtn = CreateFrame("Button", nil, banner)
+    dragBtn:SetSize(24, 24)
+    dragBtn:SetPoint("RIGHT", -36, 0)
+    dragBtn:SetNormalTexture("Interface\\Cursor\\UI-Cursor-Move")
+    dragBtn:SetHighlightTexture("Interface\\Cursor\\UI-Cursor-Move")
+    dragBtn:GetHighlightTexture():SetAlpha(0.5)
+    dragBtn:EnableMouse(true)
+    dragBtn:RegisterForDrag("LeftButton")
+    dragBtn:SetScript("OnDragStart", function(self)
+        if not InCombatLockdown() then
+            banner:StartMoving()
+        end
+    end)
+    dragBtn:SetScript("OnDragStop", function(self)
+        banner:StopMovingOrSizing()
+        -- Save position
+        local point, _, relativePoint, xOfs, yOfs = banner:GetPoint()
+        if not EasyPortDB then EasyPortDB = {} end
+        EasyPortDB.position = {
+            point = point,
+            relativePoint = relativePoint,
+            xOfs = xOfs,
+            yOfs = yOfs
+        }
+    end)
+    dragBtn:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Drag to move")
+        GameTooltip:Show()
+    end)
+    dragBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    
     -- Close button
     local closeBtn = CreateFrame("Button", nil, banner)
     closeBtn:SetSize(24, 24)
@@ -95,25 +128,6 @@ function EasyPort_UI:CreateBanner()
         GameTooltip:Show()
     end)
     closeBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-    
-    -- Dragging (only when not in combat and banner is visible)
-    banner:SetScript("OnDragStart", function(self)
-        if not InCombatLockdown() then
-            self:StartMoving()
-        end
-    end)
-    banner:SetScript("OnDragStop", function(self)
-        self:StopMovingOrSizing()
-        -- Save position
-        local point, _, relativePoint, xOfs, yOfs = self:GetPoint()
-        if not EasyPortDB then EasyPortDB = {} end
-        EasyPortDB.position = {
-            point = point,
-            relativePoint = relativePoint,
-            xOfs = xOfs,
-            yOfs = yOfs
-        }
-    end)
     
     -- Load saved position
     if EasyPortDB and EasyPortDB.position then
@@ -166,8 +180,16 @@ function EasyPort_UI:ShowBanner(banner, matches)
             if iconTexture then
                 banner.icon:SetTexture(iconTexture)
             end
-            banner:SetAttribute("type", "item")
-            banner:SetAttribute("item", "item:" .. data.itemID)
+            -- For items, use the item name (GetItemInfo returns name as first value)
+            local itemName = C_Item.GetItemNameByID(data.itemID)
+            if itemName then
+                banner:SetAttribute("type", "item")
+                banner:SetAttribute("item", itemName)
+            else
+                -- Fallback to spell if item name not available
+                banner:SetAttribute("type", "spell")
+                banner:SetAttribute("spell", data.spellName)
+            end
         end
         
         -- Update cooldown display

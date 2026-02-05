@@ -2,8 +2,13 @@
 ## Title: EasyPort
 ## Notes: Shows a clickable banner when dungeon names are detected in chat for quick teleports
 ## Author: YourName
-## Version: 4.0.0
+## Version: 5.0.0
+## SavedVariables: EasyPortDB
 
 Data.lua
-UI.lua
-EasyPort.lua
+Config.lua
+Helpers.lua
+Detector.lua
+BannerUI.lua
+BannerController.lua
+Init.lua
