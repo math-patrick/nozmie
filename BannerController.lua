@@ -49,14 +49,8 @@ local function UpdateBannerIcon(banner, data)
         local iconTexture = C_Item.GetItemIconByID(data.itemID)
         if iconTexture then banner.icon:SetTexture(iconTexture) end
         
-        local itemName = C_Item.GetItemNameByID(data.itemID)
-        if itemName then
-            banner:SetAttribute("type", "item")
-            banner:SetAttribute("item", itemName)
-        else
-            banner:SetAttribute("type", "spell")
-            banner:SetAttribute("spell", data.spellName)
-        end
+        banner:SetAttribute("type", "macro")
+        banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
     end
 end
 

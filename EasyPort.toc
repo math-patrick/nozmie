@@ -11,4 +11,5 @@ Helpers.lua
 Detector.lua
 BannerUI.lua
 BannerController.lua
+SpellbookTab.lua
 Init.lua
