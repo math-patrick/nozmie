@@ -43,20 +43,22 @@ local function CreateBannerIcon(parent)
 end
 
 local function CreateBannerText(parent, iconFrame)
-    local title = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    local title = parent:CreateFontString(nil, "OVERLAY")
+    title:SetFontObject("SystemFont_Shadow_Large")
     title:SetPoint("LEFT", iconFrame, "RIGHT", 15, 4)
     title:SetPoint("RIGHT", -40, 4)
-    title:SetTextColor(unpack(Config.COLORS.TEXT_NORMAL))
+    title:SetTextColor(0.9, 0.9, 0.95)  -- Subtle light color
     title:SetJustifyH("LEFT")
     title:SetShadowColor(0, 0, 0, 1)
-    title:SetShadowOffset(2, -2)
+    title:SetShadowOffset(1, -1)
     
-    local subtitle = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    local subtitle = parent:CreateFontString(nil, "OVERLAY")
+    subtitle:SetFontObject("GameFontHighlightSmall")
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -2)
     subtitle:SetPoint("RIGHT", -40, 0)
-    subtitle:SetText("|cff888888Click to teleport|r")
+    subtitle:SetText("|cff999999Click to teleport|r")  -- Subtle gray
     subtitle:SetJustifyH("LEFT")
-    subtitle:SetShadowColor(0, 0, 0, 0.8)
+    subtitle:SetShadowColor(0, 0, 0, 1)
     subtitle:SetShadowOffset(1, -1)
     
     return title, subtitle
@@ -75,12 +77,12 @@ function BannerUI.CreateBanner()
     banner:Hide()
     
     banner:SetBackdrop({
-        bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
+        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border",
         tile = true,
-        tileSize = 16,
-        edgeSize = 16,
-        insets = {left = 4, right = 4, top = 4, bottom = 4}
+        tileSize = 32,
+        edgeSize = 32,
+        insets = {left = 11, right = 12, top = 12, bottom = 11}
     })
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_NORMAL))
     banner:SetBackdropBorderColor(unpack(Config.COLORS.BORDER_NORMAL))
@@ -105,7 +107,7 @@ function BannerUI.CreateBanner()
     banner.icon, iconFrame = CreateBannerIcon(banner)
     banner.title, banner.subtitle = CreateBannerText(banner, iconFrame)
     
-    local dragButton = CreateButton(banner, 24, {"RIGHT", -36, 0}, {
+    local dragButton = CreateButton(banner, 16, {"BOTTOMRIGHT", -28, 8}, {
         normal = "Interface\\Cursor\\UI-Cursor-Move",
         highlight = "Interface\\Cursor\\UI-Cursor-Move"
     }, "Drag to move")
@@ -117,7 +119,7 @@ function BannerUI.CreateBanner()
     dragButton:SetScript("OnDragStart", function() if not InCombatLockdown() then banner:StartMoving() end end)
     dragButton:SetScript("OnDragStop", function() banner:StopMovingOrSizing(); Helpers.SaveBannerPosition(banner) end)
     
-    CreateButton(banner, 24, {"RIGHT", -8, 0}, {
+    CreateButton(banner, 16, {"TOPRIGHT", -8, -8}, {
         normal = "Interface\\Buttons\\UI-Panel-MinimizeButton-Up",
         highlight = "Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight",
         pushed = "Interface\\Buttons\\UI-Panel-MinimizeButton-Down"

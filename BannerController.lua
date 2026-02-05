@@ -8,10 +8,13 @@ local function UpdateBannerForCooldown(banner, data, remaining)
     banner.title:SetTextColor(unpack(Config.COLORS.TEXT_COOLDOWN))
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_COOLDOWN))
     banner.isOnCooldown = true
-    banner.cooldownData = {remaining = remaining, data = data}
-    
+    banner.cooldownData = {
+        remaining = remaining,
+        data = data
+    }
+
     banner.title:SetText(string.format("%s is on Cooldown", data.spellName or data.name))
-    
+
     local timeText = Helpers.FormatCooldownTime(remaining)
     if Helpers.IsInAnyGroup() then
         banner.subtitle:SetText("|cffff0000" .. timeText .. "|r |cff888888- Click to announce|r")
@@ -25,17 +28,48 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     banner.title:SetTextColor(unpack(Config.COLORS.TEXT_NORMAL))
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_NORMAL))
     banner.isOnCooldown = false
-    
-    local text = data.destination and ("Teleport to " .. data.destination .. "?")
-        or data.itemID and ("Use " .. data.name .. "?")
-        or ("Teleport to " .. data.name .. "?")
-    
+
+    -- Context-aware action text based on category
+    local actionVerb = "Use"
+    if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Home" or
+        data.category == "Mage" or data.category == "Druid" or data.category == "Shaman" or data.category ==
+        "Death Knight" or data.category == "Monk" or data.category == "Demon Hunter" or data.category == "Toy" then
+        actionVerb = "Teleport to"
+    elseif data.category and data.category:find("Utility") then
+        if data.destination and
+            (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Transmog") or
+                data.destination:find("Anvil")) then
+            actionVerb = "Summon"
+        elseif data.keywords and
+            (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or tContains(data.keywords, "motw") or
+                tContains(data.keywords, "intellect")) then
+            actionVerb = "Cast"
+        else
+            actionVerb = "Use"
+        end
+    end
+
+    local text = data.destination and (actionVerb .. " " .. data.destination .. "?") or
+                     (actionVerb .. " " .. data.name .. "?")
+
     banner.title:SetText(text)
-    
+
+    -- Context-aware subtitle
+    local actionText = "use"
+    if actionVerb == "Teleport to" then
+        actionText = "teleport"
+    elseif actionVerb == "Cast" then
+        actionText = "cast"
+    elseif actionVerb == "Summon" then
+        actionText = "summon"
+    end
+
     if totalOptions > 1 then
-        banner.subtitle:SetText(string.format("|cff888888Click to use • |r|cff00ff00%d/%d|r", currentIndex, totalOptions))
+        banner.subtitle:SetText(string.format(
+            "|cff888888Click to %s • |r|cff00ff00%d/%d|r |cff888888• Right-click to announce|r", actionText,
+            currentIndex, totalOptions))
     else
-        banner.subtitle:SetText("|cff888888Click to teleport|r")
+        banner.subtitle:SetText(string.format("|cff888888Click to %s • Right-click to announce|r", actionText))
     end
 end
 
@@ -49,21 +83,9 @@ local function UpdateBannerIcon(banner, data)
         local iconTexture = C_Item.GetItemIconByID(data.itemID)
         if iconTexture then banner.icon:SetTexture(iconTexture) end
         
-        -- For mounts, check if already mounted and add dismount logic
-        local isMountItem = data.keywords and (tContains(data.keywords, "mount") or 
-                                                tContains(data.keywords, "mammoth") or 
-                                                tContains(data.keywords, "yak") or 
-                                                tContains(data.keywords, "brutosaur"))
-        
-        if isMountItem then
-            -- If mounted, dismount first, then use the mount
-            local macroText = "/dismount [mounted]\n/use item:" .. data.itemID
-            banner:SetAttribute("type", "macro")
-            banner:SetAttribute("macrotext", macroText)
-        else
-            banner:SetAttribute("type", "macro")
-            banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
-        end
+        -- Use macro for all items (toys, mounts, consumables)
+        banner:SetAttribute("type", "macro")
+        banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
     end
 end
 
@@ -94,7 +116,7 @@ local function CreateNavigationArrows(banner)
             RefreshBannerDisplay(banner)
         end)
     end
-    
+
     if not banner.rightArrow then
         banner.rightArrow = CreateFrame("Button", nil, banner)
         banner.rightArrow:SetSize(20, 20)
@@ -113,33 +135,51 @@ function BannerController.ShowWithOptions(banner, teleportOptions)
     if banner.updateTimer then
         banner.updateTimer:Cancel()
     end
-    
+
     banner.options = teleportOptions
     banner.currentIndex = 1
-    
+
     if #teleportOptions > 1 then
         CreateNavigationArrows(banner)
         banner.leftArrow:Show()
         banner.rightArrow:Show()
     else
-        if banner.leftArrow then banner.leftArrow:Hide() end
-        if banner.rightArrow then banner.rightArrow:Hide() end
+        if banner.leftArrow then
+            banner.leftArrow:Hide()
+        end
+        if banner.rightArrow then
+            banner.rightArrow:Hide()
+        end
     end
-    
+
     RefreshBannerDisplay(banner)
-    banner.updateTimer = C_Timer.NewTicker(0.5, function() RefreshBannerDisplay(banner) end)
+    banner.updateTimer = C_Timer.NewTicker(0.5, function()
+        RefreshBannerDisplay(banner)
+    end)
     
-    banner:SetScript("PostClick", function(self)
+    banner:SetScript("PostClick", function(self, button)
+        -- Handle right-click for announcements
+        if button == "RightButton" then
+            local data = self.options[self.currentIndex]
+            if data then
+                Helpers.AnnounceUtility(data)
+            end
+            return
+        end
+        
+        -- Left-click behavior (original working logic)
         if self.isOnCooldown and Helpers.IsInAnyGroup() and self.cooldownData then
-            local message = string.format("%s is on cooldown (%s)", 
+            local message = string.format("%s is on cooldown (%s)",
                 self.cooldownData.data.spellName or self.cooldownData.data.name,
                 Helpers.FormatCooldownTime(self.cooldownData.remaining))
             SendChatMessage(message, Helpers.GetGroupChatChannel())
         end
         UIFrameFadeOut(self, 0.2, 1, 0)
-        C_Timer.After(0.2, function() self:Hide() end)
+        C_Timer.After(0.2, function()
+            self:Hide()
+        end)
     end)
-    
+
     Helpers.LoadBannerPosition(banner)
     banner:SetAlpha(0)
     banner:Show()
