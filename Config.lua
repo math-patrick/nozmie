@@ -1,5 +1,5 @@
 -- ============================================================================
--- EasyPort - Configuration Module
+-- Nozmie - Configuration Module
 -- Banner dimensions, colors, and chat events
 -- ============================================================================
 
@@ -27,4 +27,4 @@ local Config = {
     }
 }
 
-_G.EasyPort_Config = Config
+_G.Nozmie_Config = Config

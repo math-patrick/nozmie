@@ -1,5 +1,5 @@
 -- ============================================================================
--- EasyPort - Helpers Module
+-- Nozmie - Helpers Module
 -- Utility functions for cooldowns, player checks, formatting, and positioning
 -- ============================================================================
 
@@ -7,13 +7,13 @@ local Helpers = {}
 
 function Helpers.SaveBannerPosition(banner)
     local point, _, relativePoint, xOfs, yOfs = banner:GetPoint()
-    EasyPortDB = EasyPortDB or {}
-    EasyPortDB.position = {point = point, relativePoint = relativePoint, xOfs = xOfs, yOfs = yOfs}
+    NozmieDB = NozmieDB or {}
+    NozmieDB.position = {point = point, relativePoint = relativePoint, xOfs = xOfs, yOfs = yOfs}
 end
 
 function Helpers.LoadBannerPosition(banner)
-    if EasyPortDB and EasyPortDB.position then
-        local p = EasyPortDB.position
+    if NozmieDB and NozmieDB.position then
+        local p = NozmieDB.position
         banner:ClearAllPoints()
         banner:SetPoint(p.point, UIParent, p.relativePoint, p.xOfs, p.yOfs)
     else
@@ -46,9 +46,7 @@ function Helpers.CreateAnnouncementMessage(data)
     local nounForm = "utility"
     
     if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or 
-       data.category == "Home" or data.category == "Mage" or data.category == "Druid" or 
-       data.category == "Shaman" or data.category == "Death Knight" or data.category == "Monk" or 
-       data.category == "Demon Hunter" or data.category == "Toy" then
+       data.category == "Home" or data.category == "Class" or data.category == "Toy" then
         actionVerb = "teleport"
         nounForm = "portal"
     elseif data.category and data.category:find("Utility") then
@@ -174,4 +172,4 @@ function Helpers.CanPlayerUseTeleport(data)
     return false
 end
 
-_G.EasyPort_Helpers = Helpers
+_G.Nozmie_Helpers = Helpers

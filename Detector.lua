@@ -1,9 +1,8 @@
 -- ============================================================================
--- EasyPort - Detector Module
+-- Nozmie - Detector Module
 -- Finds matching teleports/utilities from chat messages with smart filtering
 -- ============================================================================
-
-local Helpers = EasyPort_Helpers
+local Helpers = Nozmie_Helpers
 local Detector = {}
 
 local function GetCategoryPriority(teleportData)
@@ -13,24 +12,19 @@ local function GetCategoryPriority(teleportData)
         ["Raid"] = 2,
         ["Delve"] = 3,
         ["Home"] = 4,
-        ["Mage"] = 5,
-        ["Druid"] = 6,
-        ["Shaman"] = 7,
-        ["Death Knight"] = 8,
-        ["Monk"] = 9,
-        ["Demon Hunter"] = 10,
-        ["Toy"] = 11
+        ["Class"] = 5,
+        ["Toy"] = 6
     }
-    
+
     -- Check which season/expansion the teleport belongs to
     local seasonPriority = 999
-    for categoryName, categoryData in pairs(EasyPort_Categories) do
+    for categoryName, categoryData in pairs(Nozmie_Categories) do
         for _, item in ipairs(categoryData) do
             if item.name == teleportData.name then
                 if categoryName == "MidnightSeason1" then
-                    seasonPriority = 0  -- Future season (when active, highest priority)
+                    seasonPriority = 0 -- Future season (when active, highest priority)
                 elseif categoryName == "WarWithinSeason3" then
-                    seasonPriority = 1  -- Current season highest priority
+                    seasonPriority = 1 -- Current season highest priority
                 elseif categoryName == "WarWithinSeason2" then
                     seasonPriority = 2
                 elseif categoryName == "WarWithinSeason1" then
@@ -50,7 +44,7 @@ local function GetCategoryPriority(teleportData)
             end
         end
     end
-    
+
     local catPriority = categoryPriority[teleportData.category] or 99
     -- Return combined priority: season first, then category
     return seasonPriority * 100 + catPriority
@@ -64,7 +58,9 @@ local function ShuffleTable(tbl)
 end
 
 local function IsHearthstone(teleportData)
-    if not teleportData.keywords then return false end
+    if not teleportData.keywords then
+        return false
+    end
     for _, keyword in ipairs(teleportData.keywords) do
         if keyword == "hearthstone" or keyword == "hearth" then
             return true
@@ -78,39 +74,38 @@ function Detector.FindMatchingTeleports(message, sender)
     local matches = {}
     local hearthstones = {}
     local uniqueNames = {}
-    
+
     -- Extract player name without realm suffix if present
     local targetPlayer = sender
     if targetPlayer then
         targetPlayer = targetPlayer:match("([^-]+)") or targetPlayer
     end
-    
-    for _, teleportData in ipairs(EasyPort_DungeonData) do
+
+    for _, teleportData in ipairs(Nozmie_Data) do
         if not uniqueNames[teleportData.name] and teleportData.keywords then
             local shouldMatch = false
-            
+
             for _, keyword in ipairs(teleportData.keywords) do
                 if lowerMessage:find(keyword, 1, true) then
                     shouldMatch = true
                     break
                 end
             end
-            
+
             if shouldMatch and Helpers.CanPlayerUseTeleport(teleportData) then
                 -- Clone the teleport data to avoid modifying the original
                 local teleportCopy = {}
                 for k, v in pairs(teleportData) do
                     teleportCopy[k] = v
                 end
-                
+
                 -- Add sender info for buff spells
-                if targetPlayer and teleportCopy.category and 
-                   (teleportCopy.category:find("Utility") or 
-                    teleportCopy.spellName == "Levitate" or 
-                    teleportCopy.spellName == "Slow Fall") then
+                if targetPlayer and teleportCopy.category and
+                    (teleportCopy.category:find("Utility") or teleportCopy.spellName == "Levitate" or
+                        teleportCopy.spellName == "Slow Fall") then
                     teleportCopy.targetPlayer = targetPlayer
                 end
-                
+
                 if IsHearthstone(teleportCopy) then
                     table.insert(hearthstones, teleportCopy)
                 else
@@ -120,32 +115,32 @@ function Detector.FindMatchingTeleports(message, sender)
             end
         end
     end
-    
+
     if #hearthstones > 0 then
         ShuffleTable(hearthstones)
         for _, hs in ipairs(hearthstones) do
             table.insert(matches, hs)
         end
     end
-    
+
     -- Sort: items without cooldowns first, then items with cooldowns
     table.sort(matches, function(a, b)
         local aCooldown = Helpers.GetCooldownRemaining(a)
         local bCooldown = Helpers.GetCooldownRemaining(b)
-        
+
         -- If one has cooldown and other doesn't, prioritize the one without
         if (aCooldown > 0) ~= (bCooldown > 0) then
-            return aCooldown == 0  -- true if a has no cooldown
+            return aCooldown == 0 -- true if a has no cooldown
         end
-        
+
         -- Both have same cooldown status, maintain original order
         return false
     end)
-    
+
     -- Deduplicate by spell ID, keeping highest priority (current season) version
     local seenSpells = {}
     local dedupedMatches = {}
-    
+
     for _, teleport in ipairs(matches) do
         if teleport.spellID then
             local existing = seenSpells[teleport.spellID]
@@ -173,8 +168,8 @@ function Detector.FindMatchingTeleports(message, sender)
             table.insert(dedupedMatches, teleport)
         end
     end
-    
+
     return dedupedMatches
 end
 
-_G.EasyPort_Detector = Detector
+_G.Nozmie_Detector = Detector

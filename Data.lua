@@ -1,6 +1,8 @@
--- EasyPort Data Module
+-- ============================================================================
+-- Nozmie - Data Module
 -- Contains all teleport spells, items, and toys organized by category
 -- Each entry has keywords array for detection in chat
+-- ============================================================================
 -- ============================================================================
 -- MYTHIC+ DUNGEONS
 -- ============================================================================
@@ -561,7 +563,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 3561,
     spellName = "Teleport: Stormwind",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Alliance",
     keywords = {"stormwind", "sw", "storm wind"}
 }, {
@@ -569,7 +571,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 3562,
     spellName = "Teleport: Ironforge",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Alliance",
     keywords = {"ironforge", "iron forge"}
 }, {
@@ -577,7 +579,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 3565,
     spellName = "Teleport: Darnassus",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Alliance",
     keywords = {"darnassus", "darn"}
 }, {
@@ -585,7 +587,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 32271,
     spellName = "Teleport: Exodar",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Alliance",
     keywords = {"exodar"}
 }, {
@@ -593,7 +595,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 281403,
     spellName = "Teleport: Boralus",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Alliance",
     keywords = {"boralus"}
 }, -- Horde Cities
@@ -602,7 +604,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 3567,
     spellName = "Teleport: Orgrimmar",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Horde",
     keywords = {"orgrimmar", "org"}
 }, {
@@ -610,7 +612,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 3563,
     spellName = "Teleport: Undercity",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Horde",
     keywords = {"undercity", "uc", "under city"}
 }, {
@@ -618,7 +620,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 3566,
     spellName = "Teleport: Thunder Bluff",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Horde",
     keywords = {"thunder bluff", "thunderbluff", "tb"}
 }, {
@@ -626,7 +628,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 32272,
     spellName = "Teleport: Silvermoon",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Horde",
     keywords = {"silvermoon", "silver moon", "sm"}
 }, {
@@ -634,7 +636,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 281404,
     spellName = "Teleport: Dazar'alor",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Horde",
     keywords = {"dazaralor", "dazar", "dazar'alor"}
 }, -- Neutral Cities
@@ -643,7 +645,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 33690,
     spellName = "Teleport: Shattrath",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Neutral",
     keywords = {"shattrath", "shatt"}
 }, {
@@ -651,7 +653,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 53140,
     spellName = "Teleport: Dalaran - Northrend",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Neutral",
     keywords = {"dalaran", "dal", "northrend dal"}
 }, {
@@ -659,7 +661,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 224869,
     spellName = "Teleport: Dalaran - Broken Isles",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Neutral",
     keywords = {"dalaran", "dal", "legion dal", "broken isles"}
 }, {
@@ -667,7 +669,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 132621,
     spellName = "Teleport: Vale of Eternal Blossoms",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Neutral",
     keywords = {"vale", "vale of eternal blossoms"}
 }, {
@@ -675,7 +677,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 344597,
     spellName = "Teleport: Oribos",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Neutral",
     keywords = {"oribos"}
 }, {
@@ -683,7 +685,7 @@ local MageTeleports = { -- Alliance Cities
     spellID = 395277,
     spellName = "Teleport: Valdrakken",
     actionType = "spell",
-    category = "Mage",
+    category = "Class",
     faction = "Neutral",
     keywords = {"valdrakken", "vald"}
 }}
@@ -698,14 +700,14 @@ local ClassTeleports = { -- Druid
     spellID = 18960,
     spellName = "Teleport: Moonglade",
     actionType = "spell",
-    category = "Druid",
+    category = "Class",
     keywords = {"moonglade"}
 }, {
     name = "Emerald Dreamway",
     spellID = 193753,
     spellName = "Dreamwalk",
     actionType = "spell",
-    category = "Druid",
+    category = "Class",
     keywords = {"dreamway", "dream way", "emerald dreamway"}
 }, -- Death Knight
 {
@@ -713,7 +715,7 @@ local ClassTeleports = { -- Druid
     spellID = 50977,
     spellName = "Death Gate",
     actionType = "spell",
-    category = "Death Knight",
+    category = "Class",
     keywords = {"ebon hold", "death gate", "acherus"}
 }, -- Monk
 {
@@ -721,7 +723,7 @@ local ClassTeleports = { -- Druid
     spellID = 126892,
     spellName = "Zen Pilgrimage",
     actionType = "spell",
-    category = "Monk",
+    category = "Class",
     keywords = {"peak", "peak of serenity", "monk class hall"}
 }, -- Shaman
 {
@@ -729,7 +731,7 @@ local ClassTeleports = { -- Druid
     spellID = 556,
     spellName = "Astral Recall",
     actionType = "spell",
-    category = "Shaman",
+    category = "Class",
     cooldown = "10 min",
     keywords = {"astral recall", "shaman hearth"}
 }, -- Demon Hunter
@@ -738,7 +740,7 @@ local ClassTeleports = { -- Druid
     spellID = 189838,
     spellName = "Fel Hammer",
     actionType = "spell",
-    category = "Demon Hunter",
+    category = "Class",
     keywords = {"fel hammer", "dh class hall"}
 }}
 
@@ -831,21 +833,21 @@ local ClassUtilities = { -- Mage Utilities
     spellID = 190336,
     spellName = "Conjure Refreshment",
     actionType = "spell",
-    category = "Mage Utility",
+    category = "Class Utility",
     keywords = {"cookies", "food", "mana buns", "refreshment", "table", "mage table"}
 }, {
     name = "Arcane Intellect",
     spellID = 1459,
     spellName = "Arcane Intellect",
     actionType = "spell",
-    category = "Mage Utility",
+    category = "Class Utility",
     keywords = {"intellect", "arcane intellect", "buff"}
 }, {
     name = "Slow Fall",
     spellID = 130,
     spellName = "Slow Fall",
     actionType = "spell",
-    category = "Mage Utility",
+    category = "Class Utility",
     keywords = {"slow fall", "slowfall", "slow", "sf"}
 }, -- Warlock Utilities
 {
@@ -853,14 +855,14 @@ local ClassUtilities = { -- Mage Utilities
     spellID = 698,
     spellName = "Ritual of Summoning",
     actionType = "spell",
-    category = "Warlock Utility",
+    category = "Class Utility",
     keywords = {"summon", "summons", "lock summon", "warlock summon", "port"}
 }, {
     name = "Create Soulwell",
     spellID = 29893,
     spellName = "Create Soulwell",
     actionType = "spell",
-    category = "Warlock Utility",
+    category = "Class Utility",
     keywords = {"soulwell", "soul well", "lock well", "healthstones", "healthstone", "health stone", "hs", "lock rock",
                 "cookie", "cookies"}
 }, -- Priest Utilities
@@ -869,14 +871,14 @@ local ClassUtilities = { -- Mage Utilities
     spellID = 21562,
     spellName = "Power Word: Fortitude",
     actionType = "spell",
-    category = "Priest Utility",
+    category = "Class Utility",
     keywords = {"fort", "fortitude", "stamina", "buff", "pw:f"}
 }, {
     name = "Levitate",
     spellID = 1706,
     spellName = "Levitate",
     actionType = "spell",
-    category = "Priest Utility",
+    category = "Class Utility",
     keywords = {"levitate", "lev", "levi"}
 }, -- Druid Utilities
 {
@@ -884,7 +886,7 @@ local ClassUtilities = { -- Mage Utilities
     spellID = 1126,
     spellName = "Mark of the Wild",
     actionType = "spell",
-    category = "Druid Utility",
+    category = "Class Utility",
     keywords = {"motw", "mark", "mark of the wild", "buff"}
 }, -- Evoker Utilities
 {
@@ -892,14 +894,14 @@ local ClassUtilities = { -- Mage Utilities
     spellID = 364342,
     spellName = "Blessing of the Bronze",
     actionType = "spell",
-    category = "Evoker Utility",
+    category = "Class Utility",
     keywords = {"bronze", "blessing of the bronze", "botb", "buff", "cdr", "cooldown reduction"}
 }, {
     name = "Source of Magic",
     spellID = 369459,
     spellName = "Source of Magic",
     actionType = "spell",
-    category = "Evoker Utility",
+    category = "Class Utility",
     keywords = {"source", "source of magic", "evoker mana", "buff"}
 }}
 
@@ -1355,57 +1357,57 @@ local ServiceToys = {{
 -- COMBINE ALL DATA
 -- ============================================================================
 
-EasyPort_DungeonData = {}
+Nozmie_Data = {}
 
 -- Merge all tables into one flat array
 for _, v in ipairs(MidnightSeason1) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(WarWithinSeason1) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(WarWithinSeason2) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(WarWithinSeason3) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(DragonflightDungeons) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(BfADungeons) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(ShadowlandsDungeons) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(RaidTeleports) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(DelveTeleports) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(Hearthstones) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(MageTeleports) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(ClassTeleports) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(ClassUtilities) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(TeleportToys) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 for _, v in ipairs(ServiceToys) do
-    table.insert(EasyPort_DungeonData, v)
+    table.insert(Nozmie_Data, v)
 end
 
 -- Export category tables for potential future use
-_G.EasyPort_Categories = {
+_G.Nozmie_Categories = {
     MidnightSeason1 = MidnightSeason1,
     WarWithinSeason1 = WarWithinSeason1,
     WarWithinSeason2 = WarWithinSeason2,

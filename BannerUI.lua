@@ -1,10 +1,10 @@
 -- ============================================================================
--- EasyPort - Banner UI Module
+-- Nozmie - Banner UI Module
 -- Creates and styles the notification banner frame
 -- ============================================================================
 
-local Config = EasyPort_Config
-local Helpers = EasyPort_Helpers
+local Config = Nozmie_Config
+local Helpers = Nozmie_Helpers
 
 local BannerUI = {}
 
@@ -71,7 +71,7 @@ local function CreateBannerText(parent, iconFrame)
 end
 
 function BannerUI.CreateBanner()
-    local banner = CreateFrame("Button", "EasyPortBanner", UIParent, "SecureActionButtonTemplate, BackdropTemplate")
+    local banner = CreateFrame("Button", "NozmieBanner", UIParent, "SecureActionButtonTemplate, BackdropTemplate")
     banner:SetSize(Config.BANNER.WIDTH, Config.BANNER.HEIGHT)
     banner:SetFrameStrata("HIGH")
     banner:SetAttribute("type", "macro")
@@ -135,4 +135,4 @@ function BannerUI.CreateBanner()
     return banner
 end
 
-_G.EasyPort_BannerUI = BannerUI
+_G.Nozmie_BannerUI = BannerUI

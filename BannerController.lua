@@ -1,10 +1,10 @@
 -- ============================================================================
--- EasyPort - Banner Controller Module
+-- Nozmie - Banner Controller Module
 -- Manages banner behavior, navigation, cooldown updates, and click handling
 -- ============================================================================
 
-local Config = EasyPort_Config
-local Helpers = EasyPort_Helpers
+local Config = Nozmie_Config
+local Helpers = Nozmie_Helpers
 
 local BannerController = {}
 
@@ -214,4 +214,4 @@ function BannerController.ShowWithOptions(banner, teleportOptions)
     UIFrameFadeIn(banner, 0.4, 0, 1)
 end
 
-_G.EasyPort_BannerController = BannerController
+_G.Nozmie_BannerController = BannerController

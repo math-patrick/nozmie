@@ -1,28 +1,52 @@
 -- ============================================================================
--- EasyPort - Initialization Module
+-- Nozmie - Initialization Module
 -- Event registration, chat filtering, and slash commands
 -- ============================================================================
 
-local Config = EasyPort_Config
-local Detector = EasyPort_Detector
-local BannerUI = EasyPort_BannerUI
-local BannerController = EasyPort_BannerController
+local Config = Nozmie_Config
+local Detector = Nozmie_Detector
+local BannerUI = Nozmie_BannerUI
+local BannerController = Nozmie_BannerController
+local Settings = Nozmie_Settings
 
 local addon = CreateFrame("Frame")
 local banner
 
 local function OnChatMessage(self, event, message, sender)
+    -- Check if addon is enabled
+    if not Settings.Get("enabled") then
+        return false
+    end
+    
+    -- Check if this chat type should be monitored
+    local shouldMonitor = false
+    if event == "CHAT_MSG_SAY" and Settings.Get("detectInSay") then
+        shouldMonitor = true
+    elseif event == "CHAT_MSG_PARTY" and Settings.Get("detectInParty") then
+        shouldMonitor = true
+    elseif event == "CHAT_MSG_RAID" and Settings.Get("detectInRaid") then
+        shouldMonitor = true
+    elseif event == "CHAT_MSG_GUILD" and Settings.Get("detectInGuild") then
+        shouldMonitor = true
+    elseif event == "CHAT_MSG_WHISPER" and Settings.Get("detectInWhisper") then
+        shouldMonitor = true
+    end
+    
+    if not shouldMonitor then
+        return false
+    end
+    
     local matches = Detector.FindMatchingTeleports(message, sender)
-    if #matches > 0 then
+    if #matches > 0 and Settings.Get("showBanner") then
         BannerController.ShowWithOptions(banner, matches)
     end
     return false
 end
 
 local function PrintStats()
-    print("|cff00ff00EasyPort:|r Loaded " .. #EasyPort_DungeonData .. " teleport options")
+    print("|cff00ff00Nozmie:|r Loaded " .. #Nozmie_Data .. " teleport options")
     local counts = {}
-    for _, data in ipairs(EasyPort_DungeonData) do
+    for _, data in ipairs(Nozmie_Data) do
         counts[data.category] = (counts[data.category] or 0) + 1
     end
     for category, count in pairs(counts) do
@@ -35,19 +59,23 @@ local function HandleCommand(args)
     
     if cmd == "debug" or cmd == "count" then
         PrintStats()
+    elseif cmd == "settings" or cmd == "config" or cmd == "options" or cmd == "" then
+        Settings.Show()
     elseif cmd:match("^test%s+(.+)") then
         local testMessage = cmd:match("^test%s+(.+)")
-        print("|cff00ff00EasyPort:|r Testing: '" .. testMessage .. "'")
+        print("|cff00ff00Nozmie:|r Testing: '" .. testMessage .. "'")
         OnChatMessage(nil, nil, testMessage)
     else
-        print("|cff00ff00EasyPort:|r Commands:")
-        print("  /ep debug - Show statistics")
-        print("  /ep test <keyword> - Test detection")
+        print("|cff00ff00Nozmie:|r Commands:")
+        print("  /noz - Open settings")
+        print("  /noz settings - Open settings")
+        print("  /noz debug - Show statistics")
+        print("  /noz test <keyword> - Test detection")
     end
 end
 
 local function Initialize()
-    print("|cff00ff00EasyPort:|r Initializing...")
+    print("|cff00ff00Nozmie:|r Initializing...")
     
     banner = BannerUI.CreateBanner()
     
@@ -55,16 +83,16 @@ local function Initialize()
         ChatFrame_AddMessageEventFilter(event, OnChatMessage)
     end
     
-    SLASH_EASYPORT1 = "/easyport"
-    SLASH_EASYPORT2 = "/ep"
-    SlashCmdList["EASYPORT"] = HandleCommand
+    SLASH_NOZMIE1 = "/nozmie"
+    SLASH_NOZMIE2 = "/noz"
+    SlashCmdList["NOZMIE"] = HandleCommand
     
-    print("|cff00ff00EasyPort|r loaded! Type |cff00ff00/ep|r for help.")
+    print("|cff00ff00Nozmie|r loaded! Type |cff00ff00/noz|r for help.")
 end
 
 addon:RegisterEvent("ADDON_LOADED")
 addon:SetScript("OnEvent", function(self, event, loadedAddon)
-    if loadedAddon == "EasyPort" then
+    if loadedAddon == "Nozmie" then
         Initialize()
         self:UnregisterEvent("ADDON_LOADED")
     end

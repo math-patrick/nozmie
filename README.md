@@ -1,4 +1,4 @@
-# EasyPort
+# Nozmie: Utility Helper
 
 **A smart and elegant World of Warcraft addon for instant teleportation and utility spell detection.**
 
@@ -134,7 +134,7 @@
 6. **Close** - Click the X button (top-right) or the banner auto-hides after use
 
 ### Player Targeting for Buffs 🎯
-**NEW!** When someone asks for a buff in chat, EasyPort automatically targets them:
+**NEW!** When someone asks for a buff in chat, Nozmie automatically targets them:
 - Someone says "lev" → Banner shows "Cast Levitate on PlayerName"
 - Someone says "slow fall" → Casts Slow Fall on them
 - Works with: Fort, Mark of the Wild, Arcane Intellect, all buff/utility spells
@@ -168,9 +168,9 @@ When an item is on cooldown and you're in a group:
 
 ## 🎨 Commands
 
-- `/ep` or `/easyport` - Show help
-- `/ep debug` or `/ep count` - Show statistics about loaded teleports/utilities
-- `/ep test <keyword>` - Test detection with a keyword (e.g., `/ep test dalaran`)
+- `/noz` or `/nozmie` - Show help
+- `/noz debug` or `/noz count` - Show statistics about loaded teleports/utilities
+- `/noz test <keyword>` - Test detection with a keyword (e.g., `/noz test dalaran`)
 
 ## 🐛 Known Issues
 
@@ -213,7 +213,7 @@ None currently reported! All major features tested and working.
 - Vendor mounts (Yak, Mammoth, both Brutosaurs)
 
 **Code Refactoring**
-- Removed unused files (old EasyPort.lua, UI.lua, test files)
+- Removed unused files (old Nozmie.lua, UI.lua, test files)
 - Cleaner module separation (BannerUI, BannerController, Detector, Helpers)
 - Better code organization and documentation
 
