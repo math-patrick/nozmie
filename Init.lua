@@ -9,6 +9,7 @@ local BannerUI = Nozmie_BannerUI
 local BannerController = Nozmie_BannerController
 local Settings = Nozmie_Settings
 local Minimap = Nozmie_Minimap
+local Helpers = Nozmie_Helpers
 
 local Locale = _G.Nozmie_Locale
 local function Lstr(key, fallback)
@@ -71,8 +72,22 @@ local function OnChatMessage(self, event, message, sender)
     if not shouldMonitor then
         return false
     end
+
+    local playerName = UnitName("player")
+    if sender and playerName then
+        local senderShort = sender:match("([^-]+)") or sender
+        if senderShort == playerName and Helpers and Helpers.IsRecentAnnounce and Helpers.IsRecentAnnounce(message) then
+            return false
+        end
+    end
     
     local matches = Detector.FindMatchingTeleports(message, sender)
+    if #matches > 0 then
+        for _, match in ipairs(matches) do
+            match.sourceEvent = event
+            match.sourceSender = sender
+        end
+    end
     if #matches > 0 and Settings.Get("showBanner") then
         if InCombatLockdown() then
             QueueMatches(matches)

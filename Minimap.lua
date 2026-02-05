@@ -32,6 +32,7 @@ local function UpdatePosition()
     local radius = (Minimap:GetWidth() / 2) + 5
     local x = math.cos(angle) * radius
     local y = math.sin(angle) * radius
+    minimapButton:ClearAllPoints()
     minimapButton:SetPoint("CENTER", Minimap, "CENTER", x, y)
 end
 
@@ -41,21 +42,35 @@ local function EnsureButton()
     minimapButton = CreateFrame("Button", "NozmieMinimapButton", Minimap)
     minimapButton:SetSize(32, 32)
     minimapButton:SetFrameStrata("MEDIUM")
+    minimapButton:SetFrameLevel(Minimap:GetFrameLevel() + 8)
     minimapButton:EnableMouse(true)
     minimapButton:RegisterForClicks("AnyUp")
     minimapButton:RegisterForDrag("LeftButton")
-
-    local bg = minimapButton:CreateTexture(nil, "BACKGROUND")
-    bg:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-    bg:SetSize(56, 56)
-    bg:SetPoint("CENTER", minimapButton, "CENTER", 0, 0)
-
+    minimapButton:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
     local icon = minimapButton:CreateTexture(nil, "ARTWORK")
     icon:SetTexture("Interface\\Icons\\Spell_Holy_BorrowedTime")
-    icon:SetSize(18, 18)
+    icon:SetSize(24, 24)
     icon:SetPoint("CENTER", 0, 0)
     icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    if icon.AddMaskTexture then
+        local mask = minimapButton:CreateMaskTexture()
+        mask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+        mask:SetAllPoints(icon)
+        icon:AddMaskTexture(mask)
+    elseif icon.SetMaskTexture then
+        local minimapMask = Minimap and Minimap.GetMaskTexture and Minimap:GetMaskTexture() or nil
+        if minimapMask then
+            icon:SetMaskTexture(minimapMask)
+        else
+            icon:SetMaskTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask")
+        end
+    end
     minimapButton.icon = icon
+    local highlight = minimapButton:GetHighlightTexture()
+    if highlight then
+        highlight:SetBlendMode("ADD")
+        highlight:SetAlpha(0.8)
+    end
 
     minimapButton:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")

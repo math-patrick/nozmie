@@ -1666,7 +1666,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "1 hour",
     destination = "Repair & Mailbox",
-    keywords = {"reaves", "battery", "repair", "mail", "mailbox", "vendor"}
+    keywords = {"reaves", "repair"}
 }, {
     name = "Reaves Battery",
     itemID = 132523,
@@ -1675,7 +1675,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "1 hour",
     destination = "Repair & More",
-    keywords = {"reaves", "repair", "vendor"}
+    keywords = {"reaves", "repair"}
 }, {
     name = "Grand Expedition Yak",
     itemID = 120968,

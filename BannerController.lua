@@ -206,7 +206,10 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
 end
 
 local function UpdateBannerIcon(banner, data)
-    if data.spellID then
+    local preferItem = data.itemID and (data.actionType == "item" or data.actionType == "toy" or data.category == "Home")
+    data.preferItem = preferItem and true or nil
+
+    if data.spellID and not preferItem then
         local iconTexture = C_Spell.GetSpellTexture(data.spellID)
         if iconTexture then banner.icon:SetTexture(iconTexture) end
         
@@ -332,7 +335,7 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked)
             if data then
                 local now = GetTime()
                 if now - self.lastAnnounceTime > 1 then  -- 1 second debounce
-                    Helpers.AnnounceUtility(data)
+                    Helpers.AnnounceUtility(data, data.sourceEvent, data.sourceSender)
                     self.lastAnnounceTime = now
                 end
             end
@@ -346,7 +349,18 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked)
                     local message = string.format(Lstr("banner.cooldownAnnounce", "%s is on cooldown (%s)"),
                         self.cooldownData.data.spellName or self.cooldownData.data.name,
                         Helpers.FormatCooldownTime(self.cooldownData.remaining))
-                SendChatMessage(message, Helpers.GetGroupChatChannel())
+                local sent = Helpers.SendMessageForEvent(message, self.cooldownData.data.sourceEvent,
+                    self.cooldownData.data.sourceSender)
+                if not sent then
+                    if Helpers.IsInAnyGroup() then
+                        SendChatMessage(message, Helpers.GetGroupChatChannel())
+                    else
+                        SendChatMessage(message, "SAY")
+                    end
+                end
+                if Helpers.MarkAnnounce then
+                    Helpers.MarkAnnounce(message)
+                end
                 self.lastAnnounceTime = now
             end
         end

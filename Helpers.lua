@@ -4,6 +4,7 @@
 -- ============================================================================
 
 local Helpers = {}
+local lastAnnounce = {message = nil, time = 0}
 
 local Locale = _G.Nozmie_Locale
 local function Lstr(key, fallback)
@@ -48,6 +49,45 @@ function Helpers.GetGroupChatChannel()
     if IsInRaid() then return "RAID" end
     if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then return "INSTANCE_CHAT" end
     return "PARTY"
+end
+
+function Helpers.GetChannelFromEvent(event)
+    if event == "CHAT_MSG_SAY" then return "SAY" end
+    if event == "CHAT_MSG_PARTY" then return "PARTY" end
+    if event == "CHAT_MSG_RAID" then return "RAID" end
+    if event == "CHAT_MSG_GUILD" then return "GUILD" end
+    if event == "CHAT_MSG_WHISPER" then return "WHISPER" end
+    if event == "CHAT_MSG_INSTANCE_CHAT" then return "INSTANCE_CHAT" end
+    return nil
+end
+
+function Helpers.SendMessageForEvent(message, event, sender)
+    local channel = Helpers.GetChannelFromEvent(event)
+    if not channel then
+        return false
+    end
+    if channel == "WHISPER" then
+        if not sender or sender == "" then
+            return false
+        end
+        SendChatMessage(message, channel, nil, sender)
+        return true
+    end
+    SendChatMessage(message, channel)
+    return true
+end
+
+function Helpers.MarkAnnounce(message)
+    lastAnnounce.message = message
+    lastAnnounce.time = GetTime()
+end
+
+function Helpers.IsRecentAnnounce(message, window)
+    if not lastAnnounce.message then
+        return false
+    end
+    local limit = window or 2
+    return message == lastAnnounce.message and (GetTime() - lastAnnounce.time) <= limit
 end
 
 function Helpers.CreateAnnouncementMessage(data)
@@ -96,17 +136,38 @@ function Helpers.CreateAnnouncementMessage(data)
     end
 end
 
-function Helpers.AnnounceUtility(data)
+function Helpers.AnnounceUtility(data, event, sender)
     local message = Helpers.CreateAnnouncementMessage(data)
+
+    if event and Helpers.SendMessageForEvent(message, event, sender) then
+        Helpers.MarkAnnounce(message)
+        return
+    end
     
     if Helpers.IsInAnyGroup() then
         SendChatMessage(message, Helpers.GetGroupChatChannel())
     else
         SendChatMessage(message, "SAY")
     end
+    Helpers.MarkAnnounce(message)
 end
 
 function Helpers.GetCooldownRemaining(data)
+    if data.preferItem and data.itemID then
+        local start, duration = C_Item.GetItemCooldown(data.itemID)
+        if start and duration and type(start) == "number" and type(duration) == "number" then
+            local ok, remaining = pcall(function()
+                if start > 0 and duration > 0 then
+                    return start + duration - GetTime()
+                end
+                return 0
+            end)
+            if ok and remaining and remaining > 0 then
+                return remaining
+            end
+        end
+    end
+
     if data.spellID then
         local info = C_Spell.GetSpellCooldown(data.spellID)
         -- Check if info exists and values are not tainted/secret

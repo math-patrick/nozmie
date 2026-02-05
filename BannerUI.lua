@@ -58,7 +58,9 @@ local function CreateBannerIcon(parent)
         local data = banner and banner.activeData or nil
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         if data then
-            if data.spellID then
+            if data.preferItem and data.itemID then
+                GameTooltip:SetItemByID(data.itemID)
+            elseif data.spellID then
                 GameTooltip:SetSpellByID(data.spellID)
             elseif data.itemID then
                 GameTooltip:SetItemByID(data.itemID)
