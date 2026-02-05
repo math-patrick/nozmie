@@ -1,3 +1,8 @@
+-- ============================================================================
+-- EasyPort - Initialization Module
+-- Event registration, chat filtering, and slash commands
+-- ============================================================================
+
 local Config = EasyPort_Config
 local Detector = EasyPort_Detector
 local BannerUI = EasyPort_BannerUI
@@ -6,8 +11,8 @@ local BannerController = EasyPort_BannerController
 local addon = CreateFrame("Frame")
 local banner
 
-local function OnChatMessage(self, event, message)
-    local matches = Detector.FindMatchingTeleports(message)
+local function OnChatMessage(self, event, message, sender)
+    local matches = Detector.FindMatchingTeleports(message, sender)
     if #matches > 0 then
         BannerController.ShowWithOptions(banner, matches)
     end
@@ -42,6 +47,8 @@ local function HandleCommand(args)
 end
 
 local function Initialize()
+    print("|cff00ff00EasyPort:|r Initializing...")
+    
     banner = BannerUI.CreateBanner()
     
     for _, event in ipairs(Config.CHAT_EVENTS) do

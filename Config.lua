@@ -1,15 +1,20 @@
+-- ============================================================================
+-- EasyPort - Configuration Module
+-- Banner dimensions, colors, and chat events
+-- ============================================================================
+
 local Config = {
     BANNER = {
-        WIDTH = 320,
+        WIDTH = 400,
         HEIGHT = 60
     },
     
     COLORS = {
-        BACKDROP_NORMAL = {0.05, 0.05, 0.15, 0.95},
-        BACKDROP_COOLDOWN = {0.03, 0.03, 0.1, 0.95},
-        BORDER_NORMAL = {0.3, 0.6, 1, 1},
-        BORDER_HOVER = {0.5, 0.8, 1, 1},
-        TEXT_NORMAL = {1, 1, 1},
+        BACKDROP_NORMAL = {0, 0, 0, 0.7},  -- Dark semi-transparent
+        BACKDROP_COOLDOWN = {0, 0, 0, 0.6},
+        BORDER_NORMAL = {0.3, 0.3, 0.35, 0.8},  -- Subtle dark border
+        BORDER_HOVER = {0.5, 0.5, 0.6, 1},  -- Slightly brighter on hover
+        TEXT_NORMAL = {0.9, 0.9, 0.95},  -- Subtle light text
         TEXT_COOLDOWN = {0.5, 0.5, 0.5}
     },
     

@@ -1,6 +1,6 @@
 ## Interface: 110207, 120000, 120001
 ## Title: EasyPort
-## Notes: Shows a clickable banner when dungeon names are detected in chat for quick teleports
+## Notes: Smart teleport and utility detection with player targeting. Auto-detects dungeon names and buff requests in chat.
 ## Author: YourName
 ## Version: 5.0.0
 ## SavedVariables: EasyPortDB
