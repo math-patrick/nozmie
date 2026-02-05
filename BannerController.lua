@@ -1,3 +1,8 @@
+-- ============================================================================
+-- EasyPort - Banner Controller Module
+-- Manages banner behavior, navigation, cooldown updates, and click handling
+-- ============================================================================
+
 local Config = EasyPort_Config
 local Helpers = EasyPort_Helpers
 
@@ -64,12 +69,18 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
         actionText = "summon"
     end
 
+    -- Show target player if casting on someone specific
+    local targetInfo = ""
+    if data.targetPlayer then
+        targetInfo = string.format(" |cff00ff00on %s|r", data.targetPlayer)
+    end
+
     if totalOptions > 1 then
         banner.subtitle:SetText(string.format(
-            "|cff888888Click to %s • |r|cff00ff00%d/%d|r |cff888888• Right-click to announce|r", actionText,
-            currentIndex, totalOptions))
+            "|cff888888Click to %s%s • |r|cff00ff00%d/%d|r |cff888888• Right-click to announce|r", actionText,
+            targetInfo, currentIndex, totalOptions))
     else
-        banner.subtitle:SetText(string.format("|cff888888Click to %s • Right-click to announce|r", actionText))
+        banner.subtitle:SetText(string.format("|cff888888Click to %s%s • Right-click to announce|r", actionText, targetInfo))
     end
 end
 
@@ -77,8 +88,15 @@ local function UpdateBannerIcon(banner, data)
     if data.spellID then
         local iconTexture = C_Spell.GetSpellTexture(data.spellID)
         if iconTexture then banner.icon:SetTexture(iconTexture) end
-        banner:SetAttribute("type", "spell")
-        banner:SetAttribute("spell", data.spellName)
+        
+        -- Use macro targeting for buff spells when a target player is specified
+        if data.targetPlayer and (data.category and data.category:find("Utility")) then
+            banner:SetAttribute("type", "macro")
+            banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. data.spellName)
+        else
+            banner:SetAttribute("type", "spell")
+            banner:SetAttribute("spell", data.spellName)
+        end
     elseif data.itemID then
         local iconTexture = C_Item.GetItemIconByID(data.itemID)
         if iconTexture then banner.icon:SetTexture(iconTexture) end
@@ -157,22 +175,32 @@ function BannerController.ShowWithOptions(banner, teleportOptions)
         RefreshBannerDisplay(banner)
     end)
     
+    banner.lastAnnounceTime = 0  -- Initialize announce debounce
+    
     banner:SetScript("PostClick", function(self, button)
         -- Handle right-click for announcements
         if button == "RightButton" then
             local data = self.options[self.currentIndex]
             if data then
-                Helpers.AnnounceUtility(data)
+                local now = GetTime()
+                if now - self.lastAnnounceTime > 1 then  -- 1 second debounce
+                    Helpers.AnnounceUtility(data)
+                    self.lastAnnounceTime = now
+                end
             end
             return
         end
         
         -- Left-click behavior (original working logic)
         if self.isOnCooldown and Helpers.IsInAnyGroup() and self.cooldownData then
-            local message = string.format("%s is on cooldown (%s)",
-                self.cooldownData.data.spellName or self.cooldownData.data.name,
-                Helpers.FormatCooldownTime(self.cooldownData.remaining))
-            SendChatMessage(message, Helpers.GetGroupChatChannel())
+            local now = GetTime()
+            if now - self.lastAnnounceTime > 1 then  -- 1 second debounce
+                local message = string.format("%s is on cooldown (%s)",
+                    self.cooldownData.data.spellName or self.cooldownData.data.name,
+                    Helpers.FormatCooldownTime(self.cooldownData.remaining))
+                SendChatMessage(message, Helpers.GetGroupChatChannel())
+                self.lastAnnounceTime = now
+            end
         end
         UIFrameFadeOut(self, 0.2, 1, 0)
         C_Timer.After(0.2, function()

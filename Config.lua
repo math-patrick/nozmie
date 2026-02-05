@@ -1,3 +1,8 @@
+-- ============================================================================
+-- EasyPort - Configuration Module
+-- Banner dimensions, colors, and chat events
+-- ============================================================================
+
 local Config = {
     BANNER = {
         WIDTH = 400,

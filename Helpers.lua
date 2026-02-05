@@ -1,3 +1,8 @@
+-- ============================================================================
+-- EasyPort - Helpers Module
+-- Utility functions for cooldowns, player checks, formatting, and positioning
+-- ============================================================================
+
 local Helpers = {}
 
 function Helpers.SaveBannerPosition(banner)
@@ -121,6 +126,10 @@ function Helpers.CanPlayerUseTeleport(data)
         
         -- Check if it's a learned mount
         if data.keywords and tContains(data.keywords, "mount") then
+            -- Don't show mounts if they can't be used in current zone
+            if IsIndoors() or IsMounted() then
+                return false
+            end
             -- Method 1: Try getting mount from item
             local mountID = C_MountJournal.GetMountFromItem(data.itemID)
             if mountID then
@@ -128,6 +137,11 @@ function Helpers.CanPlayerUseTeleport(data)
                 if isCollected then
                     -- Store mountID for use by action buttons
                     data.mountID = mountID
+                    -- Check if mount can be summoned in current zone
+                    if data.spellID then
+                        local usable = C_Spell.IsSpellUsable(data.spellID)
+                        return usable
+                    end
                     return true
                 end
             end
@@ -141,6 +155,11 @@ function Helpers.CanPlayerUseTeleport(data)
                     if isCollected and name and name == data.spellName then
                         -- Store mountID for use by action buttons
                         data.mountID = i
+                        -- Check if mount can be summoned in current zone
+                        if data.spellID then
+                            local usable = C_Spell.IsSpellUsable(data.spellID)
+                            return usable
+                        end
                         return true
                     end
                 end

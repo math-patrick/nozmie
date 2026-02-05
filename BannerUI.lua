@@ -1,3 +1,8 @@
+-- ============================================================================
+-- EasyPort - Banner UI Module
+-- Creates and styles the notification banner frame
+-- ============================================================================
+
 local Config = EasyPort_Config
 local Helpers = EasyPort_Helpers
 
@@ -45,6 +50,7 @@ end
 local function CreateBannerText(parent, iconFrame)
     local title = parent:CreateFontString(nil, "OVERLAY")
     title:SetFontObject("SystemFont_Shadow_Large")
+    title:SetFont(title:GetFont(), 13)  -- Slightly smaller font
     title:SetPoint("LEFT", iconFrame, "RIGHT", 15, 4)
     title:SetPoint("RIGHT", -40, 4)
     title:SetTextColor(0.9, 0.9, 0.95)  -- Subtle light color
@@ -54,7 +60,7 @@ local function CreateBannerText(parent, iconFrame)
     
     local subtitle = parent:CreateFontString(nil, "OVERLAY")
     subtitle:SetFontObject("GameFontHighlightSmall")
-    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -2)
+    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
     subtitle:SetPoint("RIGHT", -40, 0)
     subtitle:SetText("|cff999999Click to teleport|r")  -- Subtle gray
     subtitle:SetJustifyH("LEFT")
@@ -107,7 +113,7 @@ function BannerUI.CreateBanner()
     banner.icon, iconFrame = CreateBannerIcon(banner)
     banner.title, banner.subtitle = CreateBannerText(banner, iconFrame)
     
-    local dragButton = CreateButton(banner, 16, {"BOTTOMRIGHT", -28, 8}, {
+    local dragButton = CreateButton(banner, 16, {"BOTTOMRIGHT", -8, 8}, {
         normal = "Interface\\Cursor\\UI-Cursor-Move",
         highlight = "Interface\\Cursor\\UI-Cursor-Move"
     }, "Drag to move")

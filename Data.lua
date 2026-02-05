@@ -840,6 +840,13 @@ local ClassUtilities = { -- Mage Utilities
     actionType = "spell",
     category = "Mage Utility",
     keywords = {"intellect", "arcane intellect", "buff"}
+}, {
+    name = "Slow Fall",
+    spellID = 130,
+    spellName = "Slow Fall",
+    actionType = "spell",
+    category = "Mage Utility",
+    keywords = {"slow fall", "slowfall", "slow", "sf"}
 }, -- Warlock Utilities
 {
     name = "Ritual of Summoning",
@@ -864,6 +871,13 @@ local ClassUtilities = { -- Mage Utilities
     actionType = "spell",
     category = "Priest Utility",
     keywords = {"fort", "fortitude", "stamina", "buff", "pw:f"}
+}, {
+    name = "Levitate",
+    spellID = 1706,
+    spellName = "Levitate",
+    actionType = "spell",
+    category = "Priest Utility",
+    keywords = {"levitate", "lev", "levi"}
 }, -- Druid Utilities
 {
     name = "Mark of the Wild",
@@ -1193,12 +1207,12 @@ local ServiceToys = {{
     keywords = {"brutosaur", "bruto", "auction", "ah", "gilded", "trader", "mailbox", "mail", "mount"}
 }, {
     name = "Ethereal Transmogrifier",
-    itemID = 119134,
+    itemID = 206268,
     spellName = "Ethereal Transmogrifier",
     actionType = "toy",
     category = "Utility",
     cooldown = "No CD",
-    destination = "Transmog",
+    destination = "Transmogrifier",
     keywords = {"transmog", "transmogrifier", "ethereal", "mog", "xmog"}
 }, {
     name = "Blingtron 7000",
@@ -1207,7 +1221,7 @@ local ServiceToys = {{
     actionType = "toy",
     category = "Utility",
     cooldown = "4 hours",
-    destination = "Daily Gift",
+    destination = "Blingtron 7000",
     keywords = {"blingtron", "bling", "blingtron 7000", "7000", "gift"}
 }, {
     name = "Blingtron 6000",
@@ -1216,7 +1230,7 @@ local ServiceToys = {{
     actionType = "toy",
     category = "Utility",
     cooldown = "4 hours",
-    destination = "Daily Gift",
+    destination = "Blingtron 6000",
     keywords = {"blingtron", "bling", "blingtron 6000", "6000", "gift"}
 }, {
     name = "Blingtron 5000",
@@ -1225,7 +1239,7 @@ local ServiceToys = {{
     actionType = "toy",
     category = "Utility",
     cooldown = "4 hours",
-    destination = "Daily Gift",
+    destination = "Blingtron 5000",
     keywords = {"blingtron", "bling", "blingtron 5000", "5000", "gift"}
 }, {
     name = "Blingtron 4000",
@@ -1234,7 +1248,7 @@ local ServiceToys = {{
     actionType = "toy",
     category = "Utility",
     cooldown = "4 hours",
-    destination = "Daily Gift",
+    destination = "Blingtron 4000",
     keywords = {"blingtron", "bling", "blingtron 4000", "4000", "gift"}
 }, {
     name = "Thermal Anvil",
@@ -1255,31 +1269,13 @@ local ServiceToys = {{
     destination = "Bank & Vendor",
     keywords = {"argent", "squire", "bank", "vendor", "mailbox", "mail"}
 }, {
-    name = "Argent Gruntling",
-    itemID = 68806,
-    spellName = "Argent Gruntling",
-    actionType = "toy",
-    category = "Utility",
-    cooldown = "8 hours",
-    destination = "Bank & Vendor",
-    keywords = {"argent", "gruntling", "bank", "vendor", "mailbox", "mail"}
-}, {
-    name = "Guild Herald",
-    itemID = 63251,
-    spellName = "Guild Herald",
-    actionType = "toy",
-    category = "Utility",
-    cooldown = "15 min",
-    destination = "Vendor & Bank",
-    keywords = {"guild", "herald", "vendor", "bank"}
-}, {
     name = "Deployable Attire Rearranger",
-    itemID = 158149,
+    itemID = 153597,
     spellName = "Deployable Attire Rearranger",
     actionType = "toy",
     category = "Utility",
     cooldown = "10 min",
-    destination = "Transmog",
+    destination = "Transmogrifier",
     keywords = {"transmog", "attire", "rearranger", "mog", "xmog"}
 }, {
     name = "Mobile Banking",

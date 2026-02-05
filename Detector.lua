@@ -1,3 +1,8 @@
+-- ============================================================================
+-- EasyPort - Detector Module
+-- Finds matching teleports/utilities from chat messages with smart filtering
+-- ============================================================================
+
 local Helpers = EasyPort_Helpers
 local Detector = {}
 
@@ -68,11 +73,17 @@ local function IsHearthstone(teleportData)
     return false
 end
 
-function Detector.FindMatchingTeleports(message)
+function Detector.FindMatchingTeleports(message, sender)
     local lowerMessage = message:lower()
     local matches = {}
     local hearthstones = {}
     local uniqueNames = {}
+    
+    -- Extract player name without realm suffix if present
+    local targetPlayer = sender
+    if targetPlayer then
+        targetPlayer = targetPlayer:match("([^-]+)") or targetPlayer
+    end
     
     for _, teleportData in ipairs(EasyPort_DungeonData) do
         if not uniqueNames[teleportData.name] and teleportData.keywords then
@@ -86,10 +97,24 @@ function Detector.FindMatchingTeleports(message)
             end
             
             if shouldMatch and Helpers.CanPlayerUseTeleport(teleportData) then
-                if IsHearthstone(teleportData) then
-                    table.insert(hearthstones, teleportData)
+                -- Clone the teleport data to avoid modifying the original
+                local teleportCopy = {}
+                for k, v in pairs(teleportData) do
+                    teleportCopy[k] = v
+                end
+                
+                -- Add sender info for buff spells
+                if targetPlayer and teleportCopy.category and 
+                   (teleportCopy.category:find("Utility") or 
+                    teleportCopy.spellName == "Levitate" or 
+                    teleportCopy.spellName == "Slow Fall") then
+                    teleportCopy.targetPlayer = targetPlayer
+                end
+                
+                if IsHearthstone(teleportCopy) then
+                    table.insert(hearthstones, teleportCopy)
                 else
-                    table.insert(matches, teleportData)
+                    table.insert(matches, teleportCopy)
                 end
                 uniqueNames[teleportData.name] = true
             end
@@ -102,6 +127,20 @@ function Detector.FindMatchingTeleports(message)
             table.insert(matches, hs)
         end
     end
+    
+    -- Sort: items without cooldowns first, then items with cooldowns
+    table.sort(matches, function(a, b)
+        local aCooldown = Helpers.GetCooldownRemaining(a)
+        local bCooldown = Helpers.GetCooldownRemaining(b)
+        
+        -- If one has cooldown and other doesn't, prioritize the one without
+        if (aCooldown > 0) ~= (bCooldown > 0) then
+            return aCooldown == 0  -- true if a has no cooldown
+        end
+        
+        -- Both have same cooldown status, maintain original order
+        return false
+    end)
     
     -- Deduplicate by spell ID, keeping highest priority (current season) version
     local seenSpells = {}
