@@ -118,7 +118,7 @@ local Hearthstones = {
         spellName = "Dalaran Hearthstone",
         category = "Home",
         cooldown = "20 min",
-        keywords = {"dalaran hearth"}
+        keywords = {"dalaran", "dal", "dalaran hearth"}
     }
 }
 
@@ -142,7 +142,7 @@ local MageTeleports = {
         spellName = "Teleport: Ironforge",
         category = "Mage",
         faction = "Alliance",
-        keywords = {"ironforge", "if", "iron forge"}
+        keywords = {"ironforge", "iron forge"}
     },
     {
         name = "Darnassus",
@@ -218,7 +218,7 @@ local MageTeleports = {
         spellName = "Teleport: Shattrath",
         category = "Mage",
         faction = "Neutral",
-        keywords = {"shattrath", "shat"}
+        keywords = {"shattrath", "shatt"}
     },
     {
         name = "Dalaran (Northrend)",
@@ -397,14 +397,7 @@ local TeleportToys = {
         cooldown = "15 min",
         destination = "Argus (Random)",
         keywords = {"argus", "wormhole"}
-    }
-}
-
--- ============================================================================
--- SPECIAL TELEPORT ITEMS
--- ============================================================================
-
-local TeleportItems = {
+    },
     {
         name = "Time-Lost Artifact",
         itemID = 103678,
@@ -434,6 +427,7 @@ local TeleportItems = {
     }
 }
 
+
 -- ============================================================================
 -- COMBINE ALL DATA
 -- ============================================================================
@@ -457,9 +451,6 @@ for _, v in ipairs(ClassTeleports) do
     table.insert(EasyPort_DungeonData, v)
 end
 for _, v in ipairs(TeleportToys) do
-    table.insert(EasyPort_DungeonData, v)
-end
-for _, v in ipairs(TeleportItems) do
     table.insert(EasyPort_DungeonData, v)
 end
 

@@ -11,38 +11,43 @@ local banner
 local function DetectDungeon(self, event, msg, ...)
     local lowerMsg = msg:lower()
     local matches = {}
+    local addedOptions = {}  -- Track which options we've already added
     
     -- Search through all teleport options
     for _, data in ipairs(EasyPort_DungeonData) do
         -- Check each keyword for this teleport option
-        if data.keywords then
+        if data.keywords and not addedOptions[data.name] then
+            local keywordMatch = false
             for _, keyword in ipairs(data.keywords) do
                 if lowerMsg:find(keyword, 1, true) then
-                    -- Check if player can use this teleport
-                    local canUse = false
-                    
-                    if data.spellID then
-                        -- Check if it's a spell (either known or granted by item)
-                        if IsSpellKnown(data.spellID) or IsPlayerSpell(data.spellID) then
-                            canUse = true
-                        -- Some hearthstones are items, not spells
-                        elseif C_Item.GetItemCount(data.spellID, false, false, false) > 0 then
-                            canUse = true
-                        end
-                    elseif data.itemID then
-                        -- For toys, check if player has it
-                        if PlayerHasToy(data.itemID) then
-                            canUse = true
-                        -- For items, check if player has it in bags
-                        elseif C_Item.GetItemCount(data.itemID, false, false, false) > 0 then
-                            canUse = true
-                        end
+                    keywordMatch = true
+                    break
+                end
+            end
+            
+            if keywordMatch then
+                -- Check if player can use this teleport
+                local canUse = false
+                
+                -- Check itemID first (hearthstones, toys, items)
+                if data.itemID then
+                    -- For toys, check if player has it
+                    if PlayerHasToy(data.itemID) then
+                        canUse = true
+                    -- For items, check if player has it in bags
+                    elseif C_Item.GetItemCount(data.itemID, false, false, false) > 0 then
+                        canUse = true
                     end
-                    
-                    if canUse then
-                        table.insert(matches, data)
-                        break  -- Don't add same option multiple times
+                elseif data.spellID then
+                    -- Check if it's a spell (either known or granted by item)
+                    if IsSpellKnown(data.spellID) or IsPlayerSpell(data.spellID) then
+                        canUse = true
                     end
+                end
+                
+                if canUse then
+                    table.insert(matches, data)
+                    addedOptions[data.name] = true  -- Mark as added
                 end
             end
         end

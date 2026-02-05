@@ -143,11 +143,15 @@ function EasyPort_UI:ShowBanner(banner, matches)
         banner.cooldownTimer:Cancel()
     end
     
-    -- Single option - simple click to teleport
-    if #matches == 1 then
-        local data = matches[1]
-        banner:SetSize(320, 60)  -- Reset to default size
+    -- Store all matches and current index for carousel
+    banner.allMatches = matches
+    banner.currentIndex = 1
+    
+    -- Function to update display for current selection
+    local function UpdateCarouselDisplay()
+        local data = banner.allMatches[banner.currentIndex]
         banner.currentData = data
+        banner:SetSize(320, 60)  -- Reset to default size
         
         -- Update icon based on spell/item
         if data.spellID then
@@ -167,7 +171,7 @@ function EasyPort_UI:ShowBanner(banner, matches)
         end
         
         -- Update cooldown display
-        local function UpdateSingleCooldown()
+        local function UpdateCooldown()
             local cooldownRemaining = 0
             local onCooldown = false
             
@@ -202,7 +206,8 @@ function EasyPort_UI:ShowBanner(banner, matches)
                 local minutes = math.floor(cooldownRemaining / 60)
                 local seconds = math.floor(cooldownRemaining % 60)
                 local timeStr = minutes > 0 and string.format("%dm %ds", minutes, seconds) or string.format("%ds", seconds)
-                banner.text:SetText(string.format("%s is on Cooldown", data.name))
+                local displayName = data.spellName or data.name
+                banner.text:SetText(string.format("%s is on Cooldown", displayName))
                 
                 if inGroup then
                     banner.subtext:SetText("|cffff0000" .. timeStr .. "|r |cff888888- Click to announce|r")
@@ -227,188 +232,102 @@ function EasyPort_UI:ShowBanner(banner, matches)
                 end
                 
                 banner.text:SetText(displayText)
-                banner.subtext:SetText("|cff888888Click to teleport|r")
+                
+                -- Show carousel counter if multiple options
+                if #banner.allMatches > 1 then
+                    banner.subtext:SetText(string.format("|cff888888Click to use • |r|cff00ff00%d/%d|r", banner.currentIndex, #banner.allMatches))
+                else
+                    banner.subtext:SetText("|cff888888Click to teleport|r")
+                end
             end
         end
         
-        UpdateSingleCooldown()
+        UpdateCooldown()
         
         -- Update every second
-        banner.cooldownTimer = C_Timer.NewTicker(0.5, UpdateSingleCooldown)
-        
-        -- Handle clicks on cooldown
-        banner:SetScript("PostClick", function(self)
-            if self.isOnCooldown then
-                local inGroup = IsInGroup() or IsInRaid() or IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
-                if inGroup and self.cooldownData then
-                    local cd = self.cooldownData
-                    local minutes = math.floor(cd.remaining / 60)
-                    local seconds = math.floor(cd.remaining % 60)
-                    local timeStr = minutes > 0 and string.format("%dm %ds", minutes, seconds) or string.format("%ds", seconds)
-                    
-                    local channel = IsInRaid() and "RAID" or (IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "PARTY")
-                    local message = string.format("%s is on cooldown (%s)", cd.data.name, timeStr)
-                    SendChatMessage(message, channel)
-                end
-            end
-            
-            -- Hide banner
-            UIFrameFadeOut(self, 0.2, 1, 0)
-            C_Timer.After(0.2, function() self:Hide() end)
-        end)
-    
-    -- Multiple options - show selection buttons
-    else
-        banner.text:SetText("Choose teleport:")
-        banner:SetAttribute("type", nil)
-        banner:SetAlpha(1)
-        banner:SetBackdropColor(0.05, 0.05, 0.15, 0.95)
-        
-        -- Create option buttons
-        for i, data in ipairs(matches) do
-            local btn = banner.optionButtons[i] or CreateFrame("Button", nil, banner, "SecureActionButtonTemplate, BackdropTemplate")
-            btn:SetSize(300, 28)
-            btn:SetPoint("TOP", banner, "BOTTOM", 0, -(i-1) * 30 - 5)
-            btn:RegisterForClicks("AnyUp", "AnyDown")
-            btn.data = data
-            
-            -- Button backdrop
-            if not btn.bg then
-                btn:SetBackdrop({
-                    bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-                    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-                    tile = true,
-                    tileSize = 16,
-                    edgeSize = 12,
-                    insets = {left = 3, right = 3, top = 3, bottom = 3}
-                })
-                btn:SetBackdropColor(0.1, 0.1, 0.2, 0.9)
-                btn:SetBackdropBorderColor(0.3, 0.6, 1, 1)
-                btn.bg = true
-            end
-            
-            -- Button text
-            if not btn.label then
-                btn.label = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-                btn.label:SetPoint("LEFT", 8, 0)
-                btn.label:SetPoint("RIGHT", -8, 0)
-                btn.label:SetJustifyH("LEFT")
-            end
-            
-            -- Set up teleport action
-            if data.spellID then
-                btn:SetAttribute("type", "spell")
-                btn:SetAttribute("spell", data.spellName)
-            elseif data.itemID then
-                btn:SetAttribute("type", "item")
-                btn:SetAttribute("item", "item:" .. data.itemID)
-            end
-            
-            -- Update cooldown display
-            local function UpdateButtonCooldown()
-                local cooldownRemaining = 0
-                local onCooldown = false
-                
-                if data.spellID then
-                    local spellInfo = C_Spell.GetSpellCooldown(data.spellID)
-                    if spellInfo and spellInfo.startTime > 0 then
-                        cooldownRemaining = spellInfo.startTime + spellInfo.duration - GetTime()
-                        if cooldownRemaining > 0 then
-                            onCooldown = true
-                        end
-                    end
-                elseif data.itemID then
-                    local start, duration = C_Item.GetItemCooldown(data.itemID)
-                    if start > 0 and duration > 0 then
-                        cooldownRemaining = start + duration - GetTime()
-                        if cooldownRemaining > 0 then
-                            onCooldown = true
-                        end
-                    end
-                end
-                
-                local inGroup = IsInGroup() or IsInRaid() or IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
-                
-                if onCooldown and cooldownRemaining > 0 then
-                    -- Grey out and show cooldown
-                    btn.label:SetTextColor(0.5, 0.5, 0.5)
-                    btn:SetBackdropColor(0.05, 0.05, 0.1, 0.9)
-                    btn.isOnCooldown = true
-                    btn.cooldownData = {remaining = cooldownRemaining, data = data}
-                    
-                    local minutes = math.floor(cooldownRemaining / 60)
-                    local seconds = math.floor(cooldownRemaining % 60)
-                    local timeStr = minutes > 0 and string.format("%dm %ds", minutes, seconds) or string.format("%ds", seconds)
-                    
-                    if inGroup then
-                        btn.label:SetText(string.format("%s |cff00ff00[%s]|r |cffff0000(%s)|r |cff888888- Click to announce|r", data.name, data.category, timeStr))
-                    else
-                        btn.label:SetText(string.format("%s |cff00ff00[%s]|r |cffff0000(%s)|r", data.name, data.category, timeStr))
-                    end
-                else
-                    -- Ready to use
-                    btn.label:SetTextColor(1, 1, 1)
-                    btn:SetBackdropColor(0.1, 0.1, 0.2, 0.9)
-                    btn.isOnCooldown = false
-                    local cooldownText = data.cooldown and (" |cff888888(" .. data.cooldown .. ")|r") or ""
-                    btn.label:SetText(data.name .. " |cff00ff00[" .. data.category .. "]|r" .. cooldownText)
-                end
-            end
-            
-            UpdateButtonCooldown()
-            
-            -- Update every 0.5 seconds
-            btn.updateTimer = C_Timer.NewTicker(0.5, UpdateButtonCooldown)
-            
-            -- Hide banner after click
-            btn:SetScript("PostClick", function(self)
-                if self.isOnCooldown then
-                    local inGroup = IsInGroup() or IsInRaid() or IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
-                    if inGroup and self.cooldownData then
-                        local cd = self.cooldownData
-                        local minutes = math.floor(cd.remaining / 60)
-                        local seconds = math.floor(cd.remaining % 60)
-                        local timeStr = minutes > 0 and string.format("%dm %ds", minutes, seconds) or string.format("%ds", seconds)
-                        
-                        local channel = IsInRaid() and "RAID" or (IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "PARTY")
-                        local message = string.format("%s is on cooldown (%s)", cd.data.name, timeStr)
-                        SendChatMessage(message, channel)
-                    end
-                end
-                
-                UIFrameFadeOut(banner, 0.2, 1, 0)
-                C_Timer.After(0.2, function()
-                    banner:Hide()
-                    for _, b in ipairs(banner.optionButtons) do
-                        b:Hide()
-                        if b.updateTimer then
-                            b.updateTimer:Cancel()
-                        end
-                    end
-                end)
-            end)
-            
-            -- Hover effect
-            btn:SetScript("OnEnter", function(self)
-                local r, g, b = self.label:GetTextColor()
-                if r == 1 and g == 1 and b == 1 then  -- Only highlight if not on cooldown
-                    self:SetBackdropBorderColor(0.5, 0.8, 1, 1)
-                end
-            end)
-            btn:SetScript("OnLeave", function(self)
-                self:SetBackdropBorderColor(0.3, 0.6, 1, 1)
-            end)
-            
-            btn:Show()
-            table.insert(banner.optionButtons, btn)
+        if banner.cooldownTimer then
+            banner.cooldownTimer:Cancel()
         end
-        
-        -- Adjust banner height for multiple options
-        banner:SetSize(320, 60 + (#matches * 30) + 10)
+        banner.cooldownTimer = C_Timer.NewTicker(0.5, UpdateCooldown)
     end
     
-    banner:ClearAllPoints()
-    banner:SetPoint("BOTTOM", ChatFrame1, "TOP", 0, 20)
+    -- Create or show navigation arrows if multiple options
+    if #matches > 1 then
+        -- Left arrow
+        if not banner.leftArrow then
+            banner.leftArrow = CreateFrame("Button", nil, banner)
+            banner.leftArrow:SetSize(20, 20)
+            banner.leftArrow:SetPoint("TOP", banner.icon, "BOTTOM", -11, 2)
+            banner.leftArrow:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
+            banner.leftArrow:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+            banner.leftArrow:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
+            banner.leftArrow:SetScript("OnClick", function()
+                banner.currentIndex = banner.currentIndex - 1
+                if banner.currentIndex < 1 then
+                    banner.currentIndex = #banner.allMatches
+                end
+                UpdateCarouselDisplay()
+            end)
+        end
+        banner.leftArrow:Show()
+        
+        -- Right arrow
+        if not banner.rightArrow then
+            banner.rightArrow = CreateFrame("Button", nil, banner)
+            banner.rightArrow:SetSize(20, 20)
+            banner.rightArrow:SetPoint("LEFT", banner.leftArrow, "RIGHT", 2, 0)
+            banner.rightArrow:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
+            banner.rightArrow:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+            banner.rightArrow:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
+            banner.rightArrow:SetScript("OnClick", function()
+                banner.currentIndex = banner.currentIndex + 1
+                if banner.currentIndex > #banner.allMatches then
+                    banner.currentIndex = 1
+                end
+                UpdateCarouselDisplay()
+            end)
+        end
+        banner.rightArrow:Show()
+    else
+        -- Hide arrows if only one option
+        if banner.leftArrow then banner.leftArrow:Hide() end
+        if banner.rightArrow then banner.rightArrow:Hide() end
+    end
+    
+    -- Initial display
+    UpdateCarouselDisplay()
+    
+    -- Handle clicks
+    banner:SetScript("PostClick", function(self)
+        if self.isOnCooldown then
+            local inGroup = IsInGroup() or IsInRaid() or IsInGroup(LE_PARTY_CATEGORY_INSTANCE)
+            if inGroup and self.cooldownData then
+                local cd = self.cooldownData
+                local minutes = math.floor(cd.remaining / 60)
+                local seconds = math.floor(cd.remaining % 60)
+                local timeStr = minutes > 0 and string.format("%dm %ds", minutes, seconds) or string.format("%ds", seconds)
+                
+                local channel = IsInRaid() and "RAID" or (IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "PARTY")
+                local displayName = cd.data.spellName or cd.data.name
+                local message = string.format("%s is on cooldown (%s)", displayName, timeStr)
+                SendChatMessage(message, channel)
+            end
+        end
+        
+        -- Hide banner
+        UIFrameFadeOut(self, 0.2, 1, 0)
+        C_Timer.After(0.2, function() self:Hide() end)
+    end)
+    
+    -- Restore saved position or use default
+    if EasyPortDB and EasyPortDB.position then
+        local pos = EasyPortDB.position
+        banner:ClearAllPoints()
+        banner:SetPoint(pos.point, UIParent, pos.relativePoint, pos.xOfs, pos.yOfs)
+    else
+        banner:ClearAllPoints()
+        banner:SetPoint("BOTTOM", ChatFrame1, "TOP", 0, 20)
+    end
     banner:SetAlpha(0)
     banner:Show()
     
