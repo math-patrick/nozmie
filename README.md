@@ -3,10 +3,11 @@
 Lightweight WoW addon that detects teleport and utility requests from chat and shows a one-click banner.
 
 ## Features
-- Smart chat detection in Say, Party, Raid, Guild, and Whisper.
+- Multi-select chat detection channels (Say, Party, Raid, Guild, Whisper).
 - One-click banner with cooldown feedback and announcements.
 - Stacked banners for multiple matches.
 - Minimap button, blacklist support, and saved position.
+- Suppression filters for global and instance-only categories.
 
 ## Commands
 - `/noz` or `/nozmie` - Open settings.
@@ -28,6 +29,14 @@ Lightweight WoW addon that detects teleport and utility requests from chat and s
 - Only known spells and owned items/toys are shown.
 - Minimap icon can be toggled on in settings.
 - Blacklist is possible in settings.
+- Keyword matching uses whole-word detection to prevent partial matches.
+
+## Ultimas Mudancas
+- Atualizacao das configuracoes: canais de chat e supressoes sao menus de selecao multipla; a lista negra virou um unico botao.
+- As opcoes de supressao agora suportam listas globais e apenas em instancias.
+- Visuais do banner mudaram para um estilo classico de dialogo do WoW, com moldura no icone e espacamento refinado.
+- O canal de guilda agora vem desativado por padrao.
+- A deteccao de palavras agora exige correspondencia de palavra inteira.
 
 ## File Structure
 ```
