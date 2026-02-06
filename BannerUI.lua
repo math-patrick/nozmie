@@ -43,15 +43,33 @@ end
 
 local function CreateBannerIcon(parent)
     local frame = CreateFrame("Frame", nil, parent)
-    frame:SetSize(40, 40)
-    frame:SetPoint("LEFT", 12, 0)
+    frame:SetSize(44, 44)
+    frame:SetPoint("LEFT", 14, 0)
     frame:EnableMouse(true)
     
+    local background = frame:CreateTexture(nil, "BACKGROUND")
+    background:SetSize(38, 38)
+    background:SetPoint("CENTER")
+    background:SetTexture("Interface\\Buttons\\WHITE8x8")
+    background:SetVertexColor(0, 0, 0, 0.35)
+
+    local iconBorder = frame:CreateTexture(nil, "BORDER")
+    iconBorder:SetSize(36, 36)
+    iconBorder:SetPoint("CENTER")
+    iconBorder:SetTexture("Interface\\Buttons\\WHITE8x8")
+    iconBorder:SetVertexColor(0, 0, 0, 0.8)
+
     local texture = frame:CreateTexture(nil, "ARTWORK")
-    texture:SetSize(36, 36)
+    texture:SetSize(32, 32)
     texture:SetPoint("CENTER")
     texture:SetTexture("Interface\\Icons\\Spell_Arcane_TeleportDalaran")
     texture:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+
+    local border = frame:CreateTexture(nil, "OVERLAY")
+    border:SetSize(52, 52)
+    border:SetPoint("CENTER")
+    border:SetTexture("Interface\\Buttons\\UI-Quickslot2")
+    border:SetAlpha(0.85)
 
     frame:SetScript("OnEnter", function(self)
         local banner = self:GetParent()
@@ -82,9 +100,9 @@ end
 local function CreateBannerText(parent, iconFrame)
     local title = parent:CreateFontString(nil, "OVERLAY")
     title:SetFontObject("SystemFont_Shadow_Large")
-    title:SetFont(title:GetFont(), 13)  -- Slightly smaller font
-    title:SetPoint("LEFT", iconFrame, "RIGHT", 15, 4)
-    title:SetPoint("RIGHT", -40, 4)
+    title:SetFont(title:GetFont(), 14)
+    title:SetPoint("LEFT", iconFrame, "RIGHT", 14, 8)
+    title:SetPoint("RIGHT", -46, 8)
     title:SetTextColor(0.9, 0.9, 0.95)  -- Subtle light color
     title:SetJustifyH("LEFT")
     title:SetShadowColor(0, 0, 0, 1)
@@ -92,7 +110,7 @@ local function CreateBannerText(parent, iconFrame)
     
     local subtitle = parent:CreateFontString(nil, "OVERLAY")
     subtitle:SetFontObject("GameFontHighlightSmall")
-    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -6)
+    subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
     subtitle:SetPoint("RIGHT", -40, 0)
     subtitle:SetText("|cff999999" .. Lstr("banner.clickToTeleport", "Click to teleport") .. "|r")  -- Subtle gray
     subtitle:SetJustifyH("LEFT")
@@ -124,21 +142,18 @@ function BannerUI.CreateBanner()
         insets = {left = 11, right = 12, top = 12, bottom = 11}
     })
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_NORMAL))
-    banner:SetBackdropBorderColor(unpack(Config.COLORS.BORDER_NORMAL))
-    
-    local shine = banner:CreateTexture(nil, "OVERLAY")
-    shine:SetTexture("Interface\\Cooldown\\star4")
-    shine:SetSize(40, 40)
-    shine:SetPoint("LEFT", 15, 0)
-    shine:SetVertexColor(0.5, 0.8, 1, 0)
-    shine:SetBlendMode("ADD")
+    banner:SetBackdropBorderColor(1, 0.85, 0.4, 0.9)
+
+    local inner = banner:CreateTexture(nil, "BACKGROUND")
+    inner:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Background-Dark")
+    inner:SetPoint("TOPLEFT", 6, -6)
+    inner:SetPoint("BOTTOMRIGHT", -6, 6)
+    inner:SetVertexColor(1, 1, 1, 0.85)
     
     banner:SetScript("OnEnter", function(self)
-        UIFrameFadeIn(shine, 0.3, 0, 0.6)
         self:SetBackdropBorderColor(unpack(Config.COLORS.BORDER_HOVER))
     end)
     banner:SetScript("OnLeave", function(self)
-        UIFrameFadeOut(shine, 0.3, 0.6, 0)
         self:SetBackdropBorderColor(unpack(Config.COLORS.BORDER_NORMAL))
     end)
     
@@ -146,7 +161,7 @@ function BannerUI.CreateBanner()
     banner.icon, iconFrame = CreateBannerIcon(banner)
     banner.title, banner.subtitle = CreateBannerText(banner, iconFrame)
     
-    local dragButton = CreateButton(banner, 16, {"BOTTOMRIGHT", -8, 8}, {
+    local dragButton = CreateButton(banner, 16, {"BOTTOMRIGHT", -10, 10}, {
         normal = "Interface\\Cursor\\UI-Cursor-Move",
         highlight = "Interface\\Cursor\\UI-Cursor-Move"
     }, Lstr("ui.dragToMove", "Drag to move"))
@@ -159,7 +174,7 @@ function BannerUI.CreateBanner()
     dragButton:SetScript("OnDragStop", function() banner:StopMovingOrSizing(); Helpers.SaveBannerPosition(banner) end)
     banner.dragButton = dragButton
     
-    CreateButton(banner, 16, {"TOPRIGHT", -8, -8}, {
+    CreateButton(banner, 16, {"TOPRIGHT", -10, -10}, {
         normal = "Interface\\Buttons\\UI-Panel-MinimizeButton-Up",
         highlight = "Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight",
         pushed = "Interface\\Buttons\\UI-Panel-MinimizeButton-Down"

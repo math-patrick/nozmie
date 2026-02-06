@@ -22,6 +22,13 @@ end
 local addon = CreateFrame("Frame")
 local banner
 local pendingMatches = {}
+local chatEventKeys = {
+    CHAT_MSG_SAY = "say",
+    CHAT_MSG_PARTY = "party",
+    CHAT_MSG_RAID = "raid",
+    CHAT_MSG_GUILD = "guild",
+    CHAT_MSG_WHISPER = "whisper",
+}
 
 local function QueueMatches(matches)
     for _, match in ipairs(matches) do
@@ -57,16 +64,29 @@ local function OnChatMessage(self, event, message, sender)
     
     -- Check if this chat type should be monitored
     local shouldMonitor = false
-    if event == "CHAT_MSG_SAY" and Settings.Get("detectInSay") then
-        shouldMonitor = true
-    elseif event == "CHAT_MSG_PARTY" and Settings.Get("detectInParty") then
-        shouldMonitor = true
-    elseif event == "CHAT_MSG_RAID" and Settings.Get("detectInRaid") then
-        shouldMonitor = true
-    elseif event == "CHAT_MSG_GUILD" and Settings.Get("detectInGuild") then
-        shouldMonitor = true
-    elseif event == "CHAT_MSG_WHISPER" and Settings.Get("detectInWhisper") then
-        shouldMonitor = true
+    local chatList = Settings.Get("detectChatList")
+    if type(chatList) == "table" then
+        local key = chatEventKeys[event]
+        if key then
+            for _, entry in ipairs(chatList) do
+                if entry == key then
+                    shouldMonitor = true
+                    break
+                end
+            end
+        end
+    else
+        if event == "CHAT_MSG_SAY" and Settings.Get("detectInSay") then
+            shouldMonitor = true
+        elseif event == "CHAT_MSG_PARTY" and Settings.Get("detectInParty") then
+            shouldMonitor = true
+        elseif event == "CHAT_MSG_RAID" and Settings.Get("detectInRaid") then
+            shouldMonitor = true
+        elseif event == "CHAT_MSG_GUILD" and Settings.Get("detectInGuild") then
+            shouldMonitor = true
+        elseif event == "CHAT_MSG_WHISPER" and Settings.Get("detectInWhisper") then
+            shouldMonitor = true
+        end
     end
     
     if not shouldMonitor then
@@ -92,6 +112,14 @@ local function OnChatMessage(self, event, message, sender)
         if InCombatLockdown() then
             QueueMatches(matches)
             return false
+        end
+        if BannerController.FindBannerByOptions and banner and banner:IsShown() then
+            local existingBanner = BannerController.FindBannerByOptions(banner, matches)
+            if existingBanner then
+                local isStacked = existingBanner ~= banner
+                BannerController.ShowWithOptions(existingBanner, matches, isStacked, false)
+                return false
+            end
         end
         BannerController.ShowWithOptions(banner, matches)
     end

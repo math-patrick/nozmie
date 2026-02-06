@@ -97,6 +97,109 @@ local function IsPortalSpell(teleportData)
     return spellName:find("^Portal:") or spellName:find("^Ancient Portal:")
 end
 
+local function HasKeyword(data, keyword)
+    if not data or not data.keywords then
+        return false
+    end
+    for _, key in ipairs(data.keywords) do
+        if key == keyword then
+            return true
+        end
+    end
+    return false
+end
+
+local function IsMountOption(data)
+    return HasKeyword(data, "mount")
+end
+
+local function IsServiceOption(data)
+    local destination = data.destination or ""
+    return destination:find("Repair") or destination:find("Mailbox") or destination:find("Anvil")
+end
+
+local function IsTransmogOption(data)
+    local destination = data.destination or ""
+    return destination:find("Transmog")
+end
+
+local function EscapePattern(text)
+    return (text:gsub("(%W)", "%%%1"))
+end
+
+local function MatchesKeyword(message, keyword)
+    if not message or not keyword or keyword == "" then
+        return false
+    end
+    local pattern = "%f[%w]" .. EscapePattern(keyword) .. "%f[%W]"
+    return message:find(pattern) ~= nil
+end
+
+local function HasSuppression(list, key)
+    if not list then
+        return false
+    end
+    for _, entry in ipairs(list) do
+        if entry == key then
+            return true
+        end
+    end
+    return false
+end
+
+local function ShouldSuppressByList(list, keys)
+    if not list or #list == 0 then
+        return false
+    end
+    for _, key in ipairs(keys) do
+        if HasSuppression(list, key) then
+            return true
+        end
+    end
+    return false
+end
+
+local function ShouldSuppressOption(data, settings, inInstance)
+    if not settings or not settings.Get then
+        return false
+    end
+
+    local isClass = data.category == "Class"
+    local isToy = data.category == "Toy"
+    local isHome = data.category == "Home"
+    local isUtility = data.category and data.category:find("Utility")
+    local isMPlus = data.category == "M+ Dungeon"
+    local isRaid = data.category == "Raid"
+    local isDelve = data.category == "Delve"
+    local isMount = IsMountOption(data)
+    local isService = IsServiceOption(data)
+    local isTransmog = IsTransmogOption(data)
+    local isHearthstone = IsHearthstone(data)
+
+    local keys = {}
+    if isMount then table.insert(keys, "mount") end
+    if isClass then table.insert(keys, "class") end
+    if isToy then table.insert(keys, "toy") end
+    if isHome then table.insert(keys, "home") end
+    if isUtility then table.insert(keys, "utility") end
+    if isMPlus then table.insert(keys, "mplus") end
+    if isRaid then table.insert(keys, "raid") end
+    if isDelve then table.insert(keys, "delve") end
+    if isService then table.insert(keys, "service") end
+    if isTransmog then table.insert(keys, "transmog") end
+    if isHearthstone then table.insert(keys, "hearthstone") end
+
+    if ShouldSuppressByList(settings.Get("suppressGlobalList"), keys) then
+        return true
+    end
+
+    if inInstance and ShouldSuppressByList(settings.Get("suppressInstanceList"), keys) then
+        return true
+    end
+
+    return false
+end
+
 local function ChoosePreferredMatch(existing, candidate, preferPortals)
     if not existing then
         return candidate
@@ -147,35 +250,41 @@ function Detector.FindMatchingTeleports(message, sender)
         targetPlayer = nil
     end
 
+    local inInstance = IsInInstance()
+
     for _, teleportData in ipairs(Nozmie_Data) do
         if teleportData.keywords then
             local shouldMatch = false
 
             for _, keyword in ipairs(teleportData.keywords) do
-                if lowerMessage:find(keyword, 1, true) then
+                if MatchesKeyword(lowerMessage, keyword) then
                     shouldMatch = true
                     break
                 end
             end
 
             if shouldMatch and Helpers.CanPlayerUseTeleport(teleportData) then
-                -- Clone the teleport data to avoid modifying the original
-                local teleportCopy = {}
-                for k, v in pairs(teleportData) do
-                    teleportCopy[k] = v
-                end
-
-                -- Add sender info for buff spells
-                if targetPlayer and teleportCopy.category and
-                    (teleportCopy.category:find("Utility") or teleportCopy.spellName == "Levitate" or
-                        teleportCopy.spellName == "Slow Fall") then
-                    teleportCopy.targetPlayer = targetPlayer
-                end
-
-                if IsHearthstone(teleportCopy) then
-                    table.insert(hearthstones, teleportCopy)
+                if ShouldSuppressOption(teleportData, Settings, inInstance) then
+                    -- Suppressed by user settings
                 else
-                    table.insert(matches, teleportCopy)
+                    -- Clone the teleport data to avoid modifying the original
+                    local teleportCopy = {}
+                    for k, v in pairs(teleportData) do
+                        teleportCopy[k] = v
+                    end
+
+                    -- Add sender info for buff spells
+                    if targetPlayer and teleportCopy.category and
+                        (teleportCopy.category:find("Utility") or teleportCopy.spellName == "Levitate" or
+                            teleportCopy.spellName == "Slow Fall") then
+                        teleportCopy.targetPlayer = targetPlayer
+                    end
+
+                    if IsHearthstone(teleportCopy) then
+                        table.insert(hearthstones, teleportCopy)
+                    else
+                        table.insert(matches, teleportCopy)
+                    end
                 end
             end
         end

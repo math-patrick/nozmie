@@ -5,17 +5,19 @@
 
 local Config = {
     BANNER = {
-        WIDTH = 400,
-        HEIGHT = 60
+        WIDTH = 420,
+        HEIGHT = 68
     },
     
     COLORS = {
-        BACKDROP_NORMAL = {0, 0, 0, 0.7},  -- Dark semi-transparent
-        BACKDROP_COOLDOWN = {0, 0, 0, 0.6},
-        BORDER_NORMAL = {0.3, 0.3, 0.35, 0.8},  -- Subtle dark border
-        BORDER_HOVER = {0.5, 0.5, 0.6, 1},  -- Slightly brighter on hover
-        TEXT_NORMAL = {0.9, 0.9, 0.95},  -- Subtle light text
-        TEXT_COOLDOWN = {0.5, 0.5, 0.5}
+        BACKDROP_NORMAL = {0.05, 0.06, 0.08, 0.92},
+        BACKDROP_COOLDOWN = {0.05, 0.06, 0.08, 0.75},
+        BORDER_NORMAL = {0.25, 0.3, 0.35, 0.9},
+        BORDER_HOVER = {0.6, 0.7, 0.85, 1},
+        TEXT_NORMAL = {0.95, 0.96, 1},
+        TEXT_COOLDOWN = {0.6, 0.6, 0.6},
+        ACCENT = {0.24, 0.55, 0.95, 1},
+        ACCENT_SOFT = {0.24, 0.55, 0.95, 0.35}
     },
     
     CHAT_EVENTS = {

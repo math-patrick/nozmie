@@ -166,7 +166,7 @@ local LegionDungeons = {{
     spellName = "Path of the Fallen Guardian",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"karazhan", "kara"}
+    keywords = {"karazhan"}
 }}
 
 -- Cataclysm Dungeons
@@ -193,7 +193,7 @@ local DragonflightDungeons = {{
     spellName = "Path of the Watcher's Legacy",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"uldaman", "legacy of tyr", "u"}
+    keywords = {"uldaman", "legacy of tyr"}
 }, {
     name = "Ruby Life Pools",
     spellID = 393256,
@@ -207,21 +207,21 @@ local DragonflightDungeons = {{
     spellName = "Path of the Windswept Plains",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"nokhud", "nokhud offensive", "no"}
+    keywords = {"nokhud", "nokhud offensive"}
 }, {
     name = "The Azure Vault",
     spellID = 393279,
     spellName = "Path of Arcane Secrets",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"azure", "azure vault", "av"}
+    keywords = {"azure", "azure vault"}
 }, {
     name = "Algeth'ar Academy",
     spellID = 393273,
     spellName = "Path of the Draconic Diploma",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"algethar", "algeth'ar", "academy", "aa"}
+    keywords = {"algethar", "algeth'ar", "academy"}
 }, {
     name = "Neltharus",
     spellID = 393276,
@@ -301,14 +301,14 @@ local WarWithinSeason1 = {{
     spellName = "Path of the Besieged Harbor",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"siege", "boralus", "siege of boralus", "sob"}
+    keywords = {"siege", "boralus", "siege of boralus"}
 }, {
     name = "Siege of Boralus",
     spellID = 464256,
     spellName = "Path of the Besieged Harbor",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"siege", "boralus", "siege of boralus", "sob"}
+    keywords = {"siege", "boralus", "siege of boralus"}
 }, {
     name = "Grim Batol",
     spellID = 445424,
@@ -366,7 +366,7 @@ local MidnightSeason1 = {{
     spellName = "Path of the Frozen Halls",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"pit of saron", "pit", "saron", "pos"}
+    keywords = {"pit of saron", "pit", "saron"}
 }, {
     name = "Skyreach",
     spellID = 999002, -- Placeholder - update when available
@@ -387,7 +387,7 @@ local MidnightSeason1 = {{
     spellName = "Path of the Sun's Reach",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"magisters", "magister's terrace", "terrace", "mt"}
+    keywords = {"magisters", "magister's terrace", "terrace"}
 }, {
     name = "Maisara Caverns",
     spellID = 999005, -- Placeholder - update when available
@@ -462,7 +462,7 @@ local Hearthstones = {{
     actionType = "item",
     category = "Home",
     cooldown = "No CD",
-    keywords = {"dark portal", "portal"}
+    keywords = {"dark portal"}
 }, {
     name = "Ethereal Portal",
     itemID = 54452,
@@ -470,7 +470,7 @@ local Hearthstones = {{
     actionType = "item",
     category = "Home",
     cooldown = "No CD",
-    keywords = {"ethereal", "portal"}
+    keywords = {"ethereal"}
 }, {
     name = "Scroll of Recall",
     itemID = 37118,
@@ -669,7 +669,7 @@ local Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "stone"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Timewalker's Hearthstone",
     itemID = 193588,
@@ -935,7 +935,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"tol barad", "tb"}
+    keywords = {"tol barad"}
 }, {
     name = "Tol Barad",
     spellID = 88344,
@@ -943,7 +943,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"tol barad", "tb"}
+    keywords = {"tol barad"}
 }, {
     name = "Dalaran (Crater)",
     spellID = 120145,
@@ -959,7 +959,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"dalaran", "portal", "northrend"}
+    keywords = {"dalaran", "northrend"}
 }, {
     name = "Dalaran (Broken Isles)",
     spellID = 224871,
@@ -967,7 +967,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"dalaran", "portal", "broken isles", "legion"}
+    keywords = {"dalaran", "broken isles", "legion"}
 }, {
     name = "Stormwind",
     spellID = 10059,
@@ -975,7 +975,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"stormwind", "portal", "sw"}
+    keywords = {"stormwind", "sw"}
 }, {
     name = "Ironforge",
     spellID = 11416,
@@ -983,7 +983,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"ironforge", "portal"}
+    keywords = {"ironforge"}
 }, {
     name = "Darnassus",
     spellID = 11419,
@@ -991,7 +991,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"darnassus", "portal"}
+    keywords = {"darnassus"}
 }, {
     name = "Exodar",
     spellID = 32266,
@@ -999,7 +999,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"exodar", "portal"}
+    keywords = {"exodar"}
 }, {
     name = "Boralus",
     spellID = 281400,
@@ -1007,7 +1007,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"boralus", "portal"}
+    keywords = {"boralus"}
 }, {
     name = "Orgrimmar",
     spellID = 11417,
@@ -1015,7 +1015,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"orgrimmar", "portal", "org"}
+    keywords = {"orgrimmar", "org"}
 }, {
     name = "Undercity",
     spellID = 11418,
@@ -1023,7 +1023,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"undercity", "portal", "uc"}
+    keywords = {"undercity", "uc"}
 }, {
     name = "Thunder Bluff",
     spellID = 11420,
@@ -1031,7 +1031,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"thunder bluff", "portal", "tb"}
+    keywords = {"thunder bluff", "tb"}
 }, {
     name = "Silvermoon",
     spellID = 32267,
@@ -1039,7 +1039,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"silvermoon", "portal"}
+    keywords = {"silvermoon"}
 }, {
     name = "Dazar'alor",
     spellID = 281402,
@@ -1047,7 +1047,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"dazar'alor", "portal", "dazar"}
+    keywords = {"dazar'alor", "dazar"}
 }, {
     name = "Shattrath",
     spellID = 35715,
@@ -1063,7 +1063,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"shattrath", "portal"}
+    keywords = {"shattrath"}
 }, {
     name = "Shattrath",
     spellID = 35717,
@@ -1071,7 +1071,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"shattrath", "portal"}
+    keywords = {"shattrath"}
 }, {
     name = "Vale of Eternal Blossoms",
     spellID = 132627,
@@ -1087,7 +1087,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"vale", "portal"}
+    keywords = {"vale"}
 }, {
     name = "Vale of Eternal Blossoms",
     spellID = 132622,
@@ -1095,7 +1095,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"vale", "portal"}
+    keywords = {"vale"}
 }, {
     name = "Vale of Eternal Blossoms",
     spellID = 132624,
@@ -1103,7 +1103,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"vale", "portal"}
+    keywords = {"vale"}
 }, {
     name = "Vale of Eternal Blossoms",
     spellID = 132626,
@@ -1111,7 +1111,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"vale", "portal"}
+    keywords = {"vale"}
 }, {
     name = "Oribos",
     spellID = 344597,
@@ -1119,7 +1119,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"oribos", "portal"}
+    keywords = {"oribos"}
 }, {
     name = "Valdrakken",
     spellID = 395289,
@@ -1127,7 +1127,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"valdrakken", "portal"}
+    keywords = {"valdrakken"}
 }, {
     name = "Dornogal",
     spellID = 446534,
@@ -1135,7 +1135,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"dornogal", "portal"}
+    keywords = {"dornogal"}
 }, {
     name = "Stormshield",
     spellID = 176246,
@@ -1143,7 +1143,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"stormshield", "portal", "ashran"}
+    keywords = {"stormshield", "ashran"}
 }, {
     name = "Warspear",
     spellID = 176244,
@@ -1151,7 +1151,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"warspear", "portal", "ashran"}
+    keywords = {"warspear", "ashran"}
 }, {
     name = "Theramore",
     spellID = 49360,
@@ -1159,7 +1159,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"theramore", "portal"}
+    keywords = {"theramore"}
 }, {
     name = "Stonard",
     spellID = 49361,
@@ -1167,7 +1167,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"stonard", "portal"}
+    keywords = {"stonard"}
 }, {
     name = "Tol Barad",
     spellID = 88345,
@@ -1175,7 +1175,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Alliance",
-    keywords = {"tol barad", "portal", "tb"}
+    keywords = {"tol barad", "tb"}
 }, {
     name = "Tol Barad",
     spellID = 88346,
@@ -1183,7 +1183,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Horde",
-    keywords = {"tol barad", "portal", "tb"}
+    keywords = {"tol barad", "tb"}
 }, {
     name = "Dalaran (Crater)",
     spellID = 120146,
@@ -1191,7 +1191,7 @@ local MageTeleports = { -- Alliance Cities
     actionType = "spell",
     category = "Class",
     faction = "Neutral",
-    keywords = {"dalaran", "portal", "crater", "ancient"}
+    keywords = {"dalaran", "crater", "ancient"}
 }}
 
 -- ============================================================================
@@ -1570,7 +1570,7 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "4 hours",
     destination = "Karazhan",
-    keywords = {"karazhan", "kara", "violet seal"}
+    keywords = {"karazhan"}
 }, {
     name = "Fractured Necrolyte Skull",
     itemID = 151016,
@@ -1588,7 +1588,7 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "30 min",
     destination = "Random",
-    keywords = {"portal", "emitter", "unstable", "random"}
+    keywords = {"emitter", "unstable", "random"}
 }}
 
 -- ============================================================================
@@ -1602,7 +1602,7 @@ local ServiceToys = {{
     actionType = "toy",
     category = "Utility",
     cooldown = "1 hour",
-    destination = "Repair & Bank",
+    destination = "Jeeves",
     keywords = {"jeeves", "repair", "vendor", "bank"}
 }, {
     name = "Auto-Hammer",
@@ -1665,7 +1665,7 @@ local ServiceToys = {{
     actionType = "toy",
     category = "Utility",
     cooldown = "1 hour",
-    destination = "Repair & Mailbox",
+    destination = "Reaves",
     keywords = {"reaves", "repair"}
 }, {
     name = "Reaves Battery",
@@ -1674,11 +1674,11 @@ local ServiceToys = {{
     actionType = "item",
     category = "Utility",
     cooldown = "1 hour",
-    destination = "Repair & More",
+    destination = "Reaves",
     keywords = {"reaves", "repair"}
 }, {
     name = "Grand Expedition Yak",
-    itemID = 120968,
+    itemID = 84101,
     spellID = 122708,
     spellName = "Grand Expedition Yak",
     actionType = "item",
@@ -1688,7 +1688,7 @@ local ServiceToys = {{
     keywords = {"yak", "expedition", "repair", "vendor", "transmog", "mount"}
 }, {
     name = "Traveler's Tundra Mammoth",
-    itemID = 61425,
+    itemID = 44234,
     spellID = 61447,
     spellName = "Traveler's Tundra Mammoth",
     actionType = "item",
@@ -1733,7 +1733,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 7000",
-    keywords = {"blingtron", "bling", "blingtron 7000", "7000", "gift"}
+    keywords = {"blingtron", "bling", "blingtron 7000", "7000"}
 }, {
     name = "Blingtron 6000",
     itemID = 132892,
@@ -1742,7 +1742,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 6000",
-    keywords = {"blingtron", "bling", "blingtron 6000", "6000", "gift"}
+    keywords = {"blingtron", "bling", "blingtron 6000", "6000"}
 }, {
     name = "Blingtron 5000",
     itemID = 87214,
@@ -1751,7 +1751,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 5000",
-    keywords = {"blingtron", "bling", "blingtron 5000", "5000", "gift"}
+    keywords = {"blingtron", "bling", "blingtron 5000", "5000"}
 }, {
     name = "Blingtron 4000",
     itemID = 111821,
@@ -1760,7 +1760,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 4000",
-    keywords = {"blingtron", "bling", "blingtron 4000", "4000", "gift"}
+    keywords = {"blingtron", "bling", "blingtron 4000", "4000"}
 }, {
     name = "Thermal Anvil",
     itemID = 87216,
@@ -1805,7 +1805,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "5 min",
     destination = "Stable Master",
-    keywords = {"stable", "master", "pet", "companion", "repository"}
+    keywords = {"stable"}
 }, {
     name = "Pierre",
     itemID = 86578,
@@ -1814,7 +1814,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "10 min",
     destination = "Cooking Fire",
-    keywords = {"pierre", "cooking", "fire", "chef"}
+    keywords = {"pierre", "cooking"}
 }, {
     name = "Lil' Ragnaros",
     itemID = 101771,
@@ -1823,7 +1823,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "5 min",
     destination = "Cooking Fire",
-    keywords = {"ragnaros", "lil ragnaros", "cooking", "fire"}
+    keywords = {"ragnaros", "lil ragnaros"}
 }, {
     name = "Little Wickerman",
     itemID = 116115,
@@ -1832,7 +1832,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "10 min",
     destination = "Cooking Fire",
-    keywords = {"wickerman", "wicker", "cooking", "fire"}
+    keywords = {"wickerman", "wicker"}
 }, {
     name = "Sturdy Love Fool",
     itemID = 144339,
@@ -1859,7 +1859,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "fish", "rubbery"}
+    keywords = {"dummy", "training", "rubbery"}
 }, {
     name = "Tuskarr Training Dummy",
     itemID = 199830,
@@ -1886,7 +1886,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "ancient", "construct"}
+    keywords = {"dummy", "training"}
 }, {
     name = "Barrel of Fireworks",
     itemID = 219387,
@@ -1895,7 +1895,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "barrel", "fireworks"}
+    keywords = {"dummy", "training"}
 }, {
     name = "Anatomical Dummy",
     itemID = 89614,
@@ -1904,7 +1904,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "anatomical"}
+    keywords = {"dummy", "training"}
 }, {
     name = "Gnoll Targeting Barrel",
     itemID = 163201,
@@ -1913,7 +1913,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "gnoll", "barrel"}
+    keywords = {"dummy", "training"}
 }, {
     name = "Bright Campfire",
     itemID = 33278,

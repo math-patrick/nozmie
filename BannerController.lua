@@ -22,13 +22,36 @@ local STACK_GAP = 8
 local lastOptions
 
 local function GetOptionKey(data)
+    local target = data.targetPlayer and ("@" .. data.targetPlayer) or ""
     if data.spellID then
-        return "spell:" .. data.spellID
+        return "spell:" .. data.spellID .. target
     end
     if data.itemID then
-        return "item:" .. data.itemID
+        return "item:" .. data.itemID .. target
     end
-    return "name:" .. tostring(data.name or data.spellName or "")
+    return "name:" .. tostring(data.name or data.spellName or "") .. target
+end
+
+local function BuildOptionsKey(options)
+    if not options or #options == 0 then
+        return ""
+    end
+    local keys = {}
+    for _, data in ipairs(options) do
+        table.insert(keys, GetOptionKey(data))
+    end
+    table.sort(keys)
+    return table.concat(keys, "|")
+end
+
+local function GetBannerOptionsKey(banner)
+    if not banner then
+        return ""
+    end
+    if banner.optionsKey then
+        return banner.optionsKey
+    end
+    return BuildOptionsKey(banner.options)
 end
 
 local function GetBaseAnchor(root)
@@ -205,8 +228,23 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     end
 end
 
+local function HasKeyword(data, keyword)
+    if not data or not data.keywords then
+        return false
+    end
+    for _, key in ipairs(data.keywords) do
+        if key == keyword then
+            return true
+        end
+    end
+    return false
+end
+
 local function UpdateBannerIcon(banner, data)
     local preferItem = data.itemID and (data.actionType == "item" or data.actionType == "toy" or data.category == "Home")
+    if data.spellID and HasKeyword(data, "mount") then
+        preferItem = false
+    end
     data.preferItem = preferItem and true or nil
 
     if data.spellID and not preferItem then
@@ -279,9 +317,12 @@ local function CreateNavigationArrows(banner)
     end
 end
 
-function BannerController.ShowWithOptions(banner, teleportOptions, isStacked)
+function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, allowStack)
     lastOptions = teleportOptions
-    if not isStacked and banner:IsShown() then
+    if allowStack == nil then
+        allowStack = true
+    end
+    if not isStacked and banner:IsShown() and allowStack then
         banner.stack = banner.stack or {}
         local stackedBanner = BannerUI.CreateBanner()
         stackedBanner.stackRoot = banner
@@ -301,6 +342,7 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked)
     end
 
     banner.options = teleportOptions
+    banner.optionsKey = BuildOptionsKey(teleportOptions)
     banner.currentIndex = 1
 
     if #banner.options > 1 then
@@ -404,9 +446,15 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked)
         banner.baseAnchor = nil
         GetBaseAnchor(banner)
     end
-    banner:SetAlpha(0)
-    banner:Show()
-    UIFrameFadeIn(banner, 0.4, 0, 1)
+    local isRefresh = banner:IsShown() and not isStacked and not allowStack
+    if isRefresh then
+        banner:SetAlpha(1)
+        banner:Show()
+    else
+        banner:SetAlpha(0)
+        banner:Show()
+        UIFrameFadeIn(banner, 0.4, 0, 1)
+    end
     
     -- Auto-hide banner if enabled
     local Settings = Nozmie_Settings
@@ -424,6 +472,27 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked)
             end
         end)
     end
+end
+
+function BannerController.FindBannerByOptions(root, options)
+    if not root then
+        return nil
+    end
+    local optionsKey = BuildOptionsKey(options)
+    if optionsKey == "" then
+        return nil
+    end
+    if GetBannerOptionsKey(root) == optionsKey then
+        return root
+    end
+    if root.stack then
+        for _, frame in ipairs(root.stack) do
+            if GetBannerOptionsKey(frame) == optionsKey then
+                return frame
+            end
+        end
+    end
+    return nil
 end
 
 function BannerController.GetLastOptions()

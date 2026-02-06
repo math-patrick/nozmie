@@ -1,7 +1,7 @@
 ## Interface: 110207, 120000, 120001
 ## Title: Nozmie: Utility Helper
 ## Notes: Smart teleport and utility detection with player targeting. Auto-detects dungeon names and buff requests in chat.
-## Author: YourName
+## Author: Sabya
 ## Version: 5.0.0
 ## SavedVariables: NozmieDB
 ## IconTexture: Interface\Icons\Spell_Holy_BorrowedTime
@@ -23,5 +23,7 @@ Detector.lua
 BannerUI.lua
 BannerController.lua
 Minimap.lua
+SettingsMixins.lua
+SettingsTemplates.xml
 Settings.lua
 Init.lua
