@@ -570,3 +570,4 @@ function BannerController.GetLastOptions()
 end
 
 _G.Nozmie_BannerController = BannerController
+BannerController.ApplyActionAttributes = ApplyActionAttributes
