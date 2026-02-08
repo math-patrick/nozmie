@@ -27,14 +27,14 @@ local BfADungeons = {{
     spellName = "Path of Festering Rot",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"underrot", "under rot", "ur"}
+    keywords = {"underrot", "under rot"}
 }, {
     name = "Atal'Dazar",
     spellID = 424187,
     spellName = "Path of the Golden Tomb",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"atal'dazar", "ataldazar", "atal", "ad"}
+    keywords = {"atal'dazar", "ataldazar", "atal"}
 }, {
     name = "Waycrest Manor",
     spellID = 424167,
@@ -107,14 +107,14 @@ local ShadowlandsDungeons = {{
     spellName = "Path of the Undefeated",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"theater", "theater of pain", "top", "pain"}
+    keywords = {"theater", "theater of pain"}
 }, {
     name = "De Other Side",
     spellID = 354468,
     spellName = "Path of the Scheming Loa",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"de other side", "dos", "other side"}
+    keywords = {"de other side", "dos"}
 }, {
     name = "Tazavesh, the Veiled Market",
     spellID = 367416,
@@ -1374,7 +1374,7 @@ local ClassUtilities = { -- Mage Utilities
     spellName = "Ritual of Summoning",
     actionType = "spell",
     category = "Class Utility",
-    keywords = {"summon", "summons", "lock summon", "warlock summon", "port"}
+    keywords = {"summon", "resummon", "summ", "summons", "lock summon", "warlock summon"}
 }, {
     name = "Create Soulwell",
     spellID = 29893,
@@ -1397,8 +1397,16 @@ local ClassUtilities = { -- Mage Utilities
     spellName = "Levitate",
     actionType = "spell",
     category = "Class Utility",
-    keywords = {"levitate", "lev", "levi"}
+    keywords = {"levitate"}
 }, -- Druid Utilities
+{
+    name = "Battle Shout",
+    spellID = 6673,
+    spellName = "Battle Shout",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"battle shout", "shout", "buff"}
+}, -- Warrior Utility
 {
     name = "Mark of the Wild",
     spellID = 1126,
@@ -1413,7 +1421,7 @@ local ClassUtilities = { -- Mage Utilities
     spellName = "Blessing of the Bronze",
     actionType = "spell",
     category = "Class Utility",
-    keywords = {"bronze", "blessing of the bronze", "botb", "buff", "cdr", "cooldown reduction"}
+    keywords = {"blessing of the bronze", "botb", "buff"}
 }, {
     name = "Source of Magic",
     spellID = 369459,
@@ -1453,7 +1461,7 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "2 hours",
     destination = "Capital City",
-    keywords = {"capital", "city"}
+    keywords = {"capital", "city", "stormwind", "orgrimmar", "coordination"}
 }, {
     name = "The Innkeeper's Daughter",
     itemID = 64488,
@@ -1813,7 +1821,7 @@ local ServiceToys = {{
     keywords = {"guild", "bank", "mobile", "banking"}
 }, {
     name = "Interdimensional Companion Repository",
-    itemID = 130169,
+    itemID = 153510,
     spellName = "Interdimensional Companion Repository",
     actionType = "toy",
     category = "Utility",
@@ -1822,7 +1830,7 @@ local ServiceToys = {{
     keywords = {"stable"}
 }, {
     name = "Pierre",
-    itemID = 86578,
+    itemID = 94903,
     spellName = "Pierre",
     actionType = "toy",
     category = "Utility",
@@ -1840,7 +1848,7 @@ local ServiceToys = {{
     keywords = {"ragnaros", "lil ragnaros"}
 }, {
     name = "Little Wickerman",
-    itemID = 116115,
+    itemID = 70722,
     spellName = "Little Wickerman",
     actionType = "toy",
     category = "Utility",
