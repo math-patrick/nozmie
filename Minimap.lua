@@ -75,15 +75,7 @@ local function EnsureButton()
     minimapButton:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
         GameTooltip:SetText(Lstr("minimap.title", "Nozmie"))
-        local last = _G.Nozmie_BannerController and _G.Nozmie_BannerController.GetLastOptions and _G.Nozmie_BannerController.GetLastOptions()
-        if last and last[1] then
-            local name = last[1].spellName or last[1].name or Lstr("minimap.unknown", "Unknown")
-            local lastLine = string.format(Lstr("minimap.lastBanner", "Last banner: %s"), name)
-            GameTooltip:AddLine(lastLine, 0.9, 0.9, 0.9)
-        else
-            GameTooltip:AddLine(Lstr("minimap.lastBannerNone", "Last banner: (none)"), 0.7, 0.7, 0.7)
-        end
-        GameTooltip:AddLine(Lstr("minimap.leftClick", "Left-click: Show last banner"), 1, 1, 1)
+        GameTooltip:AddLine(Lstr("minimap.leftClick", "Left-click: Open Utility"), 1, 1, 1)
         GameTooltip:AddLine(Lstr("minimap.rightClick", "Right-click: Open settings"), 1, 1, 1)
         GameTooltip:AddLine(Lstr("minimap.drag", "Drag: Move minimap icon"), 1, 1, 1)
         GameTooltip:Show()
@@ -94,8 +86,8 @@ local function EnsureButton()
 
     minimapButton:SetScript("OnClick", function(self, button)
         if button == "LeftButton" then
-            if _G.Nozmie_ShowLastBanner then
-                _G.Nozmie_ShowLastBanner()
+            if _G.Nozmie_UtilityUI and _G.Nozmie_UtilityUI.Toggle then
+                _G.Nozmie_UtilityUI.Toggle()
             end
         elseif button == "RightButton" then
             if _G.Nozmie_Settings then

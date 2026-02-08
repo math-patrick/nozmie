@@ -183,6 +183,7 @@ local function Initialize()
     if Minimap then
         Minimap.Initialize()
     end
+
     
     -- Register chat event filters
     for _, event in ipairs(Config.CHAT_EVENTS) do
