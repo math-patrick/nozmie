@@ -1471,7 +1471,8 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "4 hours",
     destination = "Northrend (Random)",
-    keywords = {"northrend", "wormhole"}
+    keywords = {"northrend", "wormhole", "borean tundra", "howling fjord", "dragonblight", "grizzly hills", "zul'drak",
+                "sholazar", "storm peaks", "icecrown"}
 }, {
     name = "Wormhole Generator: Pandaria",
     itemID = 87215,
@@ -1480,7 +1481,8 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "15 min",
     destination = "Pandaria (Random)",
-    keywords = {"pandaria", "wormhole", "mop"}
+    keywords = {"pandaria", "wormhole", "mop", "jade forest", "krasarang", "krasarang wilds", "valley of the four winds",
+                "kun-lai summit", "townlong steppes", "dread wastes", "vale of eternal blossoms"}
 }, {
     name = "Wormhole Centrifuge",
     itemID = 112059,
@@ -1489,7 +1491,8 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "4 hours",
     destination = "Draenor (Random)",
-    keywords = {"draenor", "wormhole", "wod"}
+    keywords = {"draenor", "wormhole", "wod", "frostfire ridge", "shadowmoon valley", "gorgrond", "talador",
+                "spires of arak", "nagrand"}
 }, {
     name = "Wormhole Generator: Argus",
     itemID = 151652,
@@ -1498,7 +1501,7 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "15 min",
     destination = "Argus (Random)",
-    keywords = {"argus", "wormhole"}
+    keywords = {"argus", "wormhole", "krokuun", "antoran wastes", "mac'aree", "macaree"}
 }, {
     name = "Wormhole Generator: Kul Tiras",
     itemID = 168807,
@@ -1507,7 +1510,8 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "15 min",
     destination = "Kul Tiras (Random)",
-    keywords = {"kul tiras", "kultiras", "wormhole"}
+    keywords = {"kul tiras", "kultiras", "wormhole", "tiragarde", "tiragarde sound", "drustvar", "stormsong",
+                "stormsong valley"}
 }, {
     name = "Wormhole Generator: Zandalar",
     itemID = 168808,
@@ -1516,7 +1520,7 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "15 min",
     destination = "Zandalar (Random)",
-    keywords = {"zandalar", "wormhole"}
+    keywords = {"zandalar", "wormhole", "zuldazar", "nazmir", "vol'dun", "voldun"}
 }, {
     name = "Wormhole Generator: Shadowlands",
     itemID = 172924,
@@ -1525,7 +1529,7 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "15 min",
     destination = "Shadowlands (Random)",
-    keywords = {"shadowlands", "wormhole", "sl"}
+    keywords = {"shadowlands", "wormhole", "sl", "bastion", "maldraxxus", "ardenweald", "revendreth", "the maw", "maw"}
 }, {
     name = "Wormhole Generator: Khaz Algar",
     itemID = 221966,
@@ -1534,7 +1538,8 @@ local TeleportToys = {{
     category = "Toy",
     cooldown = "15 min",
     destination = "Khaz Algar (Random)",
-    keywords = {"khaz algar", "khazalgar", "wormhole", "tww"}
+    keywords = {"khaz algar", "khazalgar", "wormhole", "tww", "isle of dorn", "ringing deeps", "hallowfall",
+                "azj-kahet", "azj kahet"}
 }, {
     name = "Time-Lost Artifact",
     itemID = 103678,
@@ -1658,6 +1663,15 @@ local ServiceToys = {{
     cooldown = "20 min",
     destination = "Mailbox",
     keywords = {"mail", "mailbox"}
+}, {
+    name = "Flight Master's Whistle",
+    itemID = 141605,
+    spellName = "Flight Master's Whistle",
+    actionType = "item",
+    category = "Utility",
+    cooldown = "15 min",
+    destination = "Flight Master",
+    keywords = {"flightmaster"}
 }, {
     name = "Rechargeable Reaves Battery",
     itemID = 144341,
@@ -1914,6 +1928,15 @@ local ServiceToys = {{
     cooldown = "No CD",
     destination = "Training Dummy",
     keywords = {"dummy", "training"}
+}, {
+    name = "Drowned Hatchling",
+    petName = "Drowned Hatchling",
+    actionType = "pet",
+    category = "Utility",
+    cooldown = "No CD",
+    destination = "Oronu (Nazjatar)",
+    macrotext = "/summonpet Drowned Hatchling",
+    keywords = {"drowned hatchling", "oronu", "orunu"}
 }, {
     name = "Bright Campfire",
     itemID = 33278,

@@ -18,6 +18,28 @@ local function Lstr(key, fallback)
     return fallback or key
 end
 
+local petIconCache = {}
+local function GetPetIconByName(petName)
+    if not petName or not C_PetJournal or not C_PetJournal.GetNumPets then
+        return nil
+    end
+    if petIconCache[petName] ~= nil then
+        return petIconCache[petName]
+    end
+
+    local numPets = C_PetJournal.GetNumPets()
+    for index = 1, numPets do
+        local _, _, _, customName, _, _, _, petNameFromJournal, icon = C_PetJournal.GetPetInfoByIndex(index)
+        if petNameFromJournal == petName or customName == petName then
+            petIconCache[petName] = icon
+            return icon
+        end
+    end
+
+    petIconCache[petName] = nil
+    return nil
+end
+
 local STACK_GAP = 8
 local lastOptions
 
@@ -178,7 +200,9 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
 
     -- Context-aware action text based on category
     local actionVerb = Lstr("banner.action.use", "Use")
-    if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Home" or
+    if data.actionType == "pet" then
+        actionVerb = Lstr("banner.action.summon", "Summon")
+    elseif data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Home" or
         data.category == "Class" or data.category == "Toy" then
         actionVerb = Lstr("banner.action.teleport", "Teleport to")
     elseif data.category and data.category:find("Utility") then
@@ -241,6 +265,21 @@ local function HasKeyword(data, keyword)
 end
 
 local function UpdateBannerIcon(banner, data)
+    if data.macrotext or data.actionType == "pet" then
+        local iconTexture = data.iconTexture
+        if not iconTexture and data.petName then
+            iconTexture = GetPetIconByName(data.petName)
+        end
+        if iconTexture then banner.icon:SetTexture(iconTexture) end
+        banner:SetAttribute("type", "macro")
+        banner:SetAttribute("macrotext", data.macrotext or "")
+        -- Prevent right-click from triggering secure actions
+        banner:SetAttribute("type2", "none")
+        banner:SetAttribute("macrotext2", nil)
+        banner:SetAttribute("spell2", nil)
+        banner:SetAttribute("item2", nil)
+        return
+    end
     local preferItem = data.itemID and (data.actionType == "item" or data.actionType == "toy" or data.category == "Home")
     if data.spellID and HasKeyword(data, "mount") then
         preferItem = false

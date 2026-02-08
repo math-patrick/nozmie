@@ -201,6 +201,19 @@ function Helpers.GetCooldownRemaining(data)
 end
 
 function Helpers.CanPlayerUseTeleport(data)
+    if data.actionType == "pet" or data.petName then
+        if not C_PetJournal or not C_PetJournal.GetNumPets then
+            return false
+        end
+        local numPets = C_PetJournal.GetNumPets()
+        for index = 1, numPets do
+            local _, _, _, customName, _, _, _, petNameFromJournal = C_PetJournal.GetPetInfoByIndex(index)
+            if petNameFromJournal == data.petName or customName == data.petName then
+                return true
+            end
+        end
+        return false
+    end
     if data.itemID then
         -- Check if it's a toy
         if PlayerHasToy(data.itemID) then return true end
@@ -211,7 +224,7 @@ function Helpers.CanPlayerUseTeleport(data)
         -- Check if it's a learned mount
         if data.keywords and tContains(data.keywords, "mount") then
             -- Don't show mounts if they can't be used in current zone
-            if IsIndoors() or IsMounted() then
+            if IsIndoors() then
                 return false
             end
             -- Method 1: Try getting mount from item
