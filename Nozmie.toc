@@ -23,6 +23,7 @@ Detector.lua
 BannerUI.lua
 BannerController.lua
 Minimap.lua
+Utility\Button.lua
 UtilityUI.lua
 SettingsMixins.lua
 SettingsTemplates.xml
