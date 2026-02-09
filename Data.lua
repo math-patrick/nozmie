@@ -1,3 +1,4 @@
+
 -- ============================================================================
 -- Nozmie - Data Module
 -- Contains all teleport spells, items, and toys organized by category
@@ -1382,7 +1383,14 @@ local ClassUtilities = { -- Mage Utilities
     actionType = "spell",
     category = "Class Utility",
     keywords = {"soulwell", "soul well", "lock well", "healthstones", "healthstone", "health stone", "hs", "lock rock",
-                "cookie", "cookies"}
+                "cookie", "cookies", "buff"}
+},{
+    name = "Soulstone",
+    spellID = 20707,
+    spellName = "Soulstone",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"soulstone", "soul stone", "buff", "ss"}
 }, -- Priest Utilities
 {
     name = "Power Word: Fortitude",
@@ -1414,7 +1422,15 @@ local ClassUtilities = { -- Mage Utilities
     actionType = "spell",
     category = "Class Utility",
     keywords = {"motw", "mark", "mark of the wild", "buff"}
-}, -- Evoker Utilities
+}, -- Shaman Utilities
+{
+    name = "Skyfury",
+    spellID = 462854,
+    spellName = "Skyfury",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"skyfury", "buff", "sky fury"}
+},  -- Evoker Utilities
 {
     name = "Blessing of the Bronze",
     spellID = 364342,
@@ -1634,7 +1650,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "10 min",
     destination = "Anvil",
-    keywords = {"alvin", "anvil", "repair"}
+    keywords = {"alvin", "anvil"}
 }, {
     name = "MOLL-E",
     itemID = 40768,
@@ -1707,7 +1723,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Repair & Transmog",
-    keywords = {"yak", "expedition", "repair", "vendor", "transmog", "mount"}
+    keywords = {"yak", "expedition", "repair", "vendor", "transmog"}
 }, {
     name = "Traveler's Tundra Mammoth",
     itemID = 44234,
@@ -1717,7 +1733,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Repair & Vendor",
-    keywords = {"mammoth", "tundra", "repair", "vendor", "mount"}
+    keywords = {"mammoth", "tundra", "repair", "vendor"}
 }, {
     name = "Mighty Caravan Brutosaur",
     itemID = 163042,
@@ -1726,8 +1742,8 @@ local ServiceToys = {{
     actionType = "item",
     category = "Utility",
     cooldown = "No CD",
-    destination = "Repair & AH",
-    keywords = {"brutosaur", "bruto", "vendor", "auction", "ah", "longboy", "mount"}
+    destination = "Auction House & Repair",
+    keywords = {"brutosaur", "bruto", "vendor", "auction", "ah", "longboy"}
 }, {
     name = "Trader's Gilded Brutosaur",
     itemID = 229418,
@@ -1737,7 +1753,7 @@ local ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Auction House & Mailbox",
-    keywords = {"brutosaur", "bruto", "auction", "ah", "gilded", "trader", "mailbox", "mail", "mount"}
+    keywords = {"brutosaur", "bruto", "auction", "ah", "gilded", "trader", "mailbox", "mail"}
 }, {
     name = "Ethereal Transmogrifier",
     itemID = 206268,
