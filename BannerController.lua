@@ -2,7 +2,6 @@
 -- Nozmie - Banner Controller Module
 -- Manages banner behavior, navigation, cooldown updates, and click handling
 -- ============================================================================
-
 local Config = Nozmie_Config
 local Helpers = Nozmie_Helpers
 local BannerUI = Nozmie_BannerUI
@@ -240,6 +239,19 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
         targetInfo = string.format(" |cff00ff00" .. Lstr("banner.targetInfo", " on %s") .. "|r", data.targetPlayer)
     end
 
+    local mountInfoText = ""
+    if data.mountId and C_MountJournal and C_MountJournal.GetMountInfoByID then
+        local name, spellID, icon, isActive, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar, isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
+        if name then
+            mountInfoText = string.format("\n|cff888888Mount:|r %s", name)
+            if not isUsable then
+                mountInfoText = mountInfoText .. " |cffff0000(Not usable)|r"
+            elseif not isCollected then
+                mountInfoText = mountInfoText .. " |cffff0000(Not collected)|r"
+            end
+        end
+    end
+
     if totalOptions > 1 then
         local prefix = string.format(Lstr("banner.subtitlePrefix", "Click to %s%s"), actionText, targetInfo)
         local count = string.format(Lstr("banner.subtitleCount", "%d/%d"), currentIndex, totalOptions)
@@ -294,18 +306,24 @@ local function UpdateBannerIcon(banner, data)
         local playerName = UnitName("player")
         if data.targetPlayer and data.targetPlayer ~= playerName and (data.category and data.category:find("Utility")) then
             banner:SetAttribute("type", "macro")
-            banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. data.spellName)
+            banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. (data.spellID or data.spellName))
         else
             banner:SetAttribute("type", "spell")
-            banner:SetAttribute("spell", data.spellName)
+            banner:SetAttribute("spell", data.spellID or data.spellName)
         end
     elseif data.itemID then
         local iconTexture = C_Item.GetItemIconByID(data.itemID)
         if iconTexture then banner.icon:SetTexture(iconTexture) end
-        
-        -- Use macro for all items (toys, mounts, consumables)
-        banner:SetAttribute("type", "macro")
-        banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
+        if C_MountJournal and data.mountId then
+            banner:SetAttribute("type", nil)
+            banner:SetAttribute("macrotext", nil)
+            banner:SetScript("OnClick", function()
+                C_MountJournal.SummonByID(data.mountId)
+            end)
+        else
+            banner:SetAttribute("type", "macro")
+            banner:SetAttribute("macrotext", "/use " .. data.itemID)
+        end
     end
     -- Prevent right-click from triggering secure actions
     banner:SetAttribute("type2", "none")
