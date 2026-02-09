@@ -1,0 +1,33 @@
+name: Alpha Auto Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tag-alpha:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get latest alpha tag
+        id: get_tag
+        run: |
+          latest_tag=$(git tag --list 'v*-alpha' --sort=-v:refname | head -n1)
+          if [[ -z "$latest_tag" ]]; then
+            echo "::set-output name=alpha_num::1"
+          else
+            num=$(echo $latest_tag | sed -E 's/v([0-9]+)-alpha/\1/')
+            next_num=$((num+1))
+            echo "::set-output name=alpha_num::$next_num"
+          fi
+
+      - name: Create alpha tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          tag_name="v${{ steps.get_tag.outputs.alpha_num }}-alpha"
+          git tag "$tag_name"
+          git push origin "$tag_name"
