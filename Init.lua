@@ -42,10 +42,7 @@ _G.Nozmie_ShowOptions = function(options)
     if not options or #options == 0 then
         return
     end
-    if InCombatLockdown() then
-        QueueMatches(options)
-        return
-    end
+    -- Always show banner, even in combat, for secure actions (buff requests)
     BannerController.ShowWithOptions(banner, options)
 end
 
@@ -111,10 +108,7 @@ local function OnChatMessage(self, event, message, sender)
         end
     end
     if #matches > 0 and Settings.Get("showBanner") then
-        if InCombatLockdown() then
-            QueueMatches(matches)
-            return false
-        end
+        -- Always show banner, even in combat, for buff requests
         if BannerController.FindBannerByOptions and banner and banner:IsShown() then
             local existingBanner = BannerController.FindBannerByOptions(banner, matches)
             if existingBanner then

@@ -1,3 +1,14 @@
+-- BUFFS
+local Buffs = {
+    {
+        name = "Power Infusion",
+        spellID = 10060,
+        spellName = "Power Infusion",
+        actionType = "spell",
+        category = "Buff",
+        keywords = {"pi", "power infusion", "infusion", "buff"},
+    },
+}
 
 -- ============================================================================
 -- Nozmie - Data Module
@@ -1348,6 +1359,13 @@ local DelveTeleports = {{
 
 local ClassUtilities = { -- Mage Utilities
 {
+    name = "Power Infusion",
+    spellID = 10060,
+    spellName = "Power Infusion",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"pi", "power infusion", "infusion", "buff"}
+}, {
     name = "Conjure Refreshment",
     spellID = 190336,
     spellName = "Conjure Refreshment",
