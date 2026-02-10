@@ -83,7 +83,7 @@ local function GetBaseAnchor(root)
             relativeTo = relativeTo or UIParent,
             relativePoint = relativePoint or "BOTTOM",
             xOfs = xOfs or 0,
-            yOfs = yOfs or 0,
+            yOfs = yOfs or 0
         }
     end
     return root.baseAnchor
@@ -96,7 +96,7 @@ local function GetStackAnchor(root, index)
         relativeTo = base.relativeTo,
         relativePoint = base.relativePoint,
         xOfs = base.xOfs,
-        yOfs = base.yOfs + (Config.BANNER.HEIGHT + STACK_GAP) * index,
+        yOfs = base.yOfs + (Config.BANNER.HEIGHT + STACK_GAP) * index
     }
 end
 
@@ -113,7 +113,9 @@ local function SlideToAnchor(frame, anchor, duration, onFinished)
 
     if dx == 0 and dy == 0 then
         ApplyAnchor(frame, anchor)
-        if onFinished then onFinished() end
+        if onFinished then
+            onFinished()
+        end
         return
     end
 
@@ -127,13 +129,17 @@ local function SlideToAnchor(frame, anchor, duration, onFinished)
     translate:SetOffset(dx, dy)
     frame.slideAnim:SetScript("OnFinished", function()
         ApplyAnchor(frame, anchor)
-        if onFinished then onFinished() end
+        if onFinished then
+            onFinished()
+        end
     end)
     frame.slideAnim:Play()
 end
 
 local function ReflowStack(root)
-    if not root.stack then return end
+    if not root.stack then
+        return
+    end
     for index, frame in ipairs(root.stack) do
         local anchor = GetStackAnchor(root, index)
         SlideToAnchor(frame, anchor, 0.2)
@@ -168,7 +174,6 @@ local function PromoteNextBanner(root)
     end)
 end
 
-
 local function UpdateBannerForCooldown(banner, data, remaining)
     banner.icon:SetDesaturated(true)
     banner.title:SetTextColor(unpack(Config.COLORS.TEXT_COOLDOWN))
@@ -197,25 +202,34 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_NORMAL))
     banner.isOnCooldown = false
 
-    -- Context-aware action text based on category
     local actionVerb = Lstr("banner.action.use", "Use")
     if data.actionType == "pet" then
         actionVerb = Lstr("banner.action.summon", "Summon")
-    elseif data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Home" or
-        data.category == "Class" or data.category == "Toy" then
-        actionVerb = Lstr("banner.action.teleport", "Teleport to")
-    elseif data.category and data.category:find("Utility") then
-        if data.destination and
-            (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Transmog") or
-                data.destination:find("Anvil")) then
-            actionVerb = Lstr("banner.action.summon", "Summon")
-        elseif data.keywords and
-            (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or tContains(data.keywords, "motw") or
-                tContains(data.keywords, "intellect")) then
-            actionVerb = Lstr("banner.action.cast", "Cast")
+    elseif data.actionType == "mount" then
+        actionVerb = Lstr("banner.action.summon", "Summon")
+    elseif data.actionType == "spell" then
+        if data.category and data.category:find("Utility") then
+            if data.destination and
+                (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Transmog") or
+                    data.destination:find("Anvil")) then
+                actionVerb = Lstr("banner.action.summon", "Summon")
+            elseif data.keywords and
+                (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or tContains(data.keywords, "motw") or
+                    tContains(data.keywords, "intellect")) then
+                actionVerb = Lstr("banner.action.cast", "Cast")
+            else
+                actionVerb = Lstr("banner.action.use", "Use")
+            end
+        elseif data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category ==
+            "Home" or data.category == "Class" or data.category == "Toy" then
+            actionVerb = Lstr("banner.action.teleport", "Teleport to")
         else
             actionVerb = Lstr("banner.action.use", "Use")
         end
+    elseif data.actionType == "toy" then
+        actionVerb = Lstr("banner.action.teleport", "Teleport to")
+    elseif data.actionType == "item" then
+        actionVerb = Lstr("banner.action.use", "Use")
     end
 
     local text = string.format(Lstr("banner.titleWithDestination", "%s %s?"), actionVerb, data.destination or data.name)
@@ -241,7 +255,8 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
 
     local mountInfoText = ""
     if data.mountId and C_MountJournal and C_MountJournal.GetMountInfoByID then
-        local name, spellID, icon, isActive, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar, isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
+        local name, spellID, icon, isActive, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar,
+            isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
         if name then
             mountInfoText = string.format("\n|cff888888Mount:|r %s", name)
             if not isUsable then
@@ -256,7 +271,8 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
         local prefix = string.format(Lstr("banner.subtitlePrefix", "Click to %s%s"), actionText, targetInfo)
         local count = string.format(Lstr("banner.subtitleCount", "%d/%d"), currentIndex, totalOptions)
         local suffix = Lstr("banner.subtitleSuffix", "Right-click to announce")
-        banner.subtitle:SetText("|cff888888" .. prefix .. " • |r|cff00ff00" .. count .. "|r |cff888888• " .. suffix .. "|r")
+        banner.subtitle:SetText(
+            "|cff888888" .. prefix .. " • |r|cff00ff00" .. count .. "|r |cff888888• " .. suffix .. "|r")
     else
         local prefix = string.format(Lstr("banner.subtitlePrefix", "Click to %s%s"), actionText, targetInfo)
         local suffix = Lstr("banner.subtitleSuffix", "Right-click to announce")
@@ -276,68 +292,104 @@ local function HasKeyword(data, keyword)
     return false
 end
 
-local function UpdateBannerIcon(banner, data)
-    if data.macrotext or data.actionType == "pet" then
-        local iconTexture = data.iconTexture
-        if not iconTexture and data.petName then
-            iconTexture = GetPetIconByName(data.petName)
-        end
-        if iconTexture then banner.icon:SetTexture(iconTexture) end
-        banner:SetAttribute("type", "macro")
-        banner:SetAttribute("macrotext", data.macrotext or "")
-        -- Prevent right-click from triggering secure actions
-        banner:SetAttribute("type2", "none")
-        banner:SetAttribute("macrotext2", nil)
-        banner:SetAttribute("spell2", nil)
-        banner:SetAttribute("item2", nil)
-        return
+local function SetPetIcon(banner, data)
+    local iconTexture = data.iconTexture
+    if not iconTexture and data.petName then
+        iconTexture = GetPetIconByName(data.petName)
     end
-    local preferItem = data.itemID and (data.actionType == "item" or data.actionType == "toy" or data.category == "Home")
-    if data.spellID and HasKeyword(data, "mount") then
-        preferItem = false
+    if iconTexture then
+        banner.icon:SetTexture(iconTexture)
     end
-    data.preferItem = preferItem and true or nil
+    banner:SetAttribute("type", "macro")
+    banner:SetAttribute("macrotext", data.macrotext or "")
+end
 
-    if data.spellID and not preferItem then
-        local iconTexture = C_Spell.GetSpellTexture(data.spellID)
-        if iconTexture then banner.icon:SetTexture(iconTexture) end
-        
-        -- Use macro targeting for buff spells when a target player is specified
-        local playerName = UnitName("player")
-        if data.targetPlayer and data.targetPlayer ~= playerName and (data.category and data.category:find("Utility")) then
-            banner:SetAttribute("type", "macro")
-            banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. (data.spellID or data.spellName))
-        else
-            banner:SetAttribute("type", "spell")
-            banner:SetAttribute("spell", data.spellID or data.spellName)
-        end
-    elseif data.itemID then
-        local iconTexture = C_Item.GetItemIconByID(data.itemID)
-        if iconTexture then banner.icon:SetTexture(iconTexture) end
-        if C_MountJournal and data.mountId then
-            banner:SetAttribute("type", nil)
-            banner:SetAttribute("macrotext", nil)
-            banner:SetScript("OnClick", function()
-                C_MountJournal.SummonByID(data.mountId)
-            end)
-        else
-            banner:SetAttribute("type", "macro")
-            banner:SetAttribute("macrotext", "/use " .. data.itemID)
-        end
+local function SetSpellIcon(banner, data)
+    local iconTexture = C_Spell.GetSpellTexture(data.spellID)
+    if iconTexture then
+        banner.icon:SetTexture(iconTexture)
     end
-    -- Prevent right-click from triggering secure actions
+    local playerName = UnitName("player")
+    if data.targetPlayer and data.targetPlayer ~= playerName and (data.category and data.category:find("Utility")) then
+        banner:SetAttribute("type", "macro")
+        banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. (data.spellID or data.spellName))
+    else
+        banner:SetAttribute("type", "spell")
+        banner:SetAttribute("spell", data.spellID or data.spellName)
+    end
+end
+
+local function SetItemIcon(banner, data)
+    local iconTexture = C_Item.GetItemIconByID(data.itemID)
+    if iconTexture then
+        banner.icon:SetTexture(iconTexture)
+    end
+    banner:SetAttribute("type", "macro")
+    banner:SetAttribute("macrotext", "/use item:" .. tostring(data.itemID))
+end
+
+local function SetMountIcon(banner, data)
+    local iconTexture = C_Item.GetItemIconByID(data.itemID)
+    if iconTexture then
+        banner.icon:SetTexture(iconTexture)
+    end
+    banner:SetScript("PreClick", function()
+        C_MountJournal.SummonByID(data.mountId)
+    end)
+end
+
+local function SetToyIcon(banner, data)
+    local iconTexture = C_Item.GetItemIconByID(data.itemID)
+    if iconTexture then
+        banner.icon:SetTexture(iconTexture)
+    end
+    banner:SetAttribute("type", "macro")
+    banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
+end
+
+local function ClearBannerAttributes(banner)
+    banner:SetScript("PreClick", nil)
+    banner:SetAttribute("type", nil)
+    banner:SetAttribute("macrotext", nil)
+    banner:SetAttribute("spell", nil)
+    banner:SetAttribute("item", nil)
+    banner:SetAttribute("type2", nil)
+    banner:SetAttribute("macrotext2", nil)
+    banner:SetAttribute("spell2", nil)
+    banner:SetAttribute("item2", nil)
+end
+
+local function PreventRightClickAction(banner)
     banner:SetAttribute("type2", "none")
     banner:SetAttribute("macrotext2", nil)
     banner:SetAttribute("spell2", nil)
     banner:SetAttribute("item2", nil)
 end
 
+local function UpdateBannerIcon(banner, data)
+    ClearBannerAttributes(banner)
+
+    if data.actionType == "pet" then
+        SetPetIcon(banner, data)
+    elseif data.actionType == "spell" and data.spellID then
+        SetSpellIcon(banner, data)
+    elseif data.actionType == "item" and data.itemID then
+        SetItemIcon(banner, data)
+    elseif data.actionType == "mount" and data.mountId then
+        SetMountIcon(banner, data)
+    elseif data.actionType == "toy" and data.itemID then
+        SetToyIcon(banner, data)
+    end
+
+    PreventRightClickAction(banner)
+end
+
 RefreshBannerDisplay = function(banner)
     local data = banner.options[banner.currentIndex]
     banner.activeData = data
-    
+
     UpdateBannerIcon(banner, data)
-    
+
     local cooldown = Helpers.GetCooldownRemaining(data)
     if cooldown > 0 then
         UpdateBannerForCooldown(banner, data, cooldown)
@@ -393,7 +445,7 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
     if banner.updateTimer then
         banner.updateTimer:Cancel()
     end
-    
+
     if banner.autoHideTimer then
         banner.autoHideTimer:Cancel()
     end
@@ -419,35 +471,35 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
     banner.updateTimer = C_Timer.NewTicker(0.5, function()
         RefreshBannerDisplay(banner)
     end)
-    
-    banner.lastAnnounceTime = 0  -- Initialize announce debounce
-    
+
+    banner.lastAnnounceTime = 0 -- Initialize announce debounce
+
     banner:SetScript("PostClick", function(self, button)
         -- Cancel auto-hide timer when user interacts with banner
         if self.autoHideTimer then
             self.autoHideTimer:Cancel()
         end
-        
+
         -- Handle right-click for announcements
         if button == "RightButton" then
             local data = self.options[self.currentIndex]
             if data then
                 local now = GetTime()
-                if now - self.lastAnnounceTime > 1 then  -- 1 second debounce
+                if now - self.lastAnnounceTime > 1 then -- 1 second debounce
                     Helpers.AnnounceUtility(data, data.sourceEvent, data.sourceSender)
                     self.lastAnnounceTime = now
                 end
             end
             return
         end
-        
+
         -- Left-click behavior (original working logic)
         if self.isOnCooldown and Helpers.IsInAnyGroup() and self.cooldownData then
             local now = GetTime()
-            if now - self.lastAnnounceTime > 1 then  -- 1 second debounce
-                    local message = string.format(Lstr("banner.cooldownAnnounce", "%s is on cooldown (%s)"),
-                        self.cooldownData.data.spellName or self.cooldownData.data.name,
-                        Helpers.FormatCooldownTime(self.cooldownData.remaining))
+            if now - self.lastAnnounceTime > 1 then -- 1 second debounce
+                local message = string.format(Lstr("banner.cooldownAnnounce", "%s is on cooldown (%s)"),
+                    self.cooldownData.data.spellName or self.cooldownData.data.name,
+                    Helpers.FormatCooldownTime(self.cooldownData.remaining))
                 local sent = Helpers.SendMessageForEvent(message, self.cooldownData.data.sourceEvent,
                     self.cooldownData.data.sourceSender)
                 if not sent then
@@ -470,7 +522,9 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
     end)
 
     banner:SetScript("OnHide", function(self)
-        if self.ignoreHide then return end
+        if self.ignoreHide then
+            return
+        end
         if self.updateTimer then
             self.updateTimer:Cancel()
             self.updateTimer = nil
@@ -512,7 +566,7 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
         banner:Show()
         UIFrameFadeIn(banner, 0.4, 0, 1)
     end
-    
+
     -- Auto-hide banner if enabled
     local Settings = Nozmie_Settings
     if Settings.Get("autoHideBanner") then

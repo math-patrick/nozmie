@@ -110,7 +110,7 @@ local function HasKeyword(data, keyword)
 end
 
 local function IsMountOption(data)
-    return HasKeyword(data, "mount")
+    return data.actionType == "mount" or HasKeyword(data, "mount")
 end
 
 local function IsServiceOption(data)
@@ -263,7 +263,7 @@ function Detector.FindMatchingTeleports(message, sender)
                 end
             end
 
-            if shouldMatch and Helpers.CanPlayerUseTeleport(teleportData) then
+            if shouldMatch and Helpers.CanPlayerUseUtility(teleportData) then
                 if ShouldSuppressOption(teleportData, Settings, inInstance) then
                     -- Suppressed by user settings
                 else

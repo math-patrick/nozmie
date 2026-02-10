@@ -180,20 +180,6 @@ function BannerUI.CreateBanner()
         pushed = "Interface\\Buttons\\UI-Panel-MinimizeButton-Down"
     }, Lstr("ui.close", "Close"), function() banner:Hide() end)
     
-    banner.isDragging = false
-    banner:SetScript("OnMouseDown", function(self, button)
-        if button == "LeftButton" and IsAltKeyDown() and not InCombatLockdown() then
-            self:StartMoving()
-            self.isDragging = true
-        end
-    end)
-    banner:SetScript("OnMouseUp", function(self, button)
-        if self.isDragging then
-            self:StopMovingOrSizing()
-            self.isDragging = false
-            Helpers.SaveBannerPosition(self)
-        end
-    end)
     banner:SetScript("OnShow", function(self)
         local Settings = Nozmie_Settings
         if Settings and Settings.Get("hideDragIcon") then

@@ -5,12 +5,9 @@
 
 local Helpers = {}
 local lastAnnounce = {message = nil, time = 0}
-
 local Locale = _G.Nozmie_Locale
 local function Lstr(key, fallback)
-    if Locale and Locale.GetString then
-        return Locale.GetString(key, fallback)
-    end
+    if Locale and Locale.GetString then return Locale.GetString(key, fallback) end
     return fallback or key
 end
 
@@ -19,9 +16,7 @@ function Helpers.SaveBannerPosition(banner)
     local point, _, relativePoint, xOfs, yOfs = root:GetPoint()
     NozmieDB = NozmieDB or {}
     NozmieDB.position = {point = point, relativePoint = relativePoint, xOfs = xOfs, yOfs = yOfs}
-    if root.baseAnchor then
-        root.baseAnchor = nil
-    end
+    if root.baseAnchor then root.baseAnchor = nil end
 end
 
 function Helpers.LoadBannerPosition(banner)
@@ -29,16 +24,17 @@ function Helpers.LoadBannerPosition(banner)
         local p = NozmieDB.position
         banner:ClearAllPoints()
         banner:SetPoint(p.point, UIParent, p.relativePoint, p.xOfs, p.yOfs)
-    else
-        banner:ClearAllPoints()
-        banner:SetPoint("BOTTOM", ChatFrame1, "TOP", 0, 20)
+        return
     end
+    banner:ClearAllPoints()
+    banner:SetPoint("BOTTOM", ChatFrame1, "TOP", 0, 20)
 end
 
 function Helpers.FormatCooldownTime(seconds)
     local mins = math.floor(seconds / 60)
     local secs = math.floor(seconds % 60)
-    return mins > 0 and string.format("%dm %ds", mins, secs) or string.format("%ds", secs)
+    if mins > 0 then return string.format("%dm %ds", mins, secs) end
+    return string.format("%ds", secs)
 end
 
 function Helpers.IsInAnyGroup()
@@ -63,13 +59,9 @@ end
 
 function Helpers.SendMessageForEvent(message, event, sender)
     local channel = Helpers.GetChannelFromEvent(event)
-    if not channel then
-        return false
-    end
+    if not channel then return false end
     if channel == "WHISPER" then
-        if not sender or sender == "" then
-            return false
-        end
+        if not sender or sender == "" then return false end
         SendChatMessage(message, channel, nil, sender)
         return true
     end
@@ -83,67 +75,50 @@ function Helpers.MarkAnnounce(message)
 end
 
 function Helpers.IsRecentAnnounce(message, window)
-    if not lastAnnounce.message then
-        return false
-    end
+    if not lastAnnounce.message then return false end
     local limit = window or 2
     return message == lastAnnounce.message and (GetTime() - lastAnnounce.time) <= limit
 end
 
 function Helpers.CreateAnnouncementMessage(data)
     local cooldown = Helpers.GetCooldownRemaining(data)
-    
-    -- Determine action verb based on category
     local actionVerb = Lstr("announce.action.use", "use")
     local nounForm = "utility"
-    
-    if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or 
-       data.category == "Home" or data.category == "Class" or data.category == "Toy" then
+    if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Home" or data.category == "Class" or data.category == "Toy" then
         actionVerb = Lstr("announce.action.teleport", "teleport")
         nounForm = "portal"
     elseif data.category and data.category:find("Utility") then
-        if data.destination and (data.destination:find("Repair") or data.destination:find("Mailbox") or 
-           data.destination:find("Transmog") or data.destination:find("Anvil")) then
+        if data.destination and (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Transmog") or data.destination:find("Anvil")) then
             actionVerb = Lstr("announce.action.summon", "summon")
             nounForm = data.name
-        elseif data.keywords and (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or 
-                tContains(data.keywords, "motw") or tContains(data.keywords, "intellect")) then
+        elseif data.keywords and (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or tContains(data.keywords, "motw") or tContains(data.keywords, "intellect")) then
             actionVerb = Lstr("announce.action.cast", "cast")
             nounForm = data.name
         end
     end
-    
     if cooldown > 0 then
-        -- On cooldown
         local timeText = Helpers.FormatCooldownTime(cooldown)
         if nounForm == "portal" then
             local portalNoun = Lstr("announce.noun.portal", "Portal")
-            return string.format(Lstr("announce.portalReadyIn", "%s to %s ready in %s"), portalNoun,
-                data.destination or data.name, timeText)
-        else
-            return string.format(Lstr("announce.readyIn", "%s ready in %s"), data.name, timeText)
+            return string.format(Lstr("announce.portalReadyIn", "%s to %s ready in %s"), portalNoun, data.destination or data.name, timeText)
         end
-    else
-        -- Ready to use
-        if nounForm == "portal" then
-            return string.format(Lstr("announce.canTeleport", "I can %s to %s!"), actionVerb,
-                data.destination or data.name)
-        elseif data.destination and (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Anvil")) then
-            return string.format(Lstr("announce.canUseDestination", "I can %s %s!"), actionVerb, data.destination)
-        else
-            return string.format(Lstr("announce.canUseName", "I can %s %s!"), actionVerb, data.name)
-        end
+        return string.format(Lstr("announce.readyIn", "%s ready in %s"), data.name, timeText)
     end
+    if nounForm == "portal" then
+        return string.format(Lstr("announce.canTeleport", "I can %s to %s!"), actionVerb, data.destination or data.name)
+    end
+    if data.destination and (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Anvil")) then
+        return string.format(Lstr("announce.canUseDestination", "I can %s %s!"), actionVerb, data.destination)
+    end
+    return string.format(Lstr("announce.canUseName", "I can %s %s!"), actionVerb, data.name)
 end
 
 function Helpers.AnnounceUtility(data, event, sender)
     local message = Helpers.CreateAnnouncementMessage(data)
-
     if event and Helpers.SendMessageForEvent(message, event, sender) then
         Helpers.MarkAnnounce(message)
         return
     end
-    
     if Helpers.IsInAnyGroup() then
         SendChatMessage(message, Helpers.GetGroupChatChannel())
     else
@@ -157,117 +132,70 @@ function Helpers.GetCooldownRemaining(data)
         local start, duration = C_Item.GetItemCooldown(data.itemID)
         if start and duration and type(start) == "number" and type(duration) == "number" then
             local ok, remaining = pcall(function()
-                if start > 0 and duration > 0 then
-                    return start + duration - GetTime()
-                end
+                if start > 0 and duration > 0 then return start + duration - GetTime() end
                 return 0
             end)
-            if ok and remaining and remaining > 0 then
-                return remaining
-            end
+            if ok and remaining and remaining > 0 then return remaining end
         end
     end
-
     if data.spellID then
         local info = C_Spell.GetSpellCooldown(data.spellID)
-        -- Check if info exists and values are not tainted/secret
         if info and info.startTime and info.duration and type(info.startTime) == "number" and type(info.duration) == "number" then
             local ok, remaining = pcall(function()
-                if info.startTime > 0 and info.duration > 0 then
-                    return info.startTime + info.duration - GetTime()
-                end
+                if info.startTime > 0 and info.duration > 0 then return info.startTime + info.duration - GetTime() end
                 return 0
             end)
-            if ok and remaining and remaining > 0 then
-                return remaining
-            end
+            if ok and remaining and remaining > 0 then return remaining end
         end
     elseif data.itemID then
         local start, duration = C_Item.GetItemCooldown(data.itemID)
-        -- Check if values are not tainted/secret
         if start and duration and type(start) == "number" and type(duration) == "number" then
             local ok, remaining = pcall(function()
-                if start > 0 and duration > 0 then
-                    return start + duration - GetTime()
-                end
+                if start > 0 and duration > 0 then return start + duration - GetTime() end
                 return 0
             end)
-            if ok and remaining and remaining > 0 then
-                return remaining
-            end
+            if ok and remaining and remaining > 0 then return remaining end
         end
     end
     return 0
 end
 
-function Helpers.CanPlayerUseTeleport(data)
-    if data.actionType == "pet" or data.petName then
-        if not C_PetJournal or not C_PetJournal.GetNumPets then
-            return false
-        end
-        local numPets = C_PetJournal.GetNumPets()
-        for index = 1, numPets do
-            local _, _, _, customName, _, _, _, petNameFromJournal = C_PetJournal.GetPetInfoByIndex(index)
-            if petNameFromJournal == data.petName or customName == data.petName then
-                return true
-            end
-        end
-        return false
+local function CanUsePet(data)
+    if not C_PetJournal or not C_PetJournal.GetNumPets or not data.petName then return false end
+    for i = 1, C_PetJournal.GetNumPets() do
+        local _, _, _, customName, _, _, _, petNameFromJournal = C_PetJournal.GetPetInfoByIndex(i)
+        if petNameFromJournal == data.petName or customName == data.petName then return true end
     end
-    if data.itemID then
-        -- Check if it's a toy
-        if PlayerHasToy(data.itemID) then return true end
-        
-        -- Check if it's a regular item in inventory
-        if C_Item.GetItemCount(data.itemID, true, false, false) > 0 then return true end
-        
-        -- Check if it's a learned mount
-        if data.keywords and tContains(data.keywords, "mount") then
-            -- Don't show mounts if they can't be used in current zone
-            if IsIndoors() then
-                return false
-            end
-            -- Method 1: Try getting mount from item
-            local mountID = C_MountJournal.GetMountFromItem(data.itemID)
-            if mountID then
-                local _, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(mountID)
-                if isCollected then
-                    -- Store mountID for use by action buttons
-                    data.mountID = mountID
-                    -- Check if mount can be summoned in current zone
-                    if data.spellID then
-                        local usable = C_Spell.IsSpellUsable(data.spellID)
-                        return usable
-                    end
-                    return true
-                end
-            end
-            
-            -- Method 2: Check if mount spell is known (for mounts that use spells)
-            if data.spellName then
-                -- Iterate through player's mounts to find by name
-                local numMounts = C_MountJournal.GetNumMounts()
-                for i = 1, numMounts do
-                    local name, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(i)
-                    if isCollected and name and name == data.spellName then
-                        -- Store mountID for use by action buttons
-                        data.mountID = i
-                        -- Check if mount can be summoned in current zone
-                        if data.spellID then
-                            local usable = C_Spell.IsSpellUsable(data.spellID)
-                            return usable
-                        end
-                        return true
-                    end
-                end
-            end
-        end
+    return false
+end
+
+local function CanUseItem(data)
+    return data.itemID and C_Item.GetItemCount(data.itemID, true, false, false) > 0
+end
+
+local function CanUseMount(data)
+    if data.actionType ~= "mount" or (IsIndoors and IsIndoors()) then return false end
+    local mountID = data.mountId or (C_MountJournal and C_MountJournal.GetMountFromItem and C_MountJournal.GetMountFromItem(data.itemID))
+    if not mountID then return false end
+    local _, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(mountID)
+    return isCollected
+end
+
+local function CanUseToy(data)
+    return (type(PlayerHasToy) == "function" and PlayerHasToy(data.itemID))
+end
+
+local function CanUseSpell(data)
+    return data.spellID and (IsSpellKnown(data.spellID) or IsPlayerSpell(data.spellID))
+end
+
+function Helpers.CanPlayerUseUtility(data)
+    if data.actionType == "pet" then return CanUsePet(data)
+    elseif data.actionType == "item" then return CanUseItem(data)
+    elseif data.actionType == "mount" then return CanUseMount(data)
+    elseif data.actionType == "toy" then return CanUseToy(data)
+    elseif data.actionType == "spell" then return CanUseSpell(data)
     end
-    
-    if data.spellID then
-        if IsSpellKnown(data.spellID) or IsPlayerSpell(data.spellID) then return true end
-    end
-    
     return false
 end
 
