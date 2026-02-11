@@ -17,6 +17,8 @@ local function Lstr(key, fallback)
     return fallback or key
 end
 
+_G.Lstr = Lstr
+
 local petIconCache = {}
 local function GetPetIconByName(petName)
     if not petName or not C_PetJournal or not C_PetJournal.GetNumPets then
@@ -611,3 +613,4 @@ function BannerController.GetLastOptions()
 end
 
 _G.Nozmie_BannerController = BannerController
+BannerController.ApplyActionAttributes = ApplyActionAttributes
