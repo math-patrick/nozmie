@@ -29,10 +29,11 @@ Data.lua
 Config.lua
 Helpers.lua
 BannerUI.lua
+Utility\ConfigHelpers.lua
 BannerController.lua
+UtilityUI.lua
 Minimap.lua
 Utility\Button.lua
-UtilityUI.lua
 SettingsMixins.lua
 SettingsTemplates.xml
 Settings.lua

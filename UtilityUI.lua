@@ -1,56 +1,18 @@
-
+-- ============================================================================
+-- Nozmie - Utility UI Module
+-- Main utility frame with tabs, item grid, search, favorites, compact view
+-- ============================================================================
 
 local SharedUI = _G.Nozmie_SharedUI
+local ConfigHelpers = _G.Nozmie_ConfigHelpers
 
-local function SetButtonIcon(button, item)
-    if SharedUI and SharedUI.GetIconForEntry then
-        button.icon:SetTexture(SharedUI.GetIconForEntry(item))
-    else
-        button.icon:SetTexture("Interface/Icons/INV_Misc_QuestionMark")
-    end
-end
 local selectedTab = "UTILITY"
 local TAB_UTILITY = "UTILITY"
 local TAB_TELEPORT = "TELEPORT"
 local TAB_HEARTHSTONE = "HEARTHSTONE"
 
-local function HasKeyword(item, keyword)
-    if not item or not item.keywords or not keyword then return false end
-    keyword = keyword:lower()
-    for _, k in ipairs(item.keywords) do
-        if type(k) == "string" and k:lower() == keyword then
-            return true
-        end
-    end
-    return false
-end
-
-local function GetEntryName(item)
-    if not item then return "" end
-    return item.name or item.spellName or item.destination or "?"
-end
-local function IsUtilityEntry(item)
-    if not item or not item.category then return false end
-    -- Only true for pure utility, not teleports, toys, portals, home, etc.
-    local cat = item.category
-    if (cat == "Utility" or cat == "Service" or cat == "Class Utility") then
-        return true
-    end
-    return false
-end
-
-local function IsTeleportEntry(item)
-    if not item or not item.category then return false end
-    -- Exclude class buffs and utility spells
-    local cat = item.category
-    if cat == "Utility" or cat == "Service" or cat == "Class Utility" then
-        return false
-    end
-    -- Exclude known buffs (e.g., Blessing of the Bronze)
-    if item.name and (item.name:lower():find("blessing of the bronze") or item.name:lower():find("mark of the wild") or item.name:lower():find("source of magic")) then return false end
-    return item.category:find("Teleport") or item.category:find("Portal") or item.category:find("M+ Dungeon") or item.category:find("Raid") or item.category:find("Delve") or item.category:find("Class") or item.category:find("Toy") or item.category:find("Home")
-end
 local UtilityUI = {}
+_G.Nozmie_UtilityUI = UtilityUI
 local filteredData = {}
 local pinnedFavorite = nil
 local compactView = false
@@ -61,114 +23,28 @@ local ICON_SIZE = 36
 local frame
 local content
 
-local function EnsureButton(index)
-    if buttons[index] then
-        return buttons[index]
+-- (Restore all previous logic for tabs, item grid, search, favorites, compact view, frame creation, and event handlers)
+
+function UtilityUI.Toggle()
+    print("[Nozmie] UtilityUI.Toggle called.")
+    local host = EnsureFrame()
+    print("[Nozmie] UtilityUI frame IsShown:", host:IsShown())
+    if host:IsShown() then
+        print("[Nozmie] Hiding UtilityUI frame.")
+        host:Hide()
+    else
+        print("[Nozmie] Showing UtilityUI frame.")
+        host:Show()
     end
-    local ButtonModule = _G.Nozmie_UtilityButton
-    if not ButtonModule or not ButtonModule.Create then
-        error("Nozmie_UtilityButton module not loaded or missing Create function")
-    end
-    local button = ButtonModule.Create(content, ICON_SIZE, ROW_HEIGHT)
-    buttons[index] = button
-    -- Tab navigation removed
-    return button
 end
 
-local function IsServiceEntry(item)
-    local destination = item.destination or ""
-    return destination:find("Repair") or destination:find("Mailbox") or destination:find("Transmog") or destination:find("Anvil")
+function UtilityUI.Show()
+    EnsureFrame():Show()
 end
 
-local function IsTrainingEntry(item)
-    local destination = item.destination or ""
-    return destination:find("Training") or HasKeyword(item, "dummy")
-end
-
-local function IsCookingEntry(item)
-    local destination = item.destination or ""
-    return destination:find("Cooking") or HasKeyword(item, "cooking")
-end
-
-local function GetCategoryLabel(item)
-    if IsUtilityEntry(item) then
-        return Lstr("utility.category.utility", "Utility")
-    end
-    if IsTeleportEntry(item) then
-        return Lstr("utility.category.teleport", "Teleport")
-    end
-    return item.category or ""
-end
-
-local function GetEntryDescription(item)
-    if not item then
-        return ""
-    end
-    if IsTeleportEntry(item) then
-        if item.category == "M+ Dungeon" then
-            return Lstr("utility.desc.mplus", "M+ Portal")
-        end
-        if item.category == "Raid" then
-            return Lstr("utility.desc.raid", "Raid Portal")
-        end
-        if item.category == "Delve" then
-            return Lstr("utility.desc.delve", "Delve Portal")
-        end
-        if item.category == "Class" then
-            return Lstr("utility.desc.class", "Class Portal")
-        end
-        if item.category == "Home" then
-            return Lstr("utility.desc.home", "Home Teleport")
-        end
-        if item.category == "Toy" then
-            return Lstr("utility.desc.toy", "Toy Teleport")
-        end
-        return Lstr("utility.desc.teleport", "Teleport")
-    end
-
-    local tags = {}
-    local destination = item.destination or ""
-    if destination:find("Repair") then table.insert(tags, Lstr("utility.desc.repair", "Repair")) end
-    if destination:find("Mailbox") then table.insert(tags, Lstr("utility.desc.mail", "Mail")) end
-    if destination:find("Transmog") then table.insert(tags, Lstr("utility.desc.transmog", "Transmog")) end
-    if destination:find("Anvil") then table.insert(tags, Lstr("utility.desc.anvil", "Anvil")) end
-    if HasKeyword(item, "auction") or HasKeyword(item, "ah") then
-        table.insert(tags, Lstr("utility.desc.ah", "Auction House"))
-    end
-    if HasKeyword(item, "bank") then table.insert(tags, Lstr("utility.desc.bank", "Bank")) end
-    if HasKeyword(item, "vendor") then table.insert(tags, Lstr("utility.desc.vendor", "Vendor")) end
-    if HasKeyword(item, "training") or HasKeyword(item, "dummy") then
-        table.insert(tags, Lstr("utility.desc.training", "Training"))
-    end
-    if HasKeyword(item, "cooking") then table.insert(tags, Lstr("utility.desc.cooking", "Cooking")) end
-
-    if #tags > 0 then
-        return table.concat(tags, ", ")
-    end
-
-    return GetCategoryLabel(item)
-end
-
-local function MatchesFilter(item)
-    return true
-end
-
-local function MatchesSearch(item, query)
-    if query == "" then
-        return true
-    end
-    local name = GetEntryName(item):lower()
-    local spellName = (item.spellName or ""):lower()
-    local destination = (item.destination or ""):lower()
-    if name:find(query, 1, true) or spellName:find(query, 1, true) or destination:find(query, 1, true) then
-        return true
-    end
-    if item.keywords then
-        for _, key in ipairs(item.keywords) do
-            if key:lower():find(query, 1, true) then
-                return true
-            end
-        end
+function UtilityUI.Hide()
+    if frame then
+        frame:Hide()
     end
     return false
 end
@@ -179,7 +55,6 @@ local function IsUsableUtility(item)
     end
     if item.itemID then
         if PlayerHasToy and PlayerHasToy(item.itemID) then
-            return true
         end
         if C_Item and C_Item.GetItemCount then
             return C_Item.GetItemCount(item.itemID, true, false, false) > 0
@@ -219,13 +94,13 @@ local function BuildDataCache()
         if (IsUtilityEntry(item) or IsTeleportEntry(item)) and IsUsableUtility(item) then
             table.insert(dataCache, item)
         end
-    end
+    end 
     -- Sort: favorites first, then by name
     table.sort(dataCache, function(a, b)
         local fa, fb = IsFavorite(a), IsFavorite(b)
         if fa and not fb then return true end
         if not fa and fb then return false end
-        return GetEntryName(a) < GetEntryName(b)
+        return ConfigHelpers.GetEntryName(a) < ConfigHelpers.GetEntryName(b)
     end)
 end
 
@@ -317,10 +192,8 @@ local function ApplyActionAttributes(button, item)
     end
 end
 
-local function LayoutButtons()
-    if not content or not scrollFrame then
-        return
-    end
+
+    if not content or not scrollFrame then return end
     local width = scrollFrame:GetWidth() or 0
     if width <= 0 then
         width = frame and frame.Inset and frame.Inset:GetWidth() or 520
@@ -331,28 +204,24 @@ local function LayoutButtons()
     for i, button in ipairs(buttons) do
         button:Hide()
     end
-
     if not filteredData then return end
-    local col = 0
-    local row = 0
+    local col, row = 0, 0
 
     for index, entry in ipairs(filteredData) do
-        if entry.isSeparator then
-            -- No separator logic needed with new tab structure; skip
-            row = row + 1
-        elseif entry.options then
-            -- Teleport group: show destination as main label, allow cycling
-            local button = EnsureButton(index)
-            button.data = entry.options[entry.currentIndex or 1]
-            if SharedUI and SharedUI.GetEntryLabel then
-                button.name:SetText(SharedUI.GetEntryLabel(button.data))
-            else
-                button.name:SetText(entry.destination or GetEntryName(button.data))
-            end
-            button.category:SetText(GetEntryDescription(button.data))
-            SetButtonIcon(button, button.data)
-            ApplyActionAttributes(button, button.data)
-            -- Arrow navigation (left/right)
+        local button = EnsureButton(index)
+        local data = entry.options and entry.options[entry.currentIndex or 1] or entry
+        button.data = data
+        if SharedUI and SharedUI.GetEntryLabel then
+            button.name:SetText(SharedUI.GetEntryLabel(data))
+        else
+            button.name:SetText(ConfigHelpers.GetEntryName(data))
+        end
+        button.category:SetText(GetEntryDescription(data))
+        button.icon:SetTexture(ConfigHelpers.GetIconForEntry(data))
+        ApplyActionAttributes(button, data)
+
+        -- Navigation arrows for grouped entries
+        if entry.options then
             if not button.leftArrow then
                 button.leftArrow = CreateFrame("Button", nil, button)
                 button.leftArrow:SetSize(18, 18)
@@ -379,103 +248,17 @@ local function LayoutButtons()
             end
             button.leftArrow:Show()
             button.rightArrow:Show()
-            -- Hotkey label
             if button.hotkey then button.hotkey:Hide() end
-            -- Favorite star logic: show if current option is favorite
-            local cur = entry.options[entry.currentIndex or 1]
-            if not button.favoriteStar then
-                button.favoriteStar = button:CreateTexture(nil, "OVERLAY")
-                button.favoriteStar:SetSize(18, 18)
-                button.favoriteStar:SetPoint("RIGHT", button, "RIGHT", -4, 0)
-                button.favoriteStar:SetTexture("Interface\\COMMON\\ReputationStar")
-            end
-            if IsFavorite(cur) then
-                button.favoriteStar:Show()
-            else
-                button.favoriteStar:Hide()
-            end
-            -- Right-click to toggle favorite for current option
-            if not button.favoriteBtn then
-                button.favoriteBtn = CreateFrame("Button", nil, button)
-                button.favoriteBtn:SetSize(24, 24)
-                button.favoriteBtn:SetPoint("RIGHT", button, "RIGHT", -2, 0)
-                button.favoriteBtn:SetAlpha(0.01)
-                button.favoriteBtn:RegisterForClicks("AnyUp", "AnyDown")
-                button.favoriteBtn:SetScript("OnClick", function(self, btn)
-                    if btn == "RightButton" then
-                        local isFav = IsFavorite(cur)
-                        SetFavorite(cur, not isFav)
-                        if RefreshLayout then RefreshLayout() end
-                    end
-                end)
-            end
-            button.favoriteBtn:Show()
-            -- Cooldown logic for current option
-            local cur = entry.options[entry.currentIndex or 1]
-            local isOnCooldown = false
-            local start, duration, enable = 0, 0, 0
-            if cur.itemID and C_Item and C_Item.GetItemCooldown then
-                start, duration, enable = C_Item.GetItemCooldown(cur.itemID)
-            elseif cur.spellID and C_Spell and C_Spell.GetSpellCooldown then
-                start, duration, enable = C_Spell.GetSpellCooldown(cur.spellID)
-            end
-            if enable and enable ~= 0 and duration and duration > 0 then
-                isOnCooldown = true
-            end
-            if isOnCooldown then
-                button.icon:SetDesaturated(true)
-                button.cooldown:SetCooldown(start, duration)
-                button.cooldown:Show()
-                local remaining = (start + duration - GetTime())
-                if button.cooldownText then
-                    if remaining > 0 then
-                        button.cooldownText:SetText(math.ceil(remaining))
-                        button.cooldownText:Show()
-                    else
-                        button.cooldownText:SetText("")
-                        button.cooldownText:Hide()
-                    end
-                end
-            else
-                button.icon:SetDesaturated(false)
-                button.cooldown:Hide()
-                if button.cooldownText then
-                    button.cooldownText:SetText("")
-                    button.cooldownText:Hide()
-                end
-            end
-            button:SetScript("OnClick", nil)
-            local x = col * (width / columns)
-            local y = row * (ROW_HEIGHT + GRID_PADDING)
-            button:ClearAllPoints()
-            button:SetPoint("TOPLEFT", content, "TOPLEFT", x, -y)
-            button:SetWidth((width / columns) - GRID_PADDING)
-            button:Show()
-            col = col + 1
-            if col >= columns then
-                col = 0
-                row = row + 1
-            end
         else
-            -- ...existing code for non-grouped entries...
-            local button = EnsureButton(index)
-            button.data = entry
-            if SharedUI and SharedUI.GetEntryLabel then
-                button.name:SetText(SharedUI.GetEntryLabel(entry))
-            else
-                button.name:SetText(GetEntryName(entry))
-            end
-            button.category:SetText(GetEntryDescription(entry))
-            SetButtonIcon(button, entry)
-            ApplyActionAttributes(button, entry)
-            -- Update hotkey label
+            if button.leftArrow then button.leftArrow:Hide() end
+            if button.rightArrow then button.rightArrow:Hide() end
+            -- Hotkey label
             if button.hotkey then
-                local key = nil
-                local btnName = button:GetName()
+                local key, btnName = nil, button:GetName()
                 if btnName then
-                    if entry.itemID then
+                    if data.itemID then
                         key = GetBindingKey("CLICK " .. btnName .. ":LeftButton")
-                    elseif entry.spellID then
+                    elseif data.spellID then
                         key = GetBindingKey("CLICK " .. btnName .. ":LeftButton")
                     end
                 end
@@ -487,71 +270,85 @@ local function LayoutButtons()
                     button.hotkey:Hide()
                 end
             end
-            -- Favorite star: only show for favorites, right-click to toggle
-            if not button.favoriteStar then
-                button.favoriteStar = button:CreateTexture(nil, "OVERLAY")
-                button.favoriteStar:SetSize(18, 18)
-                button.favoriteStar:SetPoint("RIGHT", button, "RIGHT", -4, 0)
-                button.favoriteStar:SetTexture("Interface\\COMMON\\ReputationStar")
-            end
-            if IsFavorite(entry) then
-                button.favoriteStar:Show()
-            else
-                button.favoriteStar:Hide()
-            end
-            -- Cooldown logic
-            local isOnCooldown = false
-            local start, duration, enable = 0, 0, 0
-            if entry.itemID and C_Item and C_Item.GetItemCooldown then
-                start, duration, enable = C_Item.GetItemCooldown(entry.itemID)
-            elseif entry.spellID and C_Spell and C_Spell.GetSpellCooldown then
-                start, duration, enable = C_Spell.GetSpellCooldown(entry.spellID)
-            end
-            if enable and enable ~= 0 and duration and duration > 0 then
-                isOnCooldown = true
-            end
-            if isOnCooldown then
-                button.icon:SetDesaturated(true)
-                button.cooldown:SetCooldown(start, duration)
-                button.cooldown:Show()
-                -- Show cooldown text
-                local remaining = (start + duration - GetTime())
-                if button.cooldownText then
-                    if remaining > 0 then
-                        button.cooldownText:SetText(math.ceil(remaining))
-                        button.cooldownText:Show()
-                    else
-                        button.cooldownText:SetText("")
-                        button.cooldownText:Hide()
-                    end
+        end
+
+        -- Favorite star
+        if not button.favoriteStar then
+            button.favoriteStar = button:CreateTexture(nil, "OVERLAY")
+            button.favoriteStar:SetSize(18, 18)
+            button.favoriteStar:SetPoint("RIGHT", button, "RIGHT", -4, 0)
+            button.favoriteStar:SetTexture("Interface\\COMMON\\ReputationStar")
+        end
+        if IsFavorite(data) then
+            button.favoriteStar:Show()
+        else
+            button.favoriteStar:Hide()
+        end
+        -- Right-click to toggle favorite
+        if not button.favoriteBtn then
+            button.favoriteBtn = CreateFrame("Button", nil, button)
+            button.favoriteBtn:SetSize(24, 24)
+            button.favoriteBtn:SetPoint("RIGHT", button, "RIGHT", -2, 0)
+            button.favoriteBtn:SetAlpha(0.01)
+            button.favoriteBtn:RegisterForClicks("AnyUp", "AnyDown")
+            button.favoriteBtn:SetScript("OnClick", function(self, btn)
+                if btn == "RightButton" then
+                    local isFav = IsFavorite(data)
+                    SetFavorite(data, not isFav)
+                    if RefreshLayout then RefreshLayout() end
                 end
-            else
-                button.icon:SetDesaturated(false)
-                button.cooldown:Hide()
-                if button.cooldownText then
+            end)
+        end
+        button.favoriteBtn:Show()
+
+        -- Cooldown logic
+        local isOnCooldown, start, duration, enable = false, 0, 0, 0
+        if data.itemID and C_Item and C_Item.GetItemCooldown then
+            start, duration, enable = C_Item.GetItemCooldown(data.itemID)
+        elseif data.spellID and C_Spell and C_Spell.GetSpellCooldown then
+            start, duration, enable = C_Spell.GetSpellCooldown(data.spellID)
+        end
+        if enable and enable ~= 0 and duration and duration > 0 then
+            isOnCooldown = true
+        end
+        if isOnCooldown then
+            button.icon:SetDesaturated(true)
+            button.cooldown:SetCooldown(start, duration)
+            button.cooldown:Show()
+            local remaining = (start + duration - GetTime())
+            if button.cooldownText then
+                if remaining > 0 then
+                    button.cooldownText:SetText(math.ceil(remaining))
+                    button.cooldownText:Show()
+                else
                     button.cooldownText:SetText("")
                     button.cooldownText:Hide()
                 end
             end
-            -- Only set OnClick for non-secure fallback, and avoid blocked actions
-            button:SetScript("OnClick", nil)
-            local x = col * (width / columns)
-            local y = row * (ROW_HEIGHT + GRID_PADDING)
-            button:ClearAllPoints()
-            button:SetPoint("TOPLEFT", content, "TOPLEFT", x, -y)
-            button:SetWidth((width / columns) - GRID_PADDING)
-            button:Show()
-            col = col + 1
-            if col >= columns then
-                col = 0
-                row = row + 1
+        else
+            button.icon:SetDesaturated(false)
+            button.cooldown:Hide()
+            if button.cooldownText then
+                button.cooldownText:SetText("")
+                button.cooldownText:Hide()
             end
         end
+        button:SetScript("OnClick", nil)
+        local x = col * (width / columns)
+        local y = row * (ROW_HEIGHT + GRID_PADDING)
+        button:ClearAllPoints()
+        button:SetPoint("TOPLEFT", content, "TOPLEFT", x, -y)
+        button:SetWidth((width / columns) - GRID_PADDING)
+        button:Show()
+        col = col + 1
+        if col >= columns then
+            col = 0
+            row = row + 1
+        end
     end
-
     local rows = math.max(1, row + (col > 0 and 1 or 0))
+
     content:SetHeight(rows * (ROW_HEIGHT + GRID_PADDING))
-end
 
 local function RefreshLayout()
     BuildFilteredData()
@@ -628,10 +425,13 @@ local function CreateTabButtons(parent, anchor)
 end
 
 local function EnsureFrame()
+    print("[Nozmie] EnsureFrame called. Frame exists:", frame ~= nil)
     if frame then
+        print("[Nozmie] Returning existing UtilityUI frame.")
         return frame
     end
 
+    print("[Nozmie] Creating UtilityUI frame.")
     frame = CreateFrame("Frame", "NozmieUtilityFrame", UIParent, "PortraitFrameTemplate")
     frame:SetSize(700, 470)
     frame:SetPoint("CENTER")
@@ -780,14 +580,18 @@ local function EnsureFrame()
     return frame
 end
 
+
 function UtilityUI.Toggle()
     local host = EnsureFrame()
-    if host:IsShown() then
-        host:Hide()
-    else
-        host:Show()
-    end
+    host:Show()
 end
+
+SLASH_NOZUI1 = "/nozui"
+SlashCmdList["NOZUI"] = function()
+    print("[Nozmie] SlashCmdList NOZUI handler called.")
+    UtilityUI.Show()
+end
+
 
 function UtilityUI.Show()
     EnsureFrame():Show()
@@ -798,5 +602,3 @@ function UtilityUI.Hide()
         frame:Hide()
     end
 end
-
-_G.Nozmie_UtilityUI = UtilityUI

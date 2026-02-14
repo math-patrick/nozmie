@@ -7,6 +7,7 @@ local Helpers = Nozmie_Helpers
 local BannerUI = Nozmie_BannerUI
 
 local BannerController = {}
+local ConfigHelpers = _G.Nozmie_ConfigHelpers
 local RefreshBannerDisplay
 
 local Locale = _G.Nozmie_Locale
@@ -19,27 +20,7 @@ end
 
 _G.Lstr = Lstr
 
-local petIconCache = {}
-local function GetPetIconByName(petName)
-    if not petName or not C_PetJournal or not C_PetJournal.GetNumPets then
-        return nil
-    end
-    if petIconCache[petName] ~= nil then
-        return petIconCache[petName]
-    end
 
-    local numPets = C_PetJournal.GetNumPets()
-    for index = 1, numPets do
-        local _, _, _, customName, _, _, _, petNameFromJournal, icon = C_PetJournal.GetPetInfoByIndex(index)
-        if petNameFromJournal == petName or customName == petName then
-            petIconCache[petName] = icon
-            return icon
-        end
-    end
-
-    petIconCache[petName] = nil
-    return nil
-end
 
 local STACK_GAP = 8
 local lastOptions
@@ -186,7 +167,7 @@ local function UpdateBannerForCooldown(banner, data, remaining)
         data = data
     }
 
-    local cooldownTitle = string.format(Lstr("banner.cooldownTitle", "%s is on cooldown"), data.spellName or data.name)
+    local cooldownTitle = string.format(Lstr("banner.cooldownTitle", "%s is on cooldown"), ConfigHelpers.GetEntryName(data))
     banner.title:SetText(cooldownTitle)
 
     local timeText = Helpers.FormatCooldownTime(remaining)
@@ -281,12 +262,10 @@ local function SetSpellIcon(banner, data)
         banner:SetAttribute("type", "spell")
         banner:SetAttribute("spell", data.spellID or spellName)
     end
-end
-
-local function SetItemIcon(banner, data)
-    local iconTexture = C_Item.GetItemIconByID(data.itemID)
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
+    if data.mountId then
+        banner:SetScript("PreClick", function()
+            C_MountJournal.SummonByID(data.mountId)
+        end)
     end
     banner:SetAttribute("type", "macro")
     banner:SetAttribute("macrotext", "/use item:" .. tostring(data.itemID))
@@ -332,20 +311,8 @@ local function PreventRightClickAction(banner)
 end
 
 local function UpdateBannerIcon(banner, data)
-    ClearBannerAttributes(banner)
-
-    if data.actionType == "pet" then
-        SetPetIcon(banner, data)
-    elseif data.actionType == "spell" and data.spellID then
-        SetSpellIcon(banner, data)
-    elseif data.actionType == "item" and data.itemID then
-        SetItemIcon(banner, data)
-    elseif data.actionType == "mount" and data.mountId then
-        SetMountIcon(banner, data)
-    elseif data.actionType == "toy" and data.itemID then
-        SetToyIcon(banner, data)
-    end
-
+    SetBannerIcon(banner, data)
+    SetBannerAttributes(banner, data)
     PreventRightClickAction(banner)
 end
 

@@ -101,7 +101,7 @@ function SettingsModule.InitializeDB()
         preferPortals = true,
         autoHideBanner = true,
         hideDragIcon = false,
-        minimapIcon = false,
+        minimapIcon = true,
         bannerTimeout = 10,
         detectInSay = true,
         detectInParty = true,
