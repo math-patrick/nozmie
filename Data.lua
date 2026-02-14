@@ -1,4 +1,3 @@
-
 -- ============================================================================
 -- Nozmie - Data Module
 -- Contains all teleport spells, items, and toys organized by category
@@ -281,7 +280,7 @@ local WarWithinSeason1 = {{
     spellName = "Path of the Arathi Flagship",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"dawnbreaker", "dawn breaker", "arathi flagship"}
+    keywords = {"dawnbreaker", "dawn breaker", "arathi flagship", "db"}
 }, {
     name = "Priory of the Sacred Flame",
     spellID = 445444,
@@ -1554,6 +1553,19 @@ local TeleportToys = {{
     cooldown = "15 min",
     destination = "Shadowlands (Random)",
     keywords = {"shadowlands", "wormhole", "sl", "bastion", "maldraxxus", "ardenweald", "revendreth", "the maw", "maw"}
+},{
+    name = "Wyrmhole Generator: Dragon Isles",
+    itemID = 198156,
+    spellName = "Wyrmhole Generator: Dragon Isles",
+    actionType = "toy",
+    category = "Toy",
+    cooldown = "15 min",
+    destination = "Dragon Isles (Random)",
+    keywords = {
+        "dragon isles", "wyrmhole", "wormhole", "wyrmhole generator", "dragon isles generator",
+        "valdrakken", "thaldraszus", "the waking shores", "waking shores", "ohn'ahran plains", "ohnahran plains", "ohnahran", "ohn'ahran",
+        "azure span", "the azure span", "forbidden reach", "zaralek caverns", "zaralek", "caverns", "emerald dream", 
+    }
 }, {
     name = "Wormhole Generator: Khaz Algar",
     itemID = 221966,
