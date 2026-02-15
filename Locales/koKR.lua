@@ -1,6 +1,8 @@
 Nozmie_Locales = Nozmie_Locales or {}
 Nozmie_Locales["koKR"] = {
     strings = {
+        ["settings.suppress.option.teleports"] = "포탈/텔레포트/M+ 던전/공격대",
+        ["settings.suppress.option.utilityservice"] = "서비스 (우편, 수리, 형상변환)",
         ["addon.name"] = "Nozmie",
         ["settings.section.general"] = "일반",
         ["settings.section.banner"] = "Banner",

@@ -1,6 +1,8 @@
 Nozmie_Locales = Nozmie_Locales or {}
 Nozmie_Locales["deDE"] = {
     strings = {
+        ["settings.suppress.option.teleports"] = "Portale/Teleports/M+ Dungeons/Raids",
+        ["settings.suppress.option.utilityservice"] = "Dienstleistung (Post, Reparatur, Transmog)",
         ["addon.name"] = "Nozmie",
         ["settings.section.general"] = "Allgemein",
         ["settings.section.banner"] = "Banner",

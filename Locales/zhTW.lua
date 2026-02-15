@@ -1,6 +1,8 @@
 Nozmie_Locales = Nozmie_Locales or {}
 Nozmie_Locales["zhTW"] = {
     strings = {
+        ["settings.suppress.option.teleports"] = "傳送門/傳送/M+地城/團隊",
+        ["settings.suppress.option.utilityservice"] = "服務（信箱、修理、塑形）",
         ["addon.name"] = "Nozmie",
         ["settings.section.general"] = "一般",
         ["settings.section.banner"] = "Banner",

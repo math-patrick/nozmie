@@ -18,8 +18,3 @@ AddAll(DelveTeleports)
 if _G.Nozmie_Locale and _G.Nozmie_Locale.ApplyKeywordAliases then
     _G.Nozmie_Locale.ApplyKeywordAliases(Nozmie_Data)
 end
-
-
-for key, value in pairs(Expansions) do
-    print(key, value)
-end
