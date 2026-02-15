@@ -1,0 +1,10 @@
+{
+  "name": "nozmie-addon",
+  "version": "1.5.0-alpha.1",
+  "description": "Nozmie WoW Addon packaging automation",
+  "scripts": {
+    "bump:alpha": "npm version prerelease --preid=alpha && git push && git push --tags",
+    "tag:alpha": "git tag v$(node -p 'require(\"./package.json\").version') && git push origin v$(node -p 'require(\"./package.json\").version')"
+  },
+  "devDependencies": {}
+}
