@@ -1,14 +1,9 @@
--- ============================================================================
--- Nozmie - Configuration Module
--- Banner dimensions, colors, and chat events
--- ============================================================================
-
 local Config = {
     BANNER = {
         WIDTH = 420,
         HEIGHT = 68
     },
-    
+
     COLORS = {
         BACKDROP_NORMAL = {0.05, 0.06, 0.08, 0.92},
         BACKDROP_COOLDOWN = {0.05, 0.06, 0.08, 0.75},
@@ -19,16 +14,9 @@ local Config = {
         ACCENT = {0.24, 0.55, 0.95, 1},
         ACCENT_SOFT = {0.24, 0.55, 0.95, 0.35}
     },
-    
-    CHAT_EVENTS = {
-        "CHAT_MSG_SAY",
-        "CHAT_MSG_PARTY",
-        "CHAT_MSG_PARTY_LEADER",
-        "CHAT_MSG_INSTANCE_CHAT",
-        "CHAT_MSG_RAID",
-        "CHAT_MSG_GUILD",
-        "CHAT_MSG_WHISPER"
-    }
+
+    CHAT_EVENTS = {"CHAT_MSG_SAY", "CHAT_MSG_PARTY", "CHAT_MSG_PARTY_LEADER", "CHAT_MSG_INSTANCE_CHAT", "CHAT_MSG_RAID",
+                   "CHAT_MSG_GUILD", "CHAT_MSG_WHISPER"}
 }
 
 _G.Nozmie_Config = Config

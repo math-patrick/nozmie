@@ -2,7 +2,6 @@
 -- Nozmie - Initialization Module
 -- Event registration, chat filtering, and slash commands
 -- ============================================================================
-
 local Config = Nozmie_Config
 local Detector = Nozmie_Detector
 local BannerUI = Nozmie_BannerUI
@@ -29,7 +28,7 @@ local chatEventKeys = {
     CHAT_MSG_INSTANCE_CHAT = "party",
     CHAT_MSG_RAID = "raid",
     CHAT_MSG_GUILD = "guild",
-    CHAT_MSG_WHISPER = "whisper",
+    CHAT_MSG_WHISPER = "whisper"
 }
 
 local function QueueMatches(matches)
@@ -63,7 +62,7 @@ local function OnChatMessage(self, event, message, sender)
     if not Settings.Get("enabled") then
         return false
     end
-    
+
     -- Check if this chat type should be monitored
     local shouldMonitor = false
     local chatList = Settings.Get("detectChatList")
@@ -90,7 +89,7 @@ local function OnChatMessage(self, event, message, sender)
             shouldMonitor = true
         end
     end
-    
+
     if not shouldMonitor then
         return false
     end
@@ -102,7 +101,7 @@ local function OnChatMessage(self, event, message, sender)
             return false
         end
     end
-    
+
     local matches = Detector.FindMatchingTeleports(message, sender)
     if #matches > 0 then
         for _, match in ipairs(matches) do
@@ -130,20 +129,22 @@ end
 
 local function HandleCommand(args)
     local cmd = args:lower():trim()
-    
+
     if cmd == "settings" or cmd == "config" or cmd == "options" or cmd == "" then
         Settings.Show()
     elseif cmd:match("^blacklist%s+(.+)") then
         local words = args:match("^blacklist%s+(.+)")
         Settings.Set("blacklistedWords", words)
-        local message = string.format(Lstr("cmd.blacklist.updated", "Blacklist updated to: %s"), "|cffFFFFFF" .. words .. "|r")
+        local message = string.format(Lstr("cmd.blacklist.updated", "Blacklist updated to: %s"),
+            "|cffFFFFFF" .. words .. "|r")
         print("|cff00ff00Nozmie:|r " .. message)
     elseif cmd == "blacklist" then
         local current = Settings.Get("blacklistedWords") or ""
         if current == "" then
             print("|cff00ff00Nozmie:|r " .. Lstr("cmd.blacklist.none", "No blacklisted words set."))
         else
-            local message = string.format(Lstr("cmd.blacklist.current", "Current blacklist: %s"), "|cffFFFFFF" .. current .. "|r")
+            local message = string.format(Lstr("cmd.blacklist.current", "Current blacklist: %s"),
+                "|cffFFFFFF" .. current .. "|r")
             print("|cff00ff00Nozmie:|r " .. message)
         end
         print("|cffFFFFFF" .. Lstr("cmd.blacklist.usage", "  Usage: /noz blacklist <word1, word2, ...>"))
@@ -152,7 +153,8 @@ local function HandleCommand(args)
         if Minimap then
             Minimap.UpdateVisibility()
         end
-        local state = Settings.Get("minimapIcon") and Lstr("state.enabled", "enabled") or Lstr("state.disabled", "disabled")
+        local state = Settings.Get("minimapIcon") and Lstr("state.enabled", "enabled") or
+                          Lstr("state.disabled", "disabled")
         local message = string.format(Lstr("cmd.minimap.toggled", "Minimap icon %s."), state)
         print("|cff00ff00Nozmie:|r " .. message)
     elseif cmd == "last" then
@@ -169,32 +171,28 @@ local function HandleCommand(args)
 end
 
 local function Initialize()
-    print("|cff00ff00Nozmie:|r " .. Lstr("init.initializing", "Initializing..."))
-    
     -- Initialize settings database
     Settings.InitializeDB()
-    
+
     -- Create settings panel
     Settings.CreatePanel()
-    
+
     -- Create banner
     banner = BannerUI.CreateBanner()
-    
+
     if Minimap then
         Minimap.Initialize()
     end
-    
+
     -- Register chat event filters
     for _, event in ipairs(Config.CHAT_EVENTS) do
         ChatFrame_AddMessageEventFilter(event, OnChatMessage)
     end
-    
+
     -- Register slash commands
     SLASH_NOZMIE1 = "/nozmie"
     SLASH_NOZMIE2 = "/noz"
     SlashCmdList["NOZMIE"] = HandleCommand
-    
-    print("|cff00ff00Nozmie|r " .. Lstr("init.loaded", "loaded! Type /noz for settings."))
 end
 
 addon:RegisterEvent("ADDON_LOADED")

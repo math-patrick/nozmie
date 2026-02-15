@@ -16,6 +16,12 @@ Locales\zhCN.lua
 Locales\zhTW.lua
 Locales\koKR.lua
 Locales\ptBR.lua
+Data\Class.lua
+Data\Expansions.lua
+Data\Hearthstones.lua
+Data\Mage.lua
+Data\Portals.lua
+Data\Utility.lua
 Data.lua
 Config.lua
 Helpers.lua

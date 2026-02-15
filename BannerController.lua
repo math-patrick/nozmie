@@ -203,40 +203,19 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     banner.isOnCooldown = false
 
     local actionVerb = Lstr("banner.action.use", "Use")
-    if data.actionType == "pet" then
+    if data.actionType == "pet" or data.actionType == "mount" or (data.category == "Utility") then
         actionVerb = Lstr("banner.action.summon", "Summon")
-    elseif data.actionType == "mount" then
-        actionVerb = Lstr("banner.action.summon", "Summon")
-    elseif data.actionType == "spell" then
-        if data.category and data.category:find("Utility") then
-            if data.destination and
-                (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Transmog") or
-                    data.destination:find("Anvil")) then
-                actionVerb = Lstr("banner.action.summon", "Summon")
-            elseif data.keywords and
-                (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or tContains(data.keywords, "motw") or
-                    tContains(data.keywords, "intellect")) then
-                actionVerb = Lstr("banner.action.cast", "Cast")
-            else
-                actionVerb = Lstr("banner.action.use", "Use")
-            end
-        elseif data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category ==
-            "Home" or data.category == "Class" or data.category == "Toy" then
-            actionVerb = Lstr("banner.action.teleport", "Teleport to")
-        else
-            actionVerb = Lstr("banner.action.use", "Use")
-        end
-    elseif data.actionType == "toy" then
+    elseif data.actionType == "spell" and data.category and data.category:find("Class") then
+        actionVerb = Lstr("banner.action.cast", "Cast")
+    elseif data.category and data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or
+        data.category == "Home" or data.category == "Toy" then
         actionVerb = Lstr("banner.action.teleport", "Teleport to")
-    elseif data.actionType == "item" then
-        actionVerb = Lstr("banner.action.use", "Use")
     end
 
     local text = string.format(Lstr("banner.titleWithDestination", "%s %s?"), actionVerb, data.destination or data.name)
 
     banner.title:SetText(text)
 
-    -- Context-aware subtitle
     local actionText = Lstr("banner.actionText.use", "use")
     if actionVerb == Lstr("banner.action.teleport", "Teleport to") then
         actionText = Lstr("banner.actionText.teleport", "teleport")
@@ -246,7 +225,6 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
         actionText = Lstr("banner.actionText.summon", "summon")
     end
 
-    -- Show target player if casting on someone specific
     local targetInfo = ""
     local playerName = UnitName("player")
     if data.targetPlayer and data.targetPlayer ~= playerName then
@@ -503,11 +481,8 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
                 local sent = Helpers.SendMessageForEvent(message, self.cooldownData.data.sourceEvent,
                     self.cooldownData.data.sourceSender)
                 if not sent then
-                    if Helpers.IsInAnyGroup() then
-                        SendChatMessage(message, Helpers.GetGroupChatChannel())
-                    else
-                        SendChatMessage(message, "SAY")
-                    end
+                    C_ChatInfo.SendChatMessage(message,
+                    Helpers.IsInAnyGroup() and Helpers.GetGroupChatChannel() or "SAY")
                 end
                 if Helpers.MarkAnnounce then
                     Helpers.MarkAnnounce(message)
@@ -567,7 +542,6 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
         UIFrameFadeIn(banner, 0.4, 0, 1)
     end
 
-    -- Auto-hide banner if enabled
     local Settings = Nozmie_Settings
     if Settings.Get("autoHideBanner") then
         local timeout = Settings.Get("bannerTimeout") or 10

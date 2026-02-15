@@ -1,8 +1,3 @@
--- ============================================================================
--- Nozmie - Localization Loader
--- Provides localized strings and keyword aliases with English fallback
--- ============================================================================
-
 Nozmie_Locales = Nozmie_Locales or {}
 
 local Locale = {}

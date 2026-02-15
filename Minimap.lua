@@ -1,8 +1,3 @@
--- ============================================================================
--- Nozmie - Minimap Module
--- Optional minimap icon that can reopen the last banner
--- ============================================================================
-
 local MinimapModule = {}
 local minimapButton
 
@@ -27,7 +22,9 @@ local function SetAngle(angle)
 end
 
 local function UpdatePosition()
-    if not minimapButton then return end
+    if not minimapButton then
+        return
+    end
     local angle = math.rad(GetAngle())
     local radius = (Minimap:GetWidth() / 2) + 5
     local x = math.cos(angle) * radius
@@ -37,7 +34,9 @@ local function UpdatePosition()
 end
 
 local function EnsureButton()
-    if minimapButton then return minimapButton end
+    if minimapButton then
+        return minimapButton
+    end
 
     minimapButton = CreateFrame("Button", "NozmieMinimapButton", Minimap)
     minimapButton:SetSize(32, 32)
@@ -52,18 +51,8 @@ local function EnsureButton()
     icon:SetSize(24, 24)
     icon:SetPoint("CENTER", 0, 0)
     icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-    if icon.AddMaskTexture then
-        local mask = minimapButton:CreateMaskTexture()
-        mask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-        mask:SetAllPoints(icon)
-        icon:AddMaskTexture(mask)
-    elseif icon.SetMaskTexture then
-        local minimapMask = Minimap and Minimap.GetMaskTexture and Minimap:GetMaskTexture() or nil
-        if minimapMask then
-            icon:SetMaskTexture(minimapMask)
-        else
-            icon:SetMaskTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask")
-        end
+    if icon.SetMask then
+        icon:SetMask("Interface\\Minimap\\UI-Minimap-Background")
     end
     minimapButton.icon = icon
     local highlight = minimapButton:GetHighlightTexture()
@@ -75,7 +64,8 @@ local function EnsureButton()
     minimapButton:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
         GameTooltip:SetText(Lstr("minimap.title", "Nozmie"))
-        local last = _G.Nozmie_BannerController and _G.Nozmie_BannerController.GetLastOptions and _G.Nozmie_BannerController.GetLastOptions()
+        local last = _G.Nozmie_BannerController and _G.Nozmie_BannerController.GetLastOptions and
+                         _G.Nozmie_BannerController.GetLastOptions()
         if last and last[1] then
             local name = last[1].spellName or last[1].name or Lstr("minimap.unknown", "Unknown")
             local lastLine = string.format(Lstr("minimap.lastBanner", "Last banner: %s"), name)
