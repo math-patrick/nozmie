@@ -3,85 +3,60 @@ Hearthstones = {{
     itemID = 6948,
     spellID = 8690,
     spellName = "Hearthstone",
-    actionType = "spell",
+    actionType = "item",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn"}
+    keywords = {"hearthstone", "hearth", "inn"}
 }, {
+    name = "The Innkeeper's Daughter",
+    itemID = 64488,
+    spellName = "The Innkeeper's Daughter",
+    actionType = "toy",
+    category = "Home",
+    cooldown = "30 min",
+    destination = "Home",
+    keywords = {"hearthstone", "hearth", "inn"}
+},  {
     name = "Dark Portal",
     itemID = 93672,
     spellName = "Dark Portal",
-    actionType = "item",
+    actionType = "toy",
     category = "Home",
     cooldown = "No CD",
-    keywords = {"dark portal"}
+    keywords = {"hearthstone", "hearth", "inn"}
 }, {
     name = "Ethereal Portal",
     itemID = 54452,
     spellName = "Ethereal Portal",
-    actionType = "item",
+    actionType = "toy",
     category = "Home",
     cooldown = "No CD",
-    keywords = {"ethereal"}
-}, {
-    name = "Scroll of Recall",
-    itemID = 37118,
-    spellName = "Scroll of Recall",
-    actionType = "item",
-    category = "Home",
-    cooldown = "No CD",
-    keywords = {"scroll of recall", "recall"}
-}, {
-    name = "Scroll of Recall II",
-    itemID = 44314,
-    spellName = "Scroll of Recall II",
-    actionType = "item",
-    category = "Home",
-    cooldown = "No CD",
-    keywords = {"scroll of recall", "recall"}
-}, {
-    name = "Scroll of Recall III",
-    itemID = 44315,
-    spellName = "Scroll of Recall III",
-    actionType = "item",
-    category = "Home",
-    cooldown = "No CD",
-    keywords = {"scroll of recall", "recall"}
-}, {
+    keywords ={"hearthstone", "hearth", "inn"}
+},{
     name = "Astonishingly Scarlet Slippers",
     itemID = 142298,
     spellName = "Astonishingly Scarlet Slippers",
-    actionType = "item",
+    actionType = "toy",
     category = "Home",
     cooldown = "No CD",
-    keywords = {"scarlet slippers", "slippers"}
+    keywords ={"hearthstone", "hearth", "inn"}
 }, {
     name = "Scroll of Town Portal",
     itemID = 142543,
     spellName = "Scroll of Town Portal",
-    actionType = "item",
+    actionType = "toy",
     category = "Home",
     cooldown = "No CD",
-    keywords = {"town portal", "portal scroll"}
+    keywords = {"hearthstone", "hearth", "inn"}
 }, {
     name = "Tome of Town Portal",
     itemID = 142542,
     spellName = "Tome of Town Portal",
-    actionType = "item",
-    category = "Home",
-    cooldown = "No CD",
-    keywords = {"tome", "town portal"}
-}, {
-    name = "Dalaran Hearthstone",
-    itemID = 140192,
-    spellID = 193759,
-    spellName = "Dalaran Hearthstone",
-    destination = "Dalaran",
     actionType = "toy",
     category = "Home",
-    cooldown = "20 min",
-    keywords = {"dalaran", "dal", "dalaran hearth"}
-}, -- Hearthstone Toys (cosmetic variants)
+    cooldown = "No CD",
+    keywords = {"hearthstone", "hearth", "inn"}
+},  
 {
     name = "Eternal Traveler's Hearthstone",
     itemID = 172179,

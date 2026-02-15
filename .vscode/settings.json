@@ -22,6 +22,12 @@
         "MinimalSliderWithSteppersMixin",
         "StaticPopup_Show",
         "ChatFrame1",
-        "LE_PARTY_CATEGORY_INSTANCE"
+        "LE_PARTY_CATEGORY_INSTANCE",
+        "UIParent",
+        "tContains",
+        "UIFrameFadeIn",
+        "UIFrameFadeOut",
+        "GameTooltip",
+        "Minimap"
     ]
 }

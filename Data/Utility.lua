@@ -1,4 +1,4 @@
-ServiceToys = {{
+ServiceToys = { {
     name = "Jeeves",
     itemID = 49040,
     spellName = "Jeeves",
@@ -6,7 +6,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "1 hour",
     destination = "Jeeves",
-    keywords = {"jeeves", "repair", "vendor", "bank"}
+    keywords = { "jeeves", "repair", "vendor", "bank" }
 }, {
     name = "Auto-Hammer",
     itemID = 23767,
@@ -15,7 +15,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "1 hour",
     destination = "Repair",
-    keywords = {"auto-hammer", "auto hammer", "repair"}
+    keywords = { "auto-hammer", "auto hammer", "repair" }
 }, {
     name = "MOLL-E",
     itemID = 40768,
@@ -24,7 +24,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "1 hour",
     destination = "Mailbox",
-    keywords = {"moll-e", "molle", "mail", "mailbox"}
+    keywords = { "moll-e", "molle", "mail", "mailbox" }
 }, {
     name = "Katy's Stampwhistle",
     itemID = 156833,
@@ -33,7 +33,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "8 hours",
     destination = "Mailbox",
-    keywords = {"mail", "mailbox"}
+    keywords = { "mail", "mailbox" }
 }, {
     name = "Radiant Lynx Whistle",
     itemID = 232417,
@@ -42,7 +42,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "20 min",
     destination = "Mailbox",
-    keywords = {"mail", "mailbox"}
+    keywords = { "mail", "mailbox" }
 }, {
     name = "Ohuna Perch",
     itemID = 198715,
@@ -51,7 +51,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "20 min",
     destination = "Mailbox",
-    keywords = {"mail", "mailbox"}
+    keywords = { "mail", "mailbox" }
 }, {
     name = "Flight Master's Whistle",
     itemID = 141605,
@@ -60,7 +60,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "15 min",
     destination = "Flight Master",
-    keywords = {"flightmaster"}
+    keywords = { "flightmaster" }
 }, {
     name = "Rechargeable Reaves Battery",
     itemID = 144341,
@@ -69,7 +69,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "1 hour",
     destination = "Reaves",
-    keywords = {"reaves", "repair"}
+    keywords = { "reaves", "repair" }
 }, {
     name = "Reaves Battery",
     itemID = 132523,
@@ -78,7 +78,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "1 hour",
     destination = "Reaves",
-    keywords = {"reaves", "repair"}
+    keywords = { "reaves", "repair" }
 }, {
     name = "Grand Expedition Yak",
     itemID = 84101,
@@ -89,7 +89,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Repair & Transmog",
-    keywords = {"yak", "expedition", "repair", "vendor", "transmog"}
+    keywords = { "yak", "expedition", "repair", "vendor", "transmog" }
 }, {
     name = "Traveler's Tundra Mammoth",
     itemID = 44234,
@@ -100,7 +100,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Repair & Vendor",
-    keywords = {"mammoth", "tundra", "repair", "vendor"}
+    keywords = { "mammoth", "tundra", "repair", "vendor" }
 }, {
     name = "Mighty Caravan Brutosaur",
     itemID = 163042,
@@ -111,7 +111,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Auction House & Repair",
-    keywords = {"brutosaur", "bruto", "vendor", "auction", "ah", "longboy"}
+    keywords = { "brutosaur", "bruto", "vendor", "auction", "ah", "longboy" }
 }, {
     name = "Trader's Gilded Brutosaur",
     itemID = 229418,
@@ -122,7 +122,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Auction House & Mailbox",
-    keywords = {"brutosaur", "bruto", "auction", "ah", "gilded", "trader", "mailbox", "mail"}
+    keywords = { "brutosaur", "bruto", "auction", "ah", "gilded", "trader", "mailbox", "mail" }
 }, {
     name = "Ethereal Transmogrifier",
     itemID = 206268,
@@ -131,7 +131,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Transmogrifier",
-    keywords = {"transmog", "transmogrifier", "ethereal", "mog", "xmog"}
+    keywords = { "transmog", "transmogrifier", "ethereal", "mog", "xmog" }
 }, {
     name = "Blingtron 7000",
     itemID = 168667,
@@ -140,7 +140,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 7000",
-    keywords = {"blingtron", "bling", "blingtron 7000", "7000"}
+    keywords = { "blingtron", "bling", "blingtron 7000", "7000" }
 }, {
     name = "Blingtron 6000",
     itemID = 132892,
@@ -149,7 +149,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 6000",
-    keywords = {"blingtron", "bling", "blingtron 6000", "6000"}
+    keywords = { "blingtron", "bling", "blingtron 6000", "6000" }
 }, {
     name = "Blingtron 5000",
     itemID = 87214,
@@ -158,7 +158,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 5000",
-    keywords = {"blingtron", "bling", "blingtron 5000", "5000"}
+    keywords = { "blingtron", "bling", "blingtron 5000", "5000" }
 }, {
     name = "Blingtron 4000",
     itemID = 111821,
@@ -167,7 +167,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 4000",
-    keywords = {"blingtron", "bling", "blingtron 4000", "4000"}
+    keywords = { "blingtron", "bling", "blingtron 4000", "4000" }
 }, {
     name = "Thermal Anvil",
     itemID = 87216,
@@ -176,7 +176,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "15 min",
     destination = "Anvil",
-    keywords = {"anvil", "thermal", "blacksmith", "forge"}
+    keywords = { "anvil", "thermal", "blacksmith", "forge" }
 }, {
     name = "Argent Squire",
     itemID = 67414,
@@ -185,7 +185,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "8 hours",
     destination = "Bank & Vendor",
-    keywords = {"argent", "squire", "bank", "vendor", "mailbox", "mail"}
+    keywords = { "argent", "squire", "bank", "vendor", "mailbox", "mail" }
 }, {
     name = "Deployable Attire Rearranger",
     itemID = 153597,
@@ -194,7 +194,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "10 min",
     destination = "Transmogrifier",
-    keywords = {"transmog", "attire", "rearranger", "mog", "xmog"}
+    keywords = { "transmog", "attire", "rearranger", "mog", "xmog" }
 }, {
     name = "Mobile Banking",
     itemID = 183795,
@@ -203,7 +203,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "4 hours",
     destination = "Guild Bank",
-    keywords = {"guild", "bank", "mobile", "banking"}
+    keywords = { "guild", "bank", "mobile", "banking" }
 }, {
     name = "Interdimensional Companion Repository",
     itemID = 153510,
@@ -212,7 +212,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "5 min",
     destination = "Stable Master",
-    keywords = {"stable"}
+    keywords = { "stable" }
 }, {
     name = "Pierre",
     itemID = 94903,
@@ -221,7 +221,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "10 min",
     destination = "Cooking Fire",
-    keywords = {"cooking", "pierre", "cooking"}
+    keywords = { "cooking", "pierre", "cooking" }
 }, {
     name = "Lil' Ragnaros",
     itemID = 101771,
@@ -230,7 +230,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "5 min",
     destination = "Cooking Fire",
-    keywords = {"cooking", "ragnaros", "lil ragnaros"}
+    keywords = { "cooking", "ragnaros", "lil ragnaros" }
 }, {
     name = "Little Wickerman",
     itemID = 70722,
@@ -239,7 +239,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "10 min",
     destination = "Cooking Fire",
-    keywords = {"cooking", "wickerman", "wicker"}
+    keywords = { "cooking", "wickerman", "wicker" }
 }, {
     name = "Sturdy Love Fool",
     itemID = 144339,
@@ -248,7 +248,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "love fool", "sturdy"}
+    keywords = { "dummy", "training", "love fool", "sturdy" }
 }, {
     name = "Turnip Punching Bag",
     itemID = 88375,
@@ -257,7 +257,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "turnip", "punching bag"}
+    keywords = { "dummy", "training", "turnip", "punching bag" }
 }, {
     name = "Rubbery Fish Head",
     itemID = 199896,
@@ -266,7 +266,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "rubbery"}
+    keywords = { "dummy", "training", "rubbery" }
 }, {
     name = "Tuskarr Training Dummy",
     itemID = 199830,
@@ -275,7 +275,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "tuskarr"}
+    keywords = { "dummy", "training", "tuskarr" }
 }, {
     name = "Black Dragon's Challenge Dummy",
     itemID = 201933,
@@ -284,16 +284,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training", "black dragon", "challenge"}
-}, {
-    name = "Ancient Construct",
-    itemID = 225556,
-    spellName = "Ancient Construct",
-    actionType = "toy",
-    category = "Utility",
-    cooldown = "No CD",
-    destination = "Training Dummy",
-    keywords = {"dummy", "training"}
+    keywords = { "dummy", "training", "black dragon", "challenge" }
 }, {
     name = "Barrel of Fireworks",
     itemID = 219387,
@@ -302,7 +293,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training"}
+    keywords = { "dummy", "training" }
 }, {
     name = "Anatomical Dummy",
     itemID = 89614,
@@ -311,18 +302,8 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Training Dummy",
-    keywords = {"dummy", "training"}
+    keywords = { "dummy", "training" }
 }, {
-    name = "Gnoll Targeting Barrel",
-    itemID = 163201,
-    spellName = "Gnoll Targeting Barrel",
-    actionType = "toy",
-    category = "Utility",
-    cooldown = "No CD",
-    destination = "Training Dummy",
-    keywords = {"dummy", "training"}
-},
-{
     name = "Bright Campfire",
     itemID = 33278,
     spellName = "Bright Campfire",
@@ -330,7 +311,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Cooking Fire",
-    keywords = {"campfire", "fire", "cooking", "camp"}
+    keywords = { "campfire", "fire", "cooking", "camp" }
 }, {
     name = "Cantrips",
     spellID = 255661,
@@ -339,7 +320,7 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Mailbox",
-    keywords = {"cantrips", "mail", "mailbox", "nightborne"}
+    keywords = { "cantrips", "mail", "mailbox", "nightborne" }
 }, {
     name = "Pack Hobgoblin",
     spellID = 69046,
@@ -348,5 +329,5 @@ ServiceToys = {{
     category = "Utility",
     cooldown = "10 min",
     destination = "Bank",
-    keywords = {"hobgoblin", "pack", "bank", "goblin"}
-}}
+    keywords = { "hobgoblin", "pack", "bank", "goblin" }
+} }

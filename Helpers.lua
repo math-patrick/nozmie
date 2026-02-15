@@ -225,7 +225,7 @@ local function CanUsePet(data)
 end
 
 local function CanUseItem(data)
-    return data.itemID and C_Item.GetItemCount(data.itemID, true, false, false) > 0
+    return data.itemID and GetItemCount and GetItemCount(data.itemID, false, false) > 0
 end
 
 local function CanUseMount(data)
@@ -247,7 +247,7 @@ local function CanUseToy(data)
 end
 
 local function CanUseSpell(data)
-    return data.spellID and C_Spell and C_Spell.IsSpellKnown and C_Spell.IsSpellKnown(data.spellID, false)
+    return data.spellID and IsSpellKnown and IsSpellKnown(data.spellID)
 end
 
 function Helpers.CanPlayerUseUtility(data)

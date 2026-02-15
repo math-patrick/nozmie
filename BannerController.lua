@@ -207,8 +207,7 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
         actionVerb = Lstr("banner.action.summon", "Summon")
     elseif data.actionType == "spell" and data.category and data.category:find("Class") then
         actionVerb = Lstr("banner.action.cast", "Cast")
-    elseif data.category and data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or
-        data.category == "Home" or data.category == "Toy" then
+    elseif data.category and data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Toy" then
         actionVerb = Lstr("banner.action.teleport", "Teleport to")
     end
 
@@ -234,7 +233,7 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     local mountInfoText = ""
     if data.mountId and C_MountJournal and C_MountJournal.GetMountInfoByID then
         local name, spellID, icon, isActive, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar,
-            isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
+        isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
         if name then
             mountInfoText = string.format("\n|cff888888Mount:|r %s", name)
             if not isUsable then
@@ -256,18 +255,6 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
         local suffix = Lstr("banner.subtitleSuffix", "Right-click to announce")
         banner.subtitle:SetText("|cff888888" .. prefix .. " • " .. suffix .. "|r")
     end
-end
-
-local function HasKeyword(data, keyword)
-    if not data or not data.keywords then
-        return false
-    end
-    for _, key in ipairs(data.keywords) do
-        if key == keyword then
-            return true
-        end
-    end
-    return false
 end
 
 local function SetPetIcon(banner, data)
@@ -482,7 +469,7 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
                     self.cooldownData.data.sourceSender)
                 if not sent then
                     C_ChatInfo.SendChatMessage(message,
-                    Helpers.IsInAnyGroup() and Helpers.GetGroupChatChannel() or "SAY")
+                        Helpers.IsInAnyGroup() and Helpers.GetGroupChatChannel() or "SAY")
                 end
                 if Helpers.MarkAnnounce then
                     Helpers.MarkAnnounce(message)

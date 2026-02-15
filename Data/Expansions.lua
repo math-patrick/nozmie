@@ -445,7 +445,6 @@ local Midnight = {{
     current = true
 }}
 
-
 Expansions = {}
 for _, tbl in ipairs({Dragonflight, Shadowlands, BattleForAzeroth, Legion, Cataclysm, WarWithin, Midnight, WotLK, Pandaria, Draenor}) do
     for _, entry in ipairs(tbl or {}) do

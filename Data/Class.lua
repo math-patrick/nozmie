@@ -98,8 +98,6 @@ local ClassSpellsData = {{
     keywords = {"source", "source of magic", "evoker mana", "buff"}
 }}
 
-ClassSpellsData = ClassSpellsData
--- Removed return statement for WoW compatibility
 local ClassTeleports = { -- Druid
 {
     name = "Moonglade",
