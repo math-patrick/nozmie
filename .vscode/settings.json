@@ -28,6 +28,9 @@
         "UIFrameFadeIn",
         "UIFrameFadeOut",
         "GameTooltip",
-        "Minimap"
+        "Minimap",
+        "AddonCompartmentFrame",
+        "WOW_PROJECT_ID",
+        "WOW_PROJECT_MAINLINE"
     ]
 }
