@@ -2,7 +2,6 @@
 -- Nozmie - Banner UI Module
 -- Creates and styles the notification banner frame
 -- ============================================================================
-
 local Config = Nozmie_Config
 local Helpers = Nozmie_Helpers
 
@@ -20,24 +19,34 @@ local function CreateButton(parent, size, point, textures, tooltip, onClick)
     local btn = CreateFrame("Button", nil, parent)
     btn:SetSize(size, size)
     btn:SetPoint(unpack(point))
-    
+
     if textures then
-        if textures.normal or textures[1] then btn:SetNormalTexture(textures.normal or textures[1]) end
-        if textures.highlight then btn:SetHighlightTexture(textures.highlight) end
-        if textures.pushed then btn:SetPushedTexture(textures.pushed) end
+        if textures.normal or textures[1] then
+            btn:SetNormalTexture(textures.normal or textures[1])
+        end
+        if textures.highlight then
+            btn:SetHighlightTexture(textures.highlight)
+        end
+        if textures.pushed then
+            btn:SetPushedTexture(textures.pushed)
+        end
     end
-    
-    if onClick then btn:SetScript("OnClick", onClick) end
-    
+
+    if onClick then
+        btn:SetScript("OnClick", onClick)
+    end
+
     if tooltip then
         btn:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
             GameTooltip:SetText(tooltip)
             GameTooltip:Show()
         end)
-        btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        btn:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
     end
-    
+
     return btn
 end
 
@@ -46,7 +55,7 @@ local function CreateBannerIcon(parent)
     frame:SetSize(44, 44)
     frame:SetPoint("LEFT", 14, 0)
     frame:EnableMouse(true)
-    
+
     local background = frame:CreateTexture(nil, "BACKGROUND")
     background:SetSize(38, 38)
     background:SetPoint("CENTER")
@@ -93,7 +102,7 @@ local function CreateBannerIcon(parent)
     frame:SetScript("OnLeave", function()
         GameTooltip:Hide()
     end)
-    
+
     return texture, frame
 end
 
@@ -103,20 +112,20 @@ local function CreateBannerText(parent, iconFrame)
     title:SetFont(title:GetFont(), 14)
     title:SetPoint("LEFT", iconFrame, "RIGHT", 14, 8)
     title:SetPoint("RIGHT", -46, 8)
-    title:SetTextColor(0.9, 0.9, 0.95)  -- Subtle light color
+    title:SetTextColor(0.9, 0.9, 0.95) -- Subtle light color
     title:SetJustifyH("LEFT")
     title:SetShadowColor(0, 0, 0, 1)
     title:SetShadowOffset(1, -1)
-    
+
     local subtitle = parent:CreateFontString(nil, "OVERLAY")
     subtitle:SetFontObject("GameFontHighlightSmall")
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
     subtitle:SetPoint("RIGHT", -40, 0)
-    subtitle:SetText("|cff999999" .. Lstr("banner.clickToTeleport", "Click to teleport") .. "|r")  -- Subtle gray
+    subtitle:SetText("|cff999999" .. Lstr("banner.clickToTeleport", "Click to teleport") .. "|r") -- Subtle gray
     subtitle:SetJustifyH("LEFT")
     subtitle:SetShadowColor(0, 0, 0, 1)
     subtitle:SetShadowOffset(1, -1)
-    
+
     return title, subtitle
 end
 
@@ -132,14 +141,19 @@ function BannerUI.CreateBanner()
     banner:SetUserPlaced(true)
     banner:EnableMouse(true)
     banner:Hide()
-    
+
     banner:SetBackdrop({
         bgFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Background",
         edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Gold-Border",
         tile = true,
         tileSize = 32,
         edgeSize = 32,
-        insets = {left = 11, right = 12, top = 12, bottom = 11}
+        insets = {
+            left = 11,
+            right = 12,
+            top = 12,
+            bottom = 11
+        }
     })
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_NORMAL))
     banner:SetBackdropBorderColor(1, 0.85, 0.4, 0.9)
@@ -149,18 +163,18 @@ function BannerUI.CreateBanner()
     inner:SetPoint("TOPLEFT", 6, -6)
     inner:SetPoint("BOTTOMRIGHT", -6, 6)
     inner:SetVertexColor(1, 1, 1, 0.85)
-    
+
     banner:SetScript("OnEnter", function(self)
         self:SetBackdropBorderColor(unpack(Config.COLORS.BORDER_HOVER))
     end)
     banner:SetScript("OnLeave", function(self)
         self:SetBackdropBorderColor(unpack(Config.COLORS.BORDER_NORMAL))
     end)
-    
+
     local iconFrame
     banner.icon, iconFrame = CreateBannerIcon(banner)
     banner.title, banner.subtitle = CreateBannerText(banner, iconFrame)
-    
+
     local dragButton = CreateButton(banner, 16, {"BOTTOMRIGHT", -10, 10}, {
         normal = "Interface\\Cursor\\UI-Cursor-Move",
         highlight = "Interface\\Cursor\\UI-Cursor-Move"
@@ -170,25 +184,38 @@ function BannerUI.CreateBanner()
     end
     dragButton:EnableMouse(true)
     dragButton:RegisterForDrag("LeftButton")
-    dragButton:SetScript("OnDragStart", function() if not InCombatLockdown() then banner:StartMoving() end end)
-    dragButton:SetScript("OnDragStop", function() banner:StopMovingOrSizing(); Helpers.SaveBannerPosition(banner) end)
+    dragButton:SetScript("OnDragStart", function()
+        if not InCombatLockdown() then
+            banner:StartMoving()
+        end
+    end)
+    dragButton:SetScript("OnDragStop", function()
+        banner:StopMovingOrSizing();
+        Helpers.SaveBannerPosition(banner)
+    end)
     banner.dragButton = dragButton
-    
+
     CreateButton(banner, 16, {"TOPRIGHT", -10, -10}, {
         normal = "Interface\\Buttons\\UI-Panel-MinimizeButton-Up",
         highlight = "Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight",
         pushed = "Interface\\Buttons\\UI-Panel-MinimizeButton-Down"
-    }, Lstr("ui.close", "Close"), function() banner:Hide() end)
-    
+    }, Lstr("ui.close", "Close"), function()
+        banner:Hide()
+    end)
+
     banner:SetScript("OnShow", function(self)
         local Settings = Nozmie_Settings
         if Settings and Settings.Get("hideDragIcon") then
-            if self.dragButton then self.dragButton:Hide() end
+            if self.dragButton then
+                self.dragButton:Hide()
+            end
         else
-            if self.dragButton then self.dragButton:Show() end
+            if self.dragButton then
+                self.dragButton:Show()
+            end
         end
     end)
-    
+
     Helpers.LoadBannerPosition(banner)
     return banner
 end
