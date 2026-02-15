@@ -32,5 +32,8 @@
         "AddonCompartmentFrame",
         "WOW_PROJECT_ID",
         "WOW_PROJECT_MAINLINE"
+    ],
+    "Lua.diagnostics.disable": [
+        "assign-type-mismatch"
     ]
 }

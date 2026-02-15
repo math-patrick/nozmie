@@ -245,19 +245,12 @@ local function AddSuppressionSection(category, layout)
 
     local function GetSuppressionOptions()
         local container = _G.Settings.CreateControlTextContainer()
-        container:Add("mount", Lstr("settings.suppress.option.mount", "Mount"))
-        container:Add("class", Lstr("settings.suppress.option.class", "Class"))
-        container:Add("toy", Lstr("settings.suppress.option.toy", "Toy"))
-        container:Add("home", Lstr("settings.suppress.option.home", "Home"))
-        container:Add("utility", Lstr("settings.suppress.option.utility", "Utility"))
-        container:Add("mplus", Lstr("settings.suppress.option.mplus", "M+ Dungeon"))
-        container:Add("raid", Lstr("settings.suppress.option.raid", "Raid"))
-        container:Add("delve", Lstr("settings.suppress.option.delve", "Delve"))
-        container:Add("service", Lstr("settings.suppress.option.service", "Mailbox/Repair"))
-        container:Add("transmog", Lstr("settings.suppress.option.transmog", "Transmog"))
-        container:Add("hearthstone", Lstr("settings.suppress.option.hearthstone", "Hearthstone"))
+        container:Add("mount", Lstr("settings.suppress.option.mount", "Mounts"))
+        container:Add("class", Lstr("settings.suppress.option.class", "Class Utility"))
+        container:Add("utilityservice", Lstr("settings.suppress.option.utilityservice", "Utility/Service"))
+        container:Add("teleports", Lstr("settings.suppress.option.teleports", "Portals/Teleports"))
         return container:GetData()
-    end
+    end 
 
     CreateMultiSelectDropdown(
         category,

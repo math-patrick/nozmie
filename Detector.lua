@@ -12,49 +12,6 @@ local function ShuffleTable(tbl)
     end
 end
 
-local function IsHearthstone(teleportData)
-    if not teleportData.keywords then
-        return false
-    end
-    for _, keyword in ipairs(teleportData.keywords) do
-        if keyword == "hearthstone" or keyword == "hearth" then
-            return true
-        end
-    end
-    return false
-end
-
-local function IsPortalSpell(teleportData)
-    local spellName = teleportData.spellName or ""
-    return spellName:find("^Portal:") or spellName:find("^Ancient Portal:")
-end
-
-local function HasKeyword(data, keyword)
-    if not data or not data.keywords then
-        return false
-    end
-    for _, key in ipairs(data.keywords) do
-        if key == keyword then
-            return true
-        end
-    end
-    return false
-end
-
-local function IsMountOption(data)
-    return data.actionType == "mount" or HasKeyword(data, "mount")
-end
-
-local function IsServiceOption(data)
-    local destination = data.destination or ""
-    return destination:find("Repair") or destination:find("Mailbox") or destination:find("Anvil")
-end
-
-local function IsTransmogOption(data)
-    local destination = data.destination or ""
-    return destination:find("Transmog")
-end
-
 local function EscapePattern(text)
     return (text:gsub("(%W)", "%%%1"))
 end
@@ -91,56 +48,53 @@ local function ShouldSuppressByList(list, keys)
     return false
 end
 
+local function IsPortalSpell(teleportData)
+    local spellName = teleportData.spellName or ""
+    return spellName:find("^Portal:") or spellName:find("^Ancient Portal:")
+end
+
+local function IsTeleport(teleportData)
+    local spellName = teleportData.spellName or ""
+    return spellName:find("^Teleport:") or spellName:find("^Ancient Teleport:")
+end
+
+local function IsServiceOption(data)
+    local destination = data.destination or ""
+    return destination:find("Repair") or destination:find("Mailbox") or destination:find("Anvil") or destination:find("Transmog")
+end
+
+local function IsHearthstone(data)
+    return data.category == "Home"
+end
+
 local function ShouldSuppressOption(data, settings, inInstance)
     if not settings or not settings.Get then
         return false
     end
 
-    local isClass = data.category == "Class"
-    local isToy = data.category == "Toy"
-    local isHome = data.category == "Home"
-    local isUtility = data.category and data.category:find("Utility")
+    local isClass = data.category == "Class" or data.category == "Class Utility"
+    local isUtility = data.category and data.category == "Utility"
     local isMPlus = data.category == "M+ Dungeon"
     local isRaid = data.category == "Raid"
     local isDelve = data.category == "Delve"
-    local isMount = IsMountOption(data)
-    local isService = IsServiceOption(data)
-    local isTransmog = IsTransmogOption(data)
+    local isPortal = IsPortalSpell(data)
+    local isTeleport = IsTeleport(data)
     local isHearthstone = IsHearthstone(data)
+    local isMount = data.actionType == "mount"
+    local isService = IsServiceOption(data)
 
     local keys = {}
-    if isMount then
-        table.insert(keys, "mount")
+    if isMount then table.insert(keys, "mount") end
+    if isClass then table.insert(keys, "class") end
+
+    -- Grouped: Portals/Teleports/M+ Dungeons/Raids
+    if isMPlus or isRaid or isTeleport or isPortal or isDelve or isHearthstone then
+        table.insert(keys, "teleports")
     end
-    if isClass then
-        table.insert(keys, "class")
-    end
-    if isToy then
-        table.insert(keys, "toy")
-    end
-    if isHome then
-        table.insert(keys, "home")
-    end
-    if isUtility then
-        table.insert(keys, "utility")
-    end
-    if isMPlus then
-        table.insert(keys, "mplus")
-    end
-    if isRaid then
-        table.insert(keys, "raid")
-    end
-    if isDelve then
-        table.insert(keys, "delve")
-    end
-    if isService then
-        table.insert(keys, "service")
-    end
-    if isTransmog then
-        table.insert(keys, "transmog")
-    end
-    if isHearthstone then
-        table.insert(keys, "hearthstone")
+
+    -- Grouped: Utility/Service (Mail, Repair, Transmog)
+    if isUtility or isService then
+        table.insert(keys, "utilityservice")
     end
 
     if ShouldSuppressByList(settings.Get("suppressGlobalList"), keys) then

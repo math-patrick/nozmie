@@ -1,6 +1,8 @@
 Nozmie_Locales = Nozmie_Locales or {}
 Nozmie_Locales["ruRU"] = {
     strings = {
+        ["settings.suppress.option.teleports"] = "Порталы/Телепорты/М+ Подземелья/Рейды",
+        ["settings.suppress.option.utilityservice"] = "Службы (Почта, Ремонт, Трансмог)",
         ["addon.name"] = "Nozmie",
         ["settings.section.general"] = "Общие",
         ["settings.section.banner"] = "Banner",
