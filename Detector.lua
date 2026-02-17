@@ -191,7 +191,7 @@ function Detector.FindMatchingTeleports(message, sender)
         ShuffleTable(hearthstones)
     end
 
-    -- Sort matches: cooldowns last
+    -- Sort matches: cooldowns last, priority first
     local ready, oncd = {}, {}
     for _, t in ipairs(matches) do
         if Helpers.GetCooldownRemaining(t) > 0 then
@@ -200,6 +200,18 @@ function Detector.FindMatchingTeleports(message, sender)
             table.insert(ready, t)
         end
     end
+
+    -- Priority sorting: priority=1 first
+    local function sortPriority(a, b)
+        local pa = tonumber(a.priority) or 0
+        local pb = tonumber(b.priority) or 0
+        if pa ~= pb then
+            return pa > pb
+        end
+        return false
+    end
+    table.sort(ready, sortPriority)
+    table.sort(oncd, sortPriority)
 
     -- Compose result: current > ready > hearthstones > cooldowns
     local result = {}

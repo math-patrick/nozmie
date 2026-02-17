@@ -169,6 +169,7 @@ local Evoker = {{
 local MassRes = {{
     name = "Mass Resurrection",
     spellID = 212036,
+    priority = 1,
     spellName = "Mass Resurrection",
     actionType = "spell",
     category = "Class Utility",
@@ -176,6 +177,7 @@ local MassRes = {{
 }, {
     name = "Revitalize",
     spellID = 212040,
+    priority = 1,
     spellName = "Revitalize",
     actionType = "spell",
     category = "Class Utility",
@@ -183,6 +185,7 @@ local MassRes = {{
 }, {
     name = "Ancestral Vision",
     spellID = 212048,
+    priority = 1,
     spellName = "Ancestral Vision",
     actionType = "spell",
     category = "Class Utility",
@@ -190,6 +193,7 @@ local MassRes = {{
 }, {
     name = "Absolution",
     spellID = 212056,
+    priority = 1,
     spellName = "Absolution",
     actionType = "spell",
     category = "Class Utility",
@@ -197,6 +201,7 @@ local MassRes = {{
 }, {
     name = "Reawaken",
     spellID = 212051,
+    priority = 1,
     spellName = "Reawaken",
     actionType = "spell",
     category = "Class Utility",
@@ -204,6 +209,7 @@ local MassRes = {{
 }, {
     name = "Mass Return",
     spellID = 361178,
+    priority = 1,
     spellName = "Mass Return",
     actionType = "spell",
     category = "Class Utility",
@@ -269,7 +275,7 @@ local ClassTeleports = { -- Druid
 
 local ClassSpellsData = {}
 for _, tbl in ipairs(
-    {Mage, Warlock, Priest, Warrior, Druid, Shaman, Paladin, Monk, Hunter, DeathKnight, Evoker, MassRes}) do
+    {Mage, Warlock, Priest, Warrior, Druid, Shaman, Paladin, Monk, DeathKnight, Evoker, MassRes}) do
     for _, entry in ipairs(tbl) do
         table.insert(ClassSpellsData, entry)
     end

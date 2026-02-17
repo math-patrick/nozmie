@@ -5,7 +5,7 @@ local WotLK = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"pit of saron", "pit", "saron"},
-    current = true
+    priority = 1
 }}
 
 local Cataclysm = {{
@@ -42,9 +42,8 @@ local Draenor = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"skyreach", "sky reach"},
-    current = true
-}
- -- Todo: Draenor challenge Teleports
+    priority = 1
+} -- Todo: Draenor challenge Teleports
 }
 
 local Dragonflight = {{
@@ -81,7 +80,8 @@ local Dragonflight = {{
     spellName = "Path of the Draconic Diploma",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"algethar", "algeth'ar", "academy"}
+    keywords = {"algethar", "algeth'ar", "academy"},
+    priority = 1
 }, {
     name = "Neltharus",
     spellID = 393276,
@@ -314,6 +314,14 @@ local Legion = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"karazhan"}
+}, {
+    name = "Seat of the Triumvirate",
+    spellID = 999003,
+    spellName = "Path of the Void",
+    actionType = "spell",
+    category = "M+ Dungeon",
+    keywords = {"seat", "triumvirate", "seat of the triumvirate", "sott"},
+    priority = 1
 }}
 
 local WarWithin = {{
@@ -404,21 +412,13 @@ local WarWithin = {{
 }}
 
 local Midnight = {{
-    name = "Seat of the Triumvirate",
-    spellID = 999003,
-    spellName = "Path of the Void",
-    actionType = "spell",
-    category = "M+ Dungeon",
-    keywords = {"seat", "triumvirate", "seat of the triumvirate", "sott"},
-    current = true
-}, {
     name = "Magisters' Terrace",
     spellID = 999004,
     spellName = "Path of the Sun's Reach",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"magisters", "magister's terrace", "terrace"},
-    current = true
+    priority = 1
 }, {
     name = "Maisara Caverns",
     spellID = 999005,
@@ -426,7 +426,7 @@ local Midnight = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"maisara", "caverns", "maisara caverns"},
-    current = true
+    priority = 1
 }, {
     name = "Nexus-Point Xenas",
     spellID = 999006,
@@ -434,7 +434,7 @@ local Midnight = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"nexus-point", "xenas", "nexus point xenas"},
-    current = true
+    priority = 1
 }, {
     name = "Windrunner Spire",
     spellID = 999007,
@@ -442,11 +442,12 @@ local Midnight = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"windrunner", "spire", "windrunner spire"},
-    current = true
+    priority = 1
 }}
 
 Expansions = {}
-for _, tbl in ipairs({Dragonflight, Shadowlands, BattleForAzeroth, Legion, Cataclysm, WarWithin, Midnight, WotLK, Pandaria, Draenor}) do
+for _, tbl in ipairs({Dragonflight, Shadowlands, BattleForAzeroth, Legion, Cataclysm, WarWithin, Midnight, WotLK,
+                      Pandaria, Draenor}) do
     for _, entry in ipairs(tbl or {}) do
         table.insert(Expansions, entry)
     end
