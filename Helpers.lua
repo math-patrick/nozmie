@@ -111,57 +111,81 @@ function Helpers.IsRecentAnnounce(message, window)
     return message == lastAnnounce.message and (GetTime() - lastAnnounce.time) <= limit
 end
 
+function Helpers.GetActionAndNoun(data)
+    local actionVerb = Lstr("banner.action.use", "Use")
+    local nounForm = data.destination or data.name or "utility"
+    local announceVerb = "Using"
+
+    if data.actionType == "pet" or data.actionType == "mount" or (data.category == "Utility") then
+        actionVerb = Lstr("banner.action.summon", "Summon")
+        announceVerb = string.format(Lstr("announce.summoning", "Summoning %s"), nounForm)
+    elseif data.actionType == "spell" and data.category and data.category:find("Class") then
+        actionVerb = Lstr("banner.action.cast", "Cast")
+        announceVerb = string.format(Lstr("announce.casting", "Casting %s"), nounForm)
+    elseif data.category and
+        (data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Toy") then
+        actionVerb = Lstr("banner.action.teleport", "Teleport to")
+        announceVerb = string.format(Lstr("announce.teleporting", "Teleporting to %s"), nounForm)
+    end
+
+    return actionVerb, nounForm, announceVerb
+end
+
 function Helpers.CreateAnnouncementMessage(data)
     local cooldown = Helpers.GetCooldownRemaining(data)
-    local actionVerb = Lstr("announce.action.use", "use")
-    local nounForm = "utility"
-    if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Home" or
-        data.category == "Class" or data.category == "Toy" then
-        actionVerb = Lstr("announce.action.teleport", "teleport")
-        nounForm = "portal"
-    elseif data.category and data.category:find("Utility") then
-        if data.destination and
-            (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Transmog") or
-                data.destination:find("Anvil")) then
-            actionVerb = Lstr("announce.action.summon", "summon")
-            nounForm = data.name
-        elseif data.keywords and
-            (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or tContains(data.keywords, "motw") or
-                tContains(data.keywords, "intellect")) then
-            actionVerb = Lstr("announce.action.cast", "cast")
-            nounForm = data.name
-        end
-    end
+    local actionVerb, nounForm, announceVerb = Helpers.GetActionAndNoun(data)
     if cooldown > 0 then
         local timeText = Helpers.FormatCooldownTime(cooldown)
-        if nounForm == "portal" then
+        if actionVerb == Lstr("banner.action.teleport", "Teleport to") then
             local portalNoun = Lstr("announce.noun.portal", "Portal")
-            return string.format(Lstr("announce.portalReadyIn", "%s to %s ready in %s"), portalNoun,
+            return string.format(Lstr("announce.portalReadyIn", "%s %s to %s ready in %s"), announceVerb, portalNoun,
                 data.destination or data.name, timeText)
         end
-        return string.format(Lstr("announce.readyIn", "%s ready in %s"), data.name, timeText)
+        return string.format(Lstr("announce.readyIn", "%s %s ready in %s"), announceVerb, nounForm, timeText)
     end
-    if nounForm == "portal" then
+    if actionVerb == Lstr("banner.action.teleport", "Teleport to") then
         return string.format(Lstr("announce.canTeleport", "I can %s to %s!"), actionVerb, data.destination or data.name)
     end
     if data.destination and
         (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Anvil")) then
         return string.format(Lstr("announce.canUseDestination", "I can %s %s!"), actionVerb, data.destination)
     end
-    return string.format(Lstr("announce.canUseName", "I can %s %s!"), actionVerb, data.name)
+    return string.format(Lstr("announce.canUseName", "I can %s %s!"), actionVerb, nounForm)
 end
 
 function Helpers.AnnounceUtility(data, event, sender)
-    local message = Helpers.CreateAnnouncementMessage(data)
+    local Settings = _G.Nozmie_Settings
+    local announceToGroup = Settings and Settings.Get and Settings.Get("announceToGroup")
+    local message
+
+    if announceToGroup and (not event or event == "LEFT_CLICK") then
+        local _, _, announceVerb = Helpers.GetActionAndNoun(data)
+        message = string.format("[Nozmie] %s", announceVerb)
+    else
+        message = Helpers.CreateAnnouncementMessage(data)
+    end
+
+    if announceToGroup then
+        if Helpers.IsInAnyGroup() then
+            C_ChatInfo.SendChatMessage(message, Helpers.GetGroupChatChannel())
+        else
+            C_ChatInfo.SendChatMessage(message, "SAY")
+        end
+        Helpers.MarkAnnounce(message)
+        return
+    end
+
     if event and Helpers.SendMessageForEvent(message, event, sender) then
         Helpers.MarkAnnounce(message)
         return
     end
+
     if Helpers.IsInAnyGroup() then
         C_ChatInfo.SendChatMessage(message, Helpers.GetGroupChatChannel())
     else
         C_ChatInfo.SendChatMessage(message, "SAY")
     end
+
     Helpers.MarkAnnounce(message)
 end
 

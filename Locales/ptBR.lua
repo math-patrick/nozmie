@@ -106,6 +106,9 @@ Nozmie_Locales["ptBR"] = {
         ["announce.canTeleport"] = "Posso %s para %s!",
         ["announce.canUseName"] = "Posso %s %s!",
         ["announce.canUseDestination"] = "Posso %s %s!",
+        ["announce.summoning"] = "Invocando %s",
+        ["announce.casting"] = "Lançando %s",
+        ["announce.teleporting"] = "Teleportando para %s",
     },
     keywordsByName = {
         -- Adicione aliases localizados por nome de item:

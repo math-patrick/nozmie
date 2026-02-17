@@ -2,7 +2,6 @@
 -- Nozmie - Settings Module
 -- In-game settings panel accessible via ESC > Options > Addons > Nozmie
 -- ============================================================================
-
 local SettingsModule = {}
 local category
 
@@ -58,12 +57,7 @@ local function SetupMultiSelectDropdown(dropdown, setting, options, initTooltip)
     _G.Settings.InitDropdown(dropdown, setting, Inserter, initTooltip)
 end
 
-function _G.NozmieSettingsMultiSelectDropDownMixin:SetupDropdownMenu(
-    button,
-    setting,
-    options,
-    initTooltip
-)
+function _G.NozmieSettingsMultiSelectDropDownMixin:SetupDropdownMenu(button, setting, options, initTooltip)
     SetupMultiSelectDropdown(self.Control.Dropdown, setting, options, initTooltip)
     self.Control.Dropdown:SetSelectionText(function()
         local values = NozmieDB and NozmieDB[setting.variableKey]
@@ -83,21 +77,10 @@ local function CreateMultiSelectDropdown(category, variable, key, name, options,
     local function SetValue()
     end
 
-    local setting = _G.Settings.RegisterProxySetting(
-        category,
-        variable,
-        _G.Settings.VarType.String,
-        name,
-        "",
-        GetValue,
-        SetValue
-    )
-    local initializer = _G.Settings.CreateControlInitializer(
-        "NozmieSettingsMultiSelectDropDownTemplate",
-        setting,
-        options,
-        tooltip
-    )
+    local setting = _G.Settings.RegisterProxySetting(category, variable, _G.Settings.VarType.String, name, "", GetValue,
+        SetValue)
+    local initializer = _G.Settings.CreateControlInitializer("NozmieSettingsMultiSelectDropDownTemplate", setting,
+        options, tooltip)
 
     initializer.data.setting.variableKey = key
 
@@ -110,7 +93,7 @@ function SettingsModule.InitializeDB()
     if not NozmieDB then
         NozmieDB = {}
     end
-    
+
     -- Default settings with their default values
     local defaults = {
         enabled = true,
@@ -150,9 +133,9 @@ function SettingsModule.InitializeDB()
         suppressInstanceService = false,
         suppressInstanceTransmog = false,
         suppressInstanceHearthstone = false,
-        blacklistedWords = "",
+        blacklistedWords = ""
     }
-    
+
     -- Apply defaults for any missing settings
     for key, value in pairs(defaults) do
         if NozmieDB[key] == nil then
@@ -173,7 +156,7 @@ function SettingsModule.InitializeDB()
             delve = "suppressGlobalDelve",
             service = "suppressGlobalService",
             transmog = "suppressGlobalTransmog",
-            hearthstone = "suppressGlobalHearthstone",
+            hearthstone = "suppressGlobalHearthstone"
         }
         local hasLegacy = false
         for key, oldKey in pairs(migration) do
@@ -200,7 +183,7 @@ function SettingsModule.InitializeDB()
             delve = "suppressInstanceDelve",
             service = "suppressInstanceService",
             transmog = "suppressInstanceTransmog",
-            hearthstone = "suppressInstanceHearthstone",
+            hearthstone = "suppressInstanceHearthstone"
         }
         local hasLegacy = false
         for key, oldKey in pairs(migration) do
@@ -216,11 +199,21 @@ function SettingsModule.InitializeDB()
 
     if type(NozmieDB.detectChatList) ~= "table" then
         local list = {}
-        if NozmieDB.detectInSay then table.insert(list, "say") end
-        if NozmieDB.detectInParty then table.insert(list, "party") end
-        if NozmieDB.detectInRaid then table.insert(list, "raid") end
-        if NozmieDB.detectInGuild then table.insert(list, "guild") end
-        if NozmieDB.detectInWhisper then table.insert(list, "whisper") end
+        if NozmieDB.detectInSay then
+            table.insert(list, "say")
+        end
+        if NozmieDB.detectInParty then
+            table.insert(list, "party")
+        end
+        if NozmieDB.detectInRaid then
+            table.insert(list, "raid")
+        end
+        if NozmieDB.detectInGuild then
+            table.insert(list, "guild")
+        end
+        if NozmieDB.detectInWhisper then
+            table.insert(list, "whisper")
+        end
         if #list == 0 then
             list = {"say", "party", "raid", "whisper"}
         end
@@ -241,7 +234,8 @@ function SettingsModule.Set(key, value)
 end
 
 local function AddSuppressionSection(category, layout)
-    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(Lstr("settings.suppression.heading", "Suppression Filters")))
+    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(
+        Lstr("settings.suppression.heading", "Suppression Filters")))
 
     local function GetSuppressionOptions()
         local container = _G.Settings.CreateControlTextContainer()
@@ -250,42 +244,34 @@ local function AddSuppressionSection(category, layout)
         container:Add("utilityservice", Lstr("settings.suppress.option.utilityservice", "Utility/Service"))
         container:Add("teleports", Lstr("settings.suppress.option.teleports", "Portals/Teleports"))
         return container:GetData()
-    end 
+    end
 
-    CreateMultiSelectDropdown(
-        category,
-        "NOZMIE_SUPPRESS_GLOBAL",
-        "suppressGlobalList",
-        Lstr("settings.suppress.global.label", "Global Suppressions"),
-        GetSuppressionOptions,
-        Lstr("settings.suppress.global.tooltip", "Select categories to suppress everywhere.")
-    )
+    CreateMultiSelectDropdown(category, "NOZMIE_SUPPRESS_GLOBAL", "suppressGlobalList",
+        Lstr("settings.suppress.global.label", "Global Suppressions"), GetSuppressionOptions,
+        Lstr("settings.suppress.global.tooltip", "Select categories to suppress everywhere."))
 
-    CreateMultiSelectDropdown(
-        category,
-        "NOZMIE_SUPPRESS_INSTANCE",
-        "suppressInstanceList",
-        Lstr("settings.suppress.instance.label", "Instance Suppressions"),
-        GetSuppressionOptions,
-        Lstr("settings.suppress.instance.tooltip", "Select categories to suppress only while in instances.")
-    )
+    CreateMultiSelectDropdown(category, "NOZMIE_SUPPRESS_INSTANCE", "suppressInstanceList",
+        Lstr("settings.suppress.instance.label", "Instance Suppressions"), GetSuppressionOptions, Lstr(
+            "settings.suppress.instance.tooltip", "Select categories to suppress only while in instances."))
 end
 
 -- Create the settings panel using modern Settings API
 function SettingsModule.CreatePanel()
     -- Initialize database first
     SettingsModule.InitializeDB()
-    
+
     -- Create main category with vertical layout
     local categoryName = Lstr("addon.name", "Nozmie")
     category, layout = _G.Settings.RegisterVerticalLayoutCategory(categoryName)
     _G.Settings.RegisterAddOnCategory(category)
-    
+
     -- General Section
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(Lstr("settings.section.general", "General")))
-    
-    local variable, name, tooltip = "enabled", Lstr("settings.enable", "Enable Nozmie"), Lstr("settings.enable.tooltip", "Enable or disable teleport detection")
-    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB, _G.Settings.VarType.Boolean, name, true)
+
+    local variable, name, tooltip = "enabled", Lstr("settings.enable", "Enable Nozmie"),
+        Lstr("settings.enable.tooltip", "Enable or disable teleport detection")
+    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB,
+        _G.Settings.VarType.Boolean, name, true)
     _G.Settings.CreateCheckbox(category, setting, tooltip)
 
     -- Chat Detection Section
@@ -301,14 +287,9 @@ function SettingsModule.CreatePanel()
         return container:GetData()
     end
 
-    CreateMultiSelectDropdown(
-        category,
-        "NOZMIE_CHAT_CHANNELS",
-        "detectChatList",
-        Lstr("settings.detectChat.label", "Chat Channels"),
-        GetChatOptions,
-        Lstr("settings.detectChat.tooltip", "Select chat channels to monitor for teleport requests.")
-    )
+    CreateMultiSelectDropdown(category, "NOZMIE_CHAT_CHANNELS", "detectChatList",
+        Lstr("settings.detectChat.label", "Chat Channels"), GetChatOptions, Lstr("settings.detectChat.tooltip",
+            "Select chat channels to monitor for teleport requests."))
 
     -- Suppression Section
     AddSuppressionSection(category, layout)
@@ -316,20 +297,34 @@ function SettingsModule.CreatePanel()
     -- Banner Section
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(Lstr("settings.section.banner", "Banner")))
 
-    local variable, name, tooltip = "showBanner", Lstr("settings.showBanner", "Show Banner"), Lstr("settings.showBanner.tooltip", "Display the teleport banner when matches are found")
-    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB, _G.Settings.VarType.Boolean, name, true)
+    local variable, name, tooltip = "showBanner", Lstr("settings.showBanner", "Show Banner"), Lstr(
+        "settings.showBanner.tooltip", "Display the teleport banner when matches are found")
+    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB,
+        _G.Settings.VarType.Boolean, name, true)
     _G.Settings.CreateCheckbox(category, setting, tooltip)
 
-    local variable, name, tooltip = "preferPortals", Lstr("settings.preferPortals", "Prefer Portals"), Lstr("settings.preferPortals.tooltip", "Prioritize portals over teleports when both match")
-    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB, _G.Settings.VarType.Boolean, name, true)
+    local variable, name, tooltip = "preferPortals", Lstr("settings.preferPortals", "Prefer Portals"), Lstr(
+        "settings.preferPortals.tooltip", "Prioritize portals over teleports when both match")
+    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB,
+        _G.Settings.VarType.Boolean, name, true)
+
+    -- Announce to Group Option
+    local variable, name, tooltip = "announceToGroup", Lstr("settings.announceToGroup", "Announce to Group"), Lstr(
+        "settings.announceToGroup.tooltip", "Announce to group when casting utility spells, mounts, repair, mail, etc.")
+    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB,
+        _G.Settings.VarType.Boolean, name, false)
     _G.Settings.CreateCheckbox(category, setting, tooltip)
-    
-    local variable, name, tooltip = "autoHideBanner", Lstr("settings.autoHideBanner", "Auto-hide Banner"), Lstr("settings.autoHideBanner.tooltip", "Automatically hide banner after timeout")
-    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB, _G.Settings.VarType.Boolean, name, true)
+
+    local variable, name, tooltip = "autoHideBanner", Lstr("settings.autoHideBanner", "Auto-hide Banner"),
+        Lstr("settings.autoHideBanner.tooltip", "Automatically hide banner after timeout")
+    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB,
+        _G.Settings.VarType.Boolean, name, true)
     _G.Settings.CreateCheckbox(category, setting, tooltip)
-    
-    local variable, name, tooltip = "bannerTimeout", Lstr("settings.bannerTimeout", "Banner Timeout (Seconds)"), Lstr("settings.bannerTimeout.tooltip", "How long to display the banner before auto-hiding (3-30 seconds)")
-    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB, _G.Settings.VarType.Number, name, 10)
+
+    local variable, name, tooltip = "bannerTimeout", Lstr("settings.bannerTimeout", "Banner Timeout (Seconds)"), Lstr(
+        "settings.bannerTimeout.tooltip", "How long to display the banner before auto-hiding (3-30 seconds)")
+    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB,
+        _G.Settings.VarType.Number, name, 10)
     local options = _G.Settings.CreateSliderOptions(3, 30, 1)
     options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
         return string.format("%d sec", value)
@@ -339,12 +334,16 @@ function SettingsModule.CreatePanel()
     -- Appearance Section
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(Lstr("settings.section.appearance", "Appearance")))
 
-    local variable, name, tooltip = "hideDragIcon", Lstr("settings.hideDragIcon", "Hide Drag Icon"), Lstr("settings.hideDragIcon.tooltip", "Hide the drag handle on the banner")
-    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB, _G.Settings.VarType.Boolean, name, false)
+    local variable, name, tooltip = "hideDragIcon", Lstr("settings.hideDragIcon", "Hide Drag Icon"),
+        Lstr("settings.hideDragIcon.tooltip", "Hide the drag handle on the banner")
+    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB,
+        _G.Settings.VarType.Boolean, name, false)
     _G.Settings.CreateCheckbox(category, setting, tooltip)
-    
-    local variable, name, tooltip = "minimapIcon", Lstr("settings.minimapIcon", "Minimap Icon"), Lstr("settings.minimapIcon.tooltip", "Show a minimap icon for reopening the last banner")
-    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB, _G.Settings.VarType.Boolean, name, false)
+
+    local variable, name, tooltip = "minimapIcon", Lstr("settings.minimapIcon", "Minimap Icon"), Lstr(
+        "settings.minimapIcon.tooltip", "Show a minimap icon for reopening the last banner")
+    local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB,
+        _G.Settings.VarType.Boolean, name, false)
     _G.Settings.CreateCheckbox(category, setting, tooltip)
     setting:SetValueChangedCallback(function()
         if _G.Nozmie_Minimap then
@@ -362,31 +361,20 @@ function SettingsModule.CreatePanel()
     local function SetValue()
     end
 
-    local setting = _G.Settings.RegisterProxySetting(
-        category,
-        "NOZMIE_BLACKLIST_BUTTON",
-        _G.Settings.VarType.String,
-        Lstr("blacklist.edit.label", "Blacklisted Words"),
-        "",
-        GetValue,
-        SetValue
-    )
-    local initializer = _G.Settings.CreateControlInitializer(
-        "NozmieSettingsActionButtonTemplate",
-        setting,
-        nil,
-        Lstr("blacklist.edit.tooltip", "Open a dialog to edit blacklisted words (comma-separated).")
-    )
+    local setting = _G.Settings.RegisterProxySetting(category, "NOZMIE_BLACKLIST_BUTTON", _G.Settings.VarType.String,
+        Lstr("blacklist.edit.label", "Blacklisted Words"), "", GetValue, SetValue)
+    local initializer = _G.Settings.CreateControlInitializer("NozmieSettingsActionButtonTemplate", setting, nil, Lstr(
+        "blacklist.edit.tooltip", "Open a dialog to edit blacklisted words (comma-separated)."))
     initializer.data = {
         buttonText = Lstr("blacklist.edit.button", "Edit Blacklisted Words"),
         tooltip = Lstr("blacklist.edit.tooltip", "Open a dialog to edit blacklisted words (comma-separated)."),
         onClick = function()
             StaticPopup_Show("NOZMIE_BLACKLIST_INPUT")
-        end,
+        end
     }
     local layout = _G.SettingsPanel:GetLayout(category)
     layout:AddInitializer(initializer)
-    
+
     return category
 end
 
@@ -415,7 +403,8 @@ StaticPopupDialogs["NOZMIE_BLACKLIST_INPUT"] = {
         local editBox = self.editBox or self:GetEditBox()
         local value = editBox:GetText() or ""
         SettingsModule.Set("blacklistedWords", value)
-        local message = string.format(Lstr("cmd.blacklist.updated", "Blacklist updated to: %s"), "|cffFFFFFF" .. value .. "|r")
+        local message = string.format(Lstr("cmd.blacklist.updated", "Blacklist updated to: %s"),
+            "|cffFFFFFF" .. value .. "|r")
         print("|cff00ff00Nozmie:|r " .. message)
     end,
     OnHide = function(self)
@@ -425,9 +414,8 @@ StaticPopupDialogs["NOZMIE_BLACKLIST_INPUT"] = {
     timeout = 0,
     whileDead = true,
     hideOnEscape = true,
-    preferredIndex = 3,
+    preferredIndex = 3
 }
-
 
 _G.Nozmie_Settings = SettingsModule
 

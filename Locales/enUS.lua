@@ -3,8 +3,6 @@ Nozmie_Locales["enUS"] = {
     strings = {
         ["settings.suppress.option.teleports"] = "Portals/Teleports/M+ Dungeons/Raids",
         ["settings.suppress.option.utilityservice"] = "Utility/Service (Mail, Repair, Transmog)",
-        ["settings.suppress.option.teleports"] = "Portals/Teleports/M+ Dungeons/Raids",
-        ["settings.suppress.option.utilityservice"] = "Utility/Service (Mail, Repair, Transmog)",
         ["addon.name"] = "Nozmie",
         ["settings.section.general"] = "General",
         ["settings.section.banner"] = "Banner",
@@ -17,6 +15,8 @@ Nozmie_Locales["enUS"] = {
         ["settings.showBanner.tooltip"] = "Display the utility banner when matches are found",
         ["settings.preferPortals"] = "Prefer Portals",
         ["settings.preferPortals.tooltip"] = "Prioritize portals over teleports when both match",
+        ["settings.announceToGroup"] = "Announce to Group",
+        ["settings.announceToGroup.tooltip"] = "Announce to group when casting utility spells, mounts, repair, mail, etc.",
         ["settings.autoHideBanner"] = "Auto-hide Banner",
         ["settings.autoHideBanner.tooltip"] = "Automatically hide banner after timeout",
         ["settings.hideDragIcon"] = "Hide Drag Icon",
@@ -108,9 +108,9 @@ Nozmie_Locales["enUS"] = {
         ["announce.canTeleport"] = "I can %s to %s!",
         ["announce.canUseName"] = "I can %s %s!",
         ["announce.canUseDestination"] = "I can %s %s!",
+        ["announce.summoning"] = "Summoning %s",
+        ["announce.casting"] = "Casting %s",
+        ["announce.teleporting"] = "Teleporting to %s",
     },
-    keywordsByName = {
-        -- Add localized keyword aliases by item name:
-        -- ["Halls of Atonement"] = {"sala de expiacao"},
-    }
+    keywordsByName = {}
 }

@@ -106,6 +106,9 @@ Nozmie_Locales["koKR"] = {
         ["announce.canTeleport"] = "저는 %s하여 %s로 갈 수 있습니다!",
         ["announce.canUseName"] = "저는 %s %s 할 수 있습니다!",
         ["announce.canUseDestination"] = "저는 %s %s 할 수 있습니다!",
+        ["announce.summoning"] = "%s 소환 중",
+        ["announce.casting"] = "%s 시전 중",
+        ["announce.teleporting"] = "%s로 이동 중",
     },
     keywordsByName = {}
 }
