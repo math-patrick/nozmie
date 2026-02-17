@@ -458,25 +458,6 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
             return
         end
 
-        -- Left-click behavior (original working logic)
-        if self.isOnCooldown and Helpers.IsInAnyGroup() and self.cooldownData then
-            local now = GetTime()
-            if now - self.lastAnnounceTime > 1 then -- 1 second debounce
-                local message = string.format(Lstr("banner.cooldownAnnounce", "%s is on cooldown (%s)"),
-                    self.cooldownData.data.spellName or self.cooldownData.data.name,
-                    Helpers.FormatCooldownTime(self.cooldownData.remaining))
-                local sent = Helpers.SendMessageForEvent(message, self.cooldownData.data.sourceEvent,
-                    self.cooldownData.data.sourceSender)
-                if not sent then
-                    C_ChatInfo.SendChatMessage(message,
-                        Helpers.IsInAnyGroup() and Helpers.GetGroupChatChannel() or "SAY")
-                end
-                if Helpers.MarkAnnounce then
-                    Helpers.MarkAnnounce(message)
-                end
-                self.lastAnnounceTime = now
-            end
-        end
         UIFrameFadeOut(self, 0.2, 1, 0)
         C_Timer.After(0.2, function()
             self:Hide()
