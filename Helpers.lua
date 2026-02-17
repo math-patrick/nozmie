@@ -133,24 +133,24 @@ end
 
 function Helpers.CreateAnnouncementMessage(data)
     local cooldown = Helpers.GetCooldownRemaining(data)
-    local actionVerb, nounForm, announceVerb = Helpers.GetActionAndNoun(data)
+    local actionVerb, nounForm = Helpers.GetActionAndNoun(data)
     if cooldown > 0 then
         local timeText = Helpers.FormatCooldownTime(cooldown)
         if actionVerb == Lstr("banner.action.teleport", "Teleport to") then
             local portalNoun = Lstr("announce.noun.portal", "Portal")
-            return string.format(Lstr("announce.portalReadyIn", "%s %s to %s ready in %s"), announceVerb, portalNoun,
+            return string.format(Lstr("announce.portalReadyIn", "%s to %s ready in %s"), portalNoun,
                 data.destination or data.name, timeText)
         end
-        return string.format(Lstr("announce.readyIn", "%s %s ready in %s"), announceVerb, nounForm, timeText)
+        return string.format(Lstr("announce.readyIn", "%s ready in %s"), nounForm, timeText)
     end
     if actionVerb == Lstr("banner.action.teleport", "Teleport to") then
-        return string.format(Lstr("announce.canTeleport", "I can %s to %s!"), actionVerb, data.destination or data.name)
+        return string.format(Lstr("announce.canTeleport", "I can teleport to %s!"), data.destination or data.name)
     end
     if data.destination and
         (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Anvil")) then
-        return string.format(Lstr("announce.canUseDestination", "I can %s %s!"), actionVerb, data.destination)
+        return string.format(Lstr("announce.canUseDestination", "I can use %s!"), data.destination)
     end
-    return string.format(Lstr("announce.canUseName", "I can %s %s!"), actionVerb, nounForm)
+    return string.format(Lstr("announce.canUseName", "I can use %s!"), data.name)
 end
 
 function Helpers.AnnounceUtility(data, event, sender)
@@ -271,7 +271,13 @@ local function CanUseToy(data)
 end
 
 local function CanUseSpell(data)
-    return data.spellID and IsSpellKnown and IsSpellKnown(data.spellID)
+    if not data.spellID or type(data.spellID) ~= "number" then
+        return false
+    end
+    if not IsSpellKnown then
+        return false
+    end
+    return IsSpellKnown(data.spellID)
 end
 
 function Helpers.CanPlayerUseUtility(data)
