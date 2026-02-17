@@ -133,7 +133,8 @@ function SettingsModule.InitializeDB()
         suppressInstanceService = false,
         suppressInstanceTransmog = false,
         suppressInstanceHearthstone = false,
-        blacklistedWords = ""
+        blacklistedWords = "",
+        announceToGroup = false
     }
 
     -- Apply defaults for any missing settings
