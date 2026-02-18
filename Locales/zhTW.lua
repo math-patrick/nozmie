@@ -15,6 +15,8 @@ Nozmie_Locales["zhTW"] = {
         ["settings.showBanner.tooltip"] = "有匹配時顯示工具橫幅",
         ["settings.preferPortals"] = "優先傳送門",
         ["settings.preferPortals.tooltip"] = "兩者皆匹配時優先顯示傳送門",
+        ["settings.announceToGroup"] = "團隊通告",
+        ["settings.announceToGroup.tooltip"] = "施放工具法術、坐騎、修理、郵件等時向團隊通告。",
         ["settings.autoHideBanner"] = "自動隱藏橫幅",
         ["settings.autoHideBanner.tooltip"] = "超時後自動隱藏橫幅",
         ["settings.hideDragIcon"] = "隱藏拖曳圖示",
@@ -103,9 +105,12 @@ Nozmie_Locales["zhTW"] = {
         ["announce.noun.portal"] = "傳送門",
         ["announce.readyIn"] = "%s %s 後可用",
         ["announce.portalReadyIn"] = "%s 到 %s %s 後可用",
-        ["announce.canTeleport"] = "我可以%s到%s！",
+        ["announce.canTeleport"] = "我可以傳送到%s！",
         ["announce.canUseName"] = "我可以%s%s！",
         ["announce.canUseDestination"] = "我可以%s%s！",
+        ["announce.summoning"] = "正在召喚%s！",
+        ["announce.casting"] = "正在施放%s！",
+        ["announce.teleporting"] = "正在傳送到%s！",
     },
     keywordsByName = {}
 }

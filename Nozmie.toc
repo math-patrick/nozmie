@@ -26,11 +26,11 @@ Data\Utility.lua
 Data.lua
 Config.lua
 Helpers.lua
-Detector.lua
 BannerUI.lua
 BannerController.lua
 Minimap.lua
 SettingsMixins.lua
 SettingsTemplates.xml
 Settings.lua
+Detector.lua
 Init.lua

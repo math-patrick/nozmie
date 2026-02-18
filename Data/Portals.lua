@@ -188,7 +188,7 @@ TeleportToys = {{
     category = "Toy",
     cooldown = "30 min",
     destination = "Random",
-    keywords = {"emitter", "unstable", "random"}
+    keywords = {"emitter", "unstable"}
 }}
 
 DelveTeleports = {{
@@ -199,7 +199,7 @@ DelveTeleports = {{
     category = "Delve",
     cooldown = "15 min",
     destination = "Random Delve",
-    keywords = {"delve", "delveobot", "delve-obot", "7001", "random", "bountiful"}
+    keywords = {"delve", "delveobot", "delve-obot", "7001", "bountiful"}
 }, {
     name = "Delver's Mana-Bound Ethergate",
     itemID = 243056,
