@@ -273,6 +273,25 @@ local function CanUseMount(data)
 end
 
 local function CanUseToy(data)
+    -- Special case for MOLL-E: requires Engineering skill 425+
+    if data and data.itemID == 40768 then
+        local hasToy = type(PlayerHasToy) == "function" and PlayerHasToy(40768)
+        local hasSkill = false
+        if C_TradeSkillUI and C_TradeSkillUI.GetProfessionInfo then
+            local prof1, prof2 = GetProfessions and GetProfessions()
+            local profs = {prof1, prof2}
+            for _, profIndex in ipairs(profs) do
+                if profIndex then
+                    local name, _, rank = GetProfessionInfo(profIndex)
+                    if name and (name == GetSpellInfo(4036) or name == "Engineering") and rank and rank >= 425 then
+                        hasSkill = true
+                        break
+                    end
+                end
+            end
+        end
+        return hasToy and hasSkill
+    end
     return (type(PlayerHasToy) == "function" and PlayerHasToy(data.itemID))
 end
 
