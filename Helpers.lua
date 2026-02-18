@@ -64,7 +64,7 @@ function Helpers.GetChannelFromEvent(event)
     if event == "CHAT_MSG_SAY" then
         return "SAY"
     end
-    if event == "CHAT_MSG_PARTY" then
+    if event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" or event == "CHAT_MSG_INSTANCE_CHAT" then
         return "PARTY"
     end
     if event == "CHAT_MSG_RAID" then
@@ -73,19 +73,23 @@ function Helpers.GetChannelFromEvent(event)
     if event == "CHAT_MSG_GUILD" then
         return "GUILD"
     end
-    if event == "CHAT_MSG_WHISPER" then
+    if event == "CHAT_MSG_WHISPER" or event == "CHAT_MSG_WHISPER_INFORM" then
         return "WHISPER"
     end
-    if event == "CHAT_MSG_INSTANCE_CHAT" then
-        return "INSTANCE_CHAT"
+    if event == "CHAT_MSG_BN_WHISPER" then
+        return "BN_WHISPER"
     end
     return nil
 end
 
 function Helpers.SendMessageForEvent(message, event, sender)
+    -- Ignore non-channel events (like LEFT_CLICK)
+    if event == "LEFT_CLICK" or event == "RIGHT_CLICK" then
+        return false
+    end
     local channel = Helpers.GetChannelFromEvent(event)
     if not channel then
-        return false
+        channel = "SAY"
     end
     if channel == "WHISPER" then
         if not sender or sender == "" then
@@ -93,6 +97,18 @@ function Helpers.SendMessageForEvent(message, event, sender)
         end
         C_ChatInfo.SendChatMessage(message, channel, nil, sender)
         return true
+    elseif channel == "BN_WHISPER" then
+        if not sender or sender == "" then
+            return false
+        end
+        C_ChatInfo.SendAddonMessage("Nozmie", message, "BN_WHISPER", sender)
+        return true
+    end
+
+    -- Only send if channel is a valid chat type
+    local validChannels = {SAY=true, PARTY=true, RAID=true, GUILD=true, INSTANCE_CHAT=true, YELL=true}
+    if not validChannels[channel] then
+        channel = "SAY"
     end
     C_ChatInfo.SendChatMessage(message, channel)
     return true
@@ -119,7 +135,7 @@ function Helpers.GetActionAndNoun(data)
     if data.actionType == "pet" or data.actionType == "mount" or (data.category == "Utility") then
         actionVerb = Lstr("banner.action.summon", "Summon")
         announceVerb = string.format(Lstr("announce.summoning", "Summoning %s"), nounForm)
-    elseif data.actionType == "spell" and data.category and data.category:find("Class") then
+    elseif data.actionType == "spell" and data.category and (data.category:find("Class") or data.category:find("Class Utility")) then
         actionVerb = Lstr("banner.action.cast", "Cast")
         announceVerb = string.format(Lstr("announce.casting", "Casting %s"), nounForm)
     elseif data.category and
@@ -165,17 +181,8 @@ function Helpers.AnnounceUtility(data, event, sender)
         message = Helpers.CreateAnnouncementMessage(data)
     end
 
-    if announceToGroup then
-        if Helpers.IsInAnyGroup() then
-            C_ChatInfo.SendChatMessage(message, Helpers.GetGroupChatChannel())
-        else
-            C_ChatInfo.SendChatMessage(message, "SAY")
-        end
-        Helpers.MarkAnnounce(message)
-        return
-    end
-
-    if event and Helpers.SendMessageForEvent(message, event, sender) then
+    if event then
+        Helpers.SendMessageForEvent(message, event, sender)
         Helpers.MarkAnnounce(message)
         return
     end
@@ -185,7 +192,6 @@ function Helpers.AnnounceUtility(data, event, sender)
     else
         C_ChatInfo.SendChatMessage(message, "SAY")
     end
-
     Helpers.MarkAnnounce(message)
 end
 

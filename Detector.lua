@@ -114,7 +114,15 @@ function Detector.FindMatchingTeleports(message, sender)
     local Settings = Nozmie_Settings
     local preferPortals = Settings and Settings.Get and Settings.Get("preferPortals")
 
-    -- Blacklist check
+    local idsInMessage = {}
+    -- Match links like |Hitem:3577:0:0:276308480|h and |Hspell:12345|h
+    for linkType, id in message:gmatch("|H(%a+):(%d+):.-|h") do
+        idsInMessage[tonumber(id)] = true
+    end
+    for linkType, id in message:gmatch("|H(%a+):(%d+)|h") do
+        idsInMessage[tonumber(id)] = true
+    end
+
     if Settings then
         local blacklist = Settings.Get("blacklistedWords") or ""
         if blacklist ~= "" then
@@ -136,51 +144,58 @@ function Detector.FindMatchingTeleports(message, sender)
     local inInstance = IsInInstance()
 
     for _, teleportData in ipairs(Nozmie_Data) do
-        if teleportData.keywords then
+        local matched = false
+        -- Match by spellID/itemID
+        if (teleportData.spellID and idsInMessage[teleportData.spellID]) or (teleportData.itemID and idsInMessage[teleportData.itemID]) then
+            matched = true
+        elseif teleportData.keywords then
             for _, keyword in ipairs(teleportData.keywords) do
-                if MatchesKeyword(lowerMessage, keyword) and Helpers.CanPlayerUseUtility(teleportData) then
-                    if not ShouldSuppressOption(teleportData, Settings, inInstance) then
-                        local teleportCopy = {}
-                        for k, v in pairs(teleportData) do
-                            teleportCopy[k] = v
-                        end
-                        if targetPlayer and teleportCopy.category and
-                            (teleportCopy.category:find("Utility") or teleportCopy.spellName == "Levitate" or
-                                teleportCopy.spellName == "Slow Fall") then
-                            teleportCopy.targetPlayer = targetPlayer
-                        end
-                        if teleportCopy.current then
-                            table.insert(currents, teleportCopy)
-                        elseif IsHearthstone(teleportCopy) then
-                            table.insert(hearthstones, teleportCopy)
-                        else
-                            -- Portal prioritization: if preferPortals is enabled, prefer portals over teleports with same name
-                            if preferPortals and teleportCopy.spellName and teleportCopy.spellName:find("^Teleport:") then
-                                -- Try to find a matching portal in matches and replace if found
-                                local found = false
-                                for i, t in ipairs(matches) do
-                                    if t.spellName and t.spellName:gsub("^Portal:", "Teleport:") ==
-                                        teleportCopy.spellName then
-                                        -- If t is a portal, keep it; if t is a teleport, replace with portal
-                                        if IsPortalSpell(t) then
-                                            found = true
-                                            break
-                                        else
-                                            matches[i] = teleportCopy
-                                            found = true
-                                            break
-                                        end
-                                    end
+                if MatchesKeyword(lowerMessage, keyword) then
+                    matched = true
+                    break
+                end
+            end
+        end
+        if matched and Helpers.CanPlayerUseUtility(teleportData) then
+            if not ShouldSuppressOption(teleportData, Settings, inInstance) then
+                local teleportCopy = {}
+                for k, v in pairs(teleportData) do
+                    teleportCopy[k] = v
+                end
+                if targetPlayer and teleportCopy.category and
+                    (teleportCopy.category:find("Utility") or teleportCopy.spellName == "Levitate" or
+                        teleportCopy.spellName == "Slow Fall") then
+                    teleportCopy.targetPlayer = targetPlayer
+                end
+                if teleportCopy.current then
+                    table.insert(currents, teleportCopy)
+                elseif IsHearthstone(teleportCopy) then
+                    table.insert(hearthstones, teleportCopy)
+                else
+                    -- Portal prioritization: if preferPortals is enabled, prefer portals over teleports with same name
+                    if preferPortals and teleportCopy.spellName and teleportCopy.spellName:find("^Teleport:") then
+                        -- Try to find a matching portal in matches and replace if found
+                        local found = false
+                        for i, t in ipairs(matches) do
+                            if t.spellName and t.spellName:gsub("^Portal:", "Teleport:") ==
+                                teleportCopy.spellName then
+                                -- If t is a portal, keep it; if t is a teleport, replace with portal
+                                if IsPortalSpell(t) then
+                                    found = true
+                                    break
+                                else
+                                    matches[i] = teleportCopy
+                                    found = true
+                                    break
                                 end
-                                if not found then
-                                    table.insert(matches, teleportCopy)
-                                end
-                            else
-                                table.insert(matches, teleportCopy)
                             end
                         end
+                        if not found then
+                            table.insert(matches, teleportCopy)
+                        end
+                    else
+                        table.insert(matches, teleportCopy)
                     end
-                    break
                 end
             end
         end

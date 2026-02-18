@@ -140,7 +140,8 @@ local Shadowlands = {{
     spellName = "Path of the Sinful Soul",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"halls", "halls of atonement", "hoa", "atonement"}
+    keywords = {"halls", "halls of atonement", "hoa", "atonement"},
+    priority = 1
 }, {
     name = "Plaguefall",
     spellID = 354463,
@@ -196,7 +197,8 @@ local Shadowlands = {{
     spellName = "Path of the Streetwise Merchant",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"tazavesh", "taza", "veiled market"}
+    keywords = {"tazavesh", "taza", "veiled market", "streets", "gambit"},
+    priority = 1
 }, -- Raids
 {
     name = "Castle Nathria",
@@ -330,7 +332,8 @@ local WarWithin = {{
     spellName = "Path of the Ruined City",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"ara-kara", "ara kara", "arakara", "city of echoes", "ara"}
+    keywords = {"ara-kara", "ara kara", "arakara", "city of echoes", "ara"},
+    priority = 1
 }, {
     name = "City of Threads",
     spellID = 445416,
@@ -351,14 +354,16 @@ local WarWithin = {{
     spellName = "Path of the Arathi Flagship",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"dawnbreaker", "dawn breaker", "arathi flagship", "db"}
+    keywords = {"dawnbreaker", "dawn breaker", "arathi flagship", "db"},
+    priority = 1
 }, {
     name = "Priory of the Sacred Flame",
     spellID = 445444,
     spellName = "Path of the Light's Reverence",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"priory", "sacred flame", "lights reverence"}
+    keywords = {"priory", "sacred flame", "lights reverence"},
+    priority = 1
 }, {
     name = "The Rookery",
     spellID = 445443,
@@ -372,14 +377,16 @@ local WarWithin = {{
     spellName = "Path of Circuit Breaker",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"floodgate", "flood gate", "circuit breaker"}
+    keywords = {"floodgate", "flood gate", "circuit breaker"},
+    priority = 1
 }, {
     name = "Eco-Dome Al'dani",
     spellID = 1237215,
     spellName = "Path of the Eco-Dome",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"eco-dome", "eco dome", "ecodome", "aldani"}
+    keywords = {"eco-dome", "eco dome", "ecodome", "aldani"},
+    priority = 1
 }, {
     name = "Cinderbrew Meadery",
     spellID = 445440,

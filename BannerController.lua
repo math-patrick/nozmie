@@ -223,7 +223,7 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     local mountInfoText = ""
     if data.mountId and C_MountJournal and C_MountJournal.GetMountInfoByID then
         local name, spellID, icon, isActive, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar,
-        isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
+            isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
         if name then
             mountInfoText = string.format("\n|cff888888Mount:|r %s", name)
             if not isUsable then
@@ -260,17 +260,32 @@ local function SetPetIcon(banner, data)
 end
 
 local function SetSpellIcon(banner, data)
-    local iconTexture = C_Spell.GetSpellTexture(data.spellID)
+
+
+    local iconTexture = C_Spell.GetSpellTexture(data.spellID or data.spellName)
+
     if iconTexture then
         banner.icon:SetTexture(iconTexture)
     end
-    local playerName = UnitName("player")
-    if data.targetPlayer and data.targetPlayer ~= playerName and (data.category and data.category:find("Utility")) then
+
+    local spellName = data.spellName or (data.spellID and GetSpellInfo(data.spellID))
+    if not spellName and data.spellID then
+        spellName = tostring(data.spellID)
+    end
+
+    if data.targetPlayer and data.targetPlayer ~= UnitName("player") and
+        (data.category and data.category:find("Utility")) then
         banner:SetAttribute("type", "macro")
-        banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. (data.spellID or data.spellName))
+        banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. (spellName or ""))
+    elseif spellName then
+        banner:SetAttribute("type", "macro")
+        banner:SetAttribute("macrotext", "/cast " .. spellName)
+        banner:SetAttribute("spell", spellName)
     else
         banner:SetAttribute("type", "spell")
-        banner:SetAttribute("spell", data.spellID or data.spellName)
+        if data.spellID then
+            banner:SetAttribute("spell", data.spellID)
+        end
     end
 end
 
@@ -438,23 +453,19 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
         local data = self.options[self.currentIndex]
         local Settings = _G.Nozmie_Settings
         local announceToGroup = Settings and Settings.Get and Settings.Get("announceToGroup")
+        local now = GetTime()
         if button == "RightButton" then
-            if data then
-                local now = GetTime()
-                if now - self.lastAnnounceTime > 1 then -- 1 second debounce
-                    Helpers.AnnounceUtility(data, data.sourceEvent, data.sourceSender)
-                    self.lastAnnounceTime = now
-                end
+            -- Always announce to the original detected chat context, not group, for right-click
+            if data and data.sourceEvent and (not self.lastAnnounceTime or now - self.lastAnnounceTime > 1) then
+                Helpers.AnnounceUtility(data, data.sourceEvent, data.sourceSender)
+                self.lastAnnounceTime = now
             end
             return
         end
         -- Announce to group on left click if setting enabled
-        if button == "LeftButton" and announceToGroup and data then
-            local now = GetTime()
-            if now - self.lastAnnounceTime > 1 then -- 1 second debounce
-                Helpers.AnnounceUtility(data, "LEFT_CLICK", data.sourceSender)
-                self.lastAnnounceTime = now
-            end
+        if button == "LeftButton" and announceToGroup and data and (not self.lastAnnounceTime or now - self.lastAnnounceTime > 1) then
+            Helpers.AnnounceUtility(data)
+            self.lastAnnounceTime = now
         end
         UIFrameFadeOut(self, 0.2, 1, 0)
         C_Timer.After(0.2, function()
