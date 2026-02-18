@@ -28,7 +28,9 @@ local chatEventKeys = {
     CHAT_MSG_INSTANCE_CHAT = "party",
     CHAT_MSG_RAID = "raid",
     CHAT_MSG_GUILD = "guild",
-    CHAT_MSG_WHISPER = "whisper"
+    CHAT_MSG_WHISPER = "whisper",
+    CHAT_MSG_WHISPER_INFORM = "whisper",
+    CHAT_MSG_BN_WHISPER = "bn_whisper"
 }
 
 local function QueueMatches(matches)
