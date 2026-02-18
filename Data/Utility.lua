@@ -36,7 +36,7 @@ ServiceToys = { {
     keywords = { "mail", "mailbox" }
 }, {
     name = "Radiant Lynx Whistle",
-    itemID = 232417,
+    itemID = 239693,
     spellName = "Radiant Lynx Whistle",
     actionType = "item",
     category = "Utility",
@@ -45,7 +45,7 @@ ServiceToys = { {
     keywords = { "mail", "mailbox" }
 }, {
     name = "Ohuna Perch",
-    itemID = 198715,
+    itemID = 194885,
     spellName = "Ohuna Perch",
     actionType = "item",
     category = "Utility",

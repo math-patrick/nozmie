@@ -223,14 +223,14 @@ local ClassTeleports = { -- Druid
     spellName = "Teleport: Moonglade",
     actionType = "spell",
     category = "Class",
-    keywords = {"moonglade"}
+    keywords = {"moonglade", "class hall"}
 }, {
     name = "Emerald Dreamway",
     spellID = 193753,
     spellName = "Dreamwalk",
     actionType = "spell",
     category = "Class",
-    keywords = {"dreamway", "dream way", "emerald dreamway"}
+    keywords = {"dreamway", "dream way", "emerald dreamway", "class hall"}
 }, -- Death Knight
 {
     name = "Ebon Hold",
@@ -238,7 +238,7 @@ local ClassTeleports = { -- Druid
     spellName = "Death Gate",
     actionType = "spell",
     category = "Class",
-    keywords = {"ebon hold", "death gate", "acherus"}
+    keywords = {"ebon hold", "death gate", "acherus", "class hall"}
 }, -- Monk
 {
     name = "Peak of Serenity",
@@ -246,7 +246,7 @@ local ClassTeleports = { -- Druid
     spellName = "Zen Pilgrimage",
     actionType = "spell",
     category = "Class",
-    keywords = {"peak", "peak of serenity", "monk class hall"}
+    keywords = {"peak of serenity", "class hall"}
 }, -- Shaman
 {
     name = "Astral Recall",
@@ -255,7 +255,7 @@ local ClassTeleports = { -- Druid
     actionType = "spell",
     category = "Class",
     cooldown = "10 min",
-    keywords = {"astral recall", "shaman hearth"}
+    keywords = {"astral recall", "shaman hearth", "home"}
 }, -- Demon Hunter
 {
     name = "Fel Hammer",
@@ -263,14 +263,14 @@ local ClassTeleports = { -- Druid
     spellName = "Fel Hammer",
     actionType = "spell",
     category = "Class",
-    keywords = {"fel hammer", "dh class hall"}
+    keywords = {"fel hammer", "class hall"}
 }, {
     name = "Hall of the Guardian",
     spellID = 193759,
     spellName = "Teleport: Hall of the Guardian",
     actionType = "spell",
     category = "Class",
-    keywords = {"hall of the guardian", "guardian", "mage class hall"}
+    keywords = {"hall of the guardian", "class hall"}
 }}
 
 local ClassSpellsData = {}

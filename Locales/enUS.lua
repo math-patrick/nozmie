@@ -108,9 +108,9 @@ Nozmie_Locales["enUS"] = {
         ["announce.canTeleport"] = "I can teleport to %s!",
         ["announce.canUseName"] = "I can use %s!",
         ["announce.canUseDestination"] = "I can use %s!",
-        ["announce.summoning"] = "Summoning %s",
-        ["announce.casting"] = "Casting %s",
-        ["announce.teleporting"] = "Teleporting to %s",
+        ["announce.summoning"] = "Summoning %s!",
+        ["announce.casting"] = "Casting %s!",
+        ["announce.teleporting"] = "Teleporting to %s!",
     },
     keywordsByName = {}
 }

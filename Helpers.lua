@@ -130,18 +130,18 @@ end
 function Helpers.GetActionAndNoun(data)
     local actionVerb = Lstr("banner.action.use", "Use")
     local nounForm = data.destination or data.name or "utility"
-    local announceVerb = "Using"
+    local announceVerb = "Using!"
 
     if data.actionType == "pet" or data.actionType == "mount" or (data.category == "Utility") then
         actionVerb = Lstr("banner.action.summon", "Summon")
-        announceVerb = string.format(Lstr("announce.summoning", "Summoning %s"), nounForm)
+        announceVerb = string.format(Lstr("announce.summoning", "Summoning %s!"), nounForm)
     elseif data.actionType == "spell" and data.category and (data.category:find("Class") or data.category:find("Class Utility")) then
         actionVerb = Lstr("banner.action.cast", "Cast")
-        announceVerb = string.format(Lstr("announce.casting", "Casting %s"), nounForm)
+        announceVerb = string.format(Lstr("announce.casting", "Casting %s!"), nounForm)
     elseif data.category and
         (data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Toy") then
         actionVerb = Lstr("banner.action.teleport", "Teleport to")
-        announceVerb = string.format(Lstr("announce.teleporting", "Teleporting to %s"), nounForm)
+        announceVerb = string.format(Lstr("announce.teleporting", "Teleporting to %s!"), nounForm)
     end
 
     return actionVerb, nounForm, announceVerb

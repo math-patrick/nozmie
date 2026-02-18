@@ -106,9 +106,9 @@ Nozmie_Locales["zhTW"] = {
         ["announce.canTeleport"] = "我可以傳送到%s！",
         ["announce.canUseName"] = "我可以%s%s！",
         ["announce.canUseDestination"] = "我可以%s%s！",
-        ["announce.summoning"] = "正在召喚%s",
-        ["announce.casting"] = "正在施放%s",
-        ["announce.teleporting"] = "正在傳送到%s",
+        ["announce.summoning"] = "正在召喚%s！",
+        ["announce.casting"] = "正在施放%s！",
+        ["announce.teleporting"] = "正在傳送到%s！",
     },
     keywordsByName = {}
 }

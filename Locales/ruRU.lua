@@ -106,9 +106,9 @@ Nozmie_Locales["ruRU"] = {
         ["announce.canTeleport"] = "Я могу телепортироваться к %s!",
         ["announce.canUseName"] = "Я могу использовать %s!",
         ["announce.canUseDestination"] = "Я могу использовать %s!",
-            ["announce.summoning"] = "Призываю %s",
-            ["announce.casting"] = "Применяю %s",
-            ["announce.teleporting"] = "Телепортируюсь к %s",
+            ["announce.summoning"] = "Призываю %s!",
+            ["announce.casting"] = "Применяю %s!",
+            ["announce.teleporting"] = "Телепортируюсь к %s!",
     },
     keywordsByName = {}
 }
