@@ -1,4 +1,4 @@
-local ClassSpellsData = {{
+local Mage = {{
     name = "Conjure Refreshment",
     spellID = 190336,
     spellName = "Conjure Refreshment",
@@ -19,8 +19,9 @@ local ClassSpellsData = {{
     actionType = "spell",
     category = "Class Utility",
     keywords = {"slow fall", "slowfall", "slow", "sf"}
-}, -- Warlock Utilities
-{
+}}
+
+local Warlock = {{
     name = "Ritual of Summoning",
     spellID = 698,
     spellName = "Ritual of Summoning",
@@ -41,9 +42,10 @@ local ClassSpellsData = {{
     spellName = "Soulstone",
     actionType = "spell",
     category = "Class Utility",
-    keywords = {"soulstone", "soul stone", "buff", "ss"}
-}, -- Priest Utilities
-{
+    keywords = {"soulstone", "soul stone", "buff", "ss", "ress", "rez", "brez", "resurrection"}
+}}
+
+local Priest = {{
     name = "Power Word: Fortitude",
     spellID = 21562,
     spellName = "Power Word: Fortitude",
@@ -57,32 +59,91 @@ local ClassSpellsData = {{
     actionType = "spell",
     category = "Class Utility",
     keywords = {"levitate"}
-}, -- Druid Utilities
-{
+}, {
+    name = "Resurrection",
+    spellID = 2006,
+    spellName = "Resurrection",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"res", "rez", "ress", "resurrection", "priest res", "priest"}
+}}
+
+local Warrior = {{
     name = "Battle Shout",
     spellID = 6673,
     spellName = "Battle Shout",
     actionType = "spell",
     category = "Class Utility",
     keywords = {"battle shout", "shout", "buff"}
-}, -- Warrior Utility
-{
+}}
+
+local Druid = {{
     name = "Mark of the Wild",
     spellID = 1126,
     spellName = "Mark of the Wild",
     actionType = "spell",
     category = "Class Utility",
     keywords = {"motw", "mark", "mark of the wild", "buff"}
-}, -- Shaman Utilities
-{
+}, {
+    name = "Rebirth",
+    spellID = 20484,
+    spellName = "Rebirth",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"res", "rebirth", "brez", "bress", "ress"}
+}, {
+    name = "Revive",
+    spellID = 50769,
+    spellName = "Revive",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"res", "revive", "brez", "bress", "ress"}
+}}
+
+local Shaman = {{
     name = "Skyfury",
     spellID = 462854,
     spellName = "Skyfury",
     actionType = "spell",
     category = "Class Utility",
     keywords = {"skyfury", "buff", "sky fury"}
-}, -- Evoker Utilities
-{
+}, {
+    name = "Ancestral Spirit",
+    spellID = 2008,
+    spellName = "Ancestral Spirit",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"res", "ancestral spirit", "rez", "brez", "bress", "ress"}
+}}
+
+local Paladin = {{
+    name = "Redemption",
+    spellID = 7328,
+    spellName = "Redemption",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"res", "redemption", "rez", "brez", "bress", "ress"}
+}}
+
+local Monk = {{
+    name = "Resuscitate",
+    spellID = 115178,
+    spellName = "Resuscitate",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"res", "resuscitate", "rez", "brez", "bress", "ress"}
+}}
+
+local DeathKnight = {{
+    name = "Raise Ally",
+    spellID = 61999,
+    spellName = "Raise Ally",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"res", "raise ally", "rez", "brez", "bress", "ress"}
+}}
+
+local Evoker = {{
     name = "Blessing of the Bronze",
     spellID = 364342,
     spellName = "Blessing of the Bronze",
@@ -96,6 +157,63 @@ local ClassSpellsData = {{
     actionType = "spell",
     category = "Class Utility",
     keywords = {"source", "source of magic", "evoker mana", "buff"}
+}, {
+    name = "Return",
+    spellID = 361227,
+    spellName = "Return",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"res", "rez", "brez", "bress", "ress"}
+}}
+
+local MassRes = {{
+    name = "Mass Resurrection",
+    spellID = 212036,
+    priority = 1,
+    spellName = "Mass Resurrection",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"mass res", "rez", "mass rez", "mass revive", "ress"}
+}, {
+    name = "Revitalize",
+    spellID = 212040,
+    priority = 1,
+    spellName = "Revitalize",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"mass res", "rez", "mass rez", "mass revive", "ress"}
+}, {
+    name = "Ancestral Vision",
+    spellID = 212048,
+    priority = 1,
+    spellName = "Ancestral Vision",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"mass res", "rez", "mass rez", "mass revive", "ress"}
+}, {
+    name = "Absolution",
+    spellID = 212056,
+    priority = 1,
+    spellName = "Absolution",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"mass res", "rez", "mass rez", "mass revive", "ress"}
+}, {
+    name = "Reawaken",
+    spellID = 212051,
+    priority = 1,
+    spellName = "Reawaken",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"mass res", "rez", "mass rez", "mass revive", "ress"}
+}, {
+    name = "Mass Return",
+    spellID = 361178,
+    priority = 1,
+    spellName = "Mass Return",
+    actionType = "spell",
+    category = "Class Utility",
+    keywords = {"mass res", "rez", "mass rez", "mass revive", "ress"}
 }}
 
 local ClassTeleports = { -- Druid
@@ -105,14 +223,14 @@ local ClassTeleports = { -- Druid
     spellName = "Teleport: Moonglade",
     actionType = "spell",
     category = "Class",
-    keywords = {"moonglade"}
+    keywords = {"moonglade", "class hall"}
 }, {
     name = "Emerald Dreamway",
     spellID = 193753,
     spellName = "Dreamwalk",
     actionType = "spell",
     category = "Class",
-    keywords = {"dreamway", "dream way", "emerald dreamway"}
+    keywords = {"dreamway", "dream way", "emerald dreamway", "class hall"}
 }, -- Death Knight
 {
     name = "Ebon Hold",
@@ -120,7 +238,7 @@ local ClassTeleports = { -- Druid
     spellName = "Death Gate",
     actionType = "spell",
     category = "Class",
-    keywords = {"ebon hold", "death gate", "acherus"}
+    keywords = {"ebon hold", "death gate", "acherus", "class hall"}
 }, -- Monk
 {
     name = "Peak of Serenity",
@@ -128,7 +246,7 @@ local ClassTeleports = { -- Druid
     spellName = "Zen Pilgrimage",
     actionType = "spell",
     category = "Class",
-    keywords = {"peak", "peak of serenity", "monk class hall"}
+    keywords = {"peak of serenity", "class hall"}
 }, -- Shaman
 {
     name = "Astral Recall",
@@ -137,7 +255,7 @@ local ClassTeleports = { -- Druid
     actionType = "spell",
     category = "Class",
     cooldown = "10 min",
-    keywords = {"astral recall", "shaman hearth"}
+    keywords = {"astral recall", "shaman hearth", "home"}
 }, -- Demon Hunter
 {
     name = "Fel Hammer",
@@ -145,15 +263,23 @@ local ClassTeleports = { -- Druid
     spellName = "Fel Hammer",
     actionType = "spell",
     category = "Class",
-    keywords = {"fel hammer", "dh class hall"}
+    keywords = {"fel hammer", "class hall"}
 }, {
     name = "Hall of the Guardian",
     spellID = 193759,
     spellName = "Teleport: Hall of the Guardian",
     actionType = "spell",
     category = "Class",
-    keywords = {"hall of the guardian", "guardian", "mage class hall"}
+    keywords = {"hall of the guardian", "class hall"}
 }}
+
+local ClassSpellsData = {}
+for _, tbl in ipairs(
+    {Mage, Warlock, Priest, Warrior, Druid, Shaman, Paladin, Monk, DeathKnight, Evoker, MassRes}) do
+    for _, entry in ipairs(tbl) do
+        table.insert(ClassSpellsData, entry)
+    end
+end
 
 ClassSpells = {
     ClassSpellsData = ClassSpellsData,

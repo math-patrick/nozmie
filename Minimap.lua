@@ -32,6 +32,24 @@ function Nozmie_ToggleMinimapIcon()
     end
 end
 
-if icon and dataobj then
-    icon:Register("Nozmie", dataobj, NozmieDB.minimap)
+
+local Minimap = {}
+
+function Minimap.UpdateVisibility()
+    if not icon then return end
+    local show = NozmieDB and NozmieDB.minimap and not NozmieDB.minimap.hide
+    if show then
+        icon:Show("Nozmie")
+    else
+        icon:Hide("Nozmie")
+    end
 end
+
+function Minimap.Initialize()
+    if icon and dataobj then
+        icon:Register("Nozmie", dataobj, NozmieDB.minimap)
+        Minimap.UpdateVisibility()
+    end
+end
+
+_G.Nozmie_Minimap = Minimap

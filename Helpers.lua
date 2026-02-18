@@ -64,7 +64,7 @@ function Helpers.GetChannelFromEvent(event)
     if event == "CHAT_MSG_SAY" then
         return "SAY"
     end
-    if event == "CHAT_MSG_PARTY" then
+    if event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" or event == "CHAT_MSG_INSTANCE_CHAT" then
         return "PARTY"
     end
     if event == "CHAT_MSG_RAID" then
@@ -73,19 +73,23 @@ function Helpers.GetChannelFromEvent(event)
     if event == "CHAT_MSG_GUILD" then
         return "GUILD"
     end
-    if event == "CHAT_MSG_WHISPER" then
+    if event == "CHAT_MSG_WHISPER" or event == "CHAT_MSG_WHISPER_INFORM" then
         return "WHISPER"
     end
-    if event == "CHAT_MSG_INSTANCE_CHAT" then
-        return "INSTANCE_CHAT"
+    if event == "CHAT_MSG_BN_WHISPER" then
+        return "BN_WHISPER"
     end
     return nil
 end
 
 function Helpers.SendMessageForEvent(message, event, sender)
+    -- Ignore non-channel events (like LEFT_CLICK)
+    if event == "LEFT_CLICK" or event == "RIGHT_CLICK" then
+        return false
+    end
     local channel = Helpers.GetChannelFromEvent(event)
     if not channel then
-        return false
+        channel = "SAY"
     end
     if channel == "WHISPER" then
         if not sender or sender == "" then
@@ -93,6 +97,18 @@ function Helpers.SendMessageForEvent(message, event, sender)
         end
         C_ChatInfo.SendChatMessage(message, channel, nil, sender)
         return true
+    elseif channel == "BN_WHISPER" then
+        if not sender or sender == "" then
+            return false
+        end
+        C_ChatInfo.SendAddonMessage("Nozmie", message, "BN_WHISPER", sender)
+        return true
+    end
+
+    -- Only send if channel is a valid chat type
+    local validChannels = {SAY=true, PARTY=true, RAID=true, GUILD=true, INSTANCE_CHAT=true, YELL=true}
+    if not validChannels[channel] then
+        channel = "SAY"
     end
     C_ChatInfo.SendChatMessage(message, channel)
     return true
@@ -111,52 +127,66 @@ function Helpers.IsRecentAnnounce(message, window)
     return message == lastAnnounce.message and (GetTime() - lastAnnounce.time) <= limit
 end
 
+function Helpers.GetActionAndNoun(data)
+    local actionVerb = Lstr("banner.action.use", "Use")
+    local nounForm = data.destination or data.name or "utility"
+    local announceVerb = "Using!"
+
+    if data.actionType == "pet" or data.actionType == "mount" or (data.category == "Utility") then
+        actionVerb = Lstr("banner.action.summon", "Summon")
+        announceVerb = string.format(Lstr("announce.summoning", "Summoning %s!"), nounForm)
+    elseif data.actionType == "spell" and data.category and (data.category:find("Class") or data.category:find("Class Utility")) then
+        actionVerb = Lstr("banner.action.cast", "Cast")
+        announceVerb = string.format(Lstr("announce.casting", "Casting %s!"), nounForm)
+    elseif data.category and
+        (data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Toy") then
+        actionVerb = Lstr("banner.action.teleport", "Teleport to")
+        announceVerb = string.format(Lstr("announce.teleporting", "Teleporting to %s!"), nounForm)
+    end
+
+    return actionVerb, nounForm, announceVerb
+end
+
 function Helpers.CreateAnnouncementMessage(data)
     local cooldown = Helpers.GetCooldownRemaining(data)
-    local actionVerb = Lstr("announce.action.use", "use")
-    local nounForm = "utility"
-    if data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Home" or
-        data.category == "Class" or data.category == "Toy" then
-        actionVerb = Lstr("announce.action.teleport", "teleport")
-        nounForm = "portal"
-    elseif data.category and data.category:find("Utility") then
-        if data.destination and
-            (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Transmog") or
-                data.destination:find("Anvil")) then
-            actionVerb = Lstr("announce.action.summon", "summon")
-            nounForm = data.name
-        elseif data.keywords and
-            (tContains(data.keywords, "buff") or tContains(data.keywords, "fort") or tContains(data.keywords, "motw") or
-                tContains(data.keywords, "intellect")) then
-            actionVerb = Lstr("announce.action.cast", "cast")
-            nounForm = data.name
-        end
-    end
+    local actionVerb, nounForm = Helpers.GetActionAndNoun(data)
     if cooldown > 0 then
         local timeText = Helpers.FormatCooldownTime(cooldown)
-        if nounForm == "portal" then
+        if actionVerb == Lstr("banner.action.teleport", "Teleport to") then
             local portalNoun = Lstr("announce.noun.portal", "Portal")
             return string.format(Lstr("announce.portalReadyIn", "%s to %s ready in %s"), portalNoun,
                 data.destination or data.name, timeText)
         end
-        return string.format(Lstr("announce.readyIn", "%s ready in %s"), data.name, timeText)
+        return string.format(Lstr("announce.readyIn", "%s ready in %s"), nounForm, timeText)
     end
-    if nounForm == "portal" then
-        return string.format(Lstr("announce.canTeleport", "I can %s to %s!"), actionVerb, data.destination or data.name)
+    if actionVerb == Lstr("banner.action.teleport", "Teleport to") then
+        return string.format(Lstr("announce.canTeleport", "I can teleport to %s!"), data.destination or data.name)
     end
     if data.destination and
         (data.destination:find("Repair") or data.destination:find("Mailbox") or data.destination:find("Anvil")) then
-        return string.format(Lstr("announce.canUseDestination", "I can %s %s!"), actionVerb, data.destination)
+        return string.format(Lstr("announce.canUseDestination", "I can use %s!"), data.destination)
     end
-    return string.format(Lstr("announce.canUseName", "I can %s %s!"), actionVerb, data.name)
+    return string.format(Lstr("announce.canUseName", "I can use %s!"), data.name)
 end
 
 function Helpers.AnnounceUtility(data, event, sender)
-    local message = Helpers.CreateAnnouncementMessage(data)
-    if event and Helpers.SendMessageForEvent(message, event, sender) then
+    local Settings = _G.Nozmie_Settings
+    local announceToGroup = Settings and Settings.Get and Settings.Get("announceToGroup")
+    local message
+
+    if announceToGroup and (not event or event == "LEFT_CLICK") then
+        local _, _, announceVerb = Helpers.GetActionAndNoun(data)
+        message = string.format("[Nozmie] %s", announceVerb)
+    else
+        message = Helpers.CreateAnnouncementMessage(data)
+    end
+
+    if event then
+        Helpers.SendMessageForEvent(message, event, sender)
         Helpers.MarkAnnounce(message)
         return
     end
+
     if Helpers.IsInAnyGroup() then
         C_ChatInfo.SendChatMessage(message, Helpers.GetGroupChatChannel())
     else
@@ -243,11 +273,36 @@ local function CanUseMount(data)
 end
 
 local function CanUseToy(data)
+    -- Special case for MOLL-E: requires Engineering skill 425+
+    if data and data.itemID == 40768 then
+        local hasToy = type(PlayerHasToy) == "function" and PlayerHasToy(40768)
+        local hasSkill = false
+        if C_TradeSkillUI and C_TradeSkillUI.GetProfessionInfo then
+            local prof1, prof2 = GetProfessions and GetProfessions()
+            local profs = {prof1, prof2}
+            for _, profIndex in ipairs(profs) do
+                if profIndex then
+                    local name, _, rank = GetProfessionInfo(profIndex)
+                    if name and (name == GetSpellInfo(4036) or name == "Engineering") and rank and rank >= 425 then
+                        hasSkill = true
+                        break
+                    end
+                end
+            end
+        end
+        return hasToy and hasSkill
+    end
     return (type(PlayerHasToy) == "function" and PlayerHasToy(data.itemID))
 end
 
 local function CanUseSpell(data)
-    return data.spellID and IsSpellKnown and IsSpellKnown(data.spellID)
+    if not data.spellID or type(data.spellID) ~= "number" then
+        return false
+    end
+    if not IsSpellKnown then
+        return false
+    end
+    return IsSpellKnown(data.spellID)
 end
 
 function Helpers.CanPlayerUseUtility(data)
