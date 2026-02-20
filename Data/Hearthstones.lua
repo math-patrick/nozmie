@@ -3,7 +3,7 @@ Hearthstones = {{
     itemID = 6948,
     spellID = 8690,
     spellName = "Hearthstone",
-    actionType = "item",
+    actionType = "toy",
     category = "Home",
     cooldown = "30 min",
     keywords = {"hearthstone", "hearth", "inn"}
@@ -16,7 +16,7 @@ Hearthstones = {{
     cooldown = "30 min",
     destination = "Home",
     keywords = {"hearthstone", "hearth", "inn"}
-},  {
+}, {
     name = "Dark Portal",
     itemID = 93672,
     spellName = "Dark Portal",
@@ -31,15 +31,15 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "No CD",
-    keywords ={"hearthstone", "hearth", "inn"}
-},{
+    keywords = {"hearthstone", "hearth", "inn"}
+}, {
     name = "Astonishingly Scarlet Slippers",
     itemID = 142298,
     spellName = "Astonishingly Scarlet Slippers",
     actionType = "toy",
     category = "Home",
     cooldown = "No CD",
-    keywords ={"hearthstone", "hearth", "inn"}
+    keywords = {"hearthstone", "hearth", "inn"}
 }, {
     name = "Scroll of Town Portal",
     itemID = 142543,
@@ -56,8 +56,7 @@ Hearthstones = {{
     category = "Home",
     cooldown = "No CD",
     keywords = {"hearthstone", "hearth", "inn"}
-},  
-{
+}, {
     name = "Eternal Traveler's Hearthstone",
     itemID = 172179,
     spellID = 308742,
@@ -65,7 +64,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "eternal"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Brewfest Reveler's Hearthstone",
     itemID = 166747,
@@ -74,7 +73,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "brewfest"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Headless Horseman's Hearthstone",
     itemID = 163045,
@@ -83,7 +82,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "horseman"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Lunar Elder's Hearthstone",
     itemID = 165669,
@@ -92,7 +91,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "lunar"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Peddlefeet's Lovely Hearthstone",
     itemID = 165670,
@@ -101,7 +100,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "peddlefeet"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Noble Gardener's Hearthstone",
     itemID = 165802,
@@ -110,7 +109,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "noble"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Fire Eater's Hearthstone",
     itemID = 166746,
@@ -119,7 +118,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "fire eater"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Greatfather Winter's Hearthstone",
     itemID = 162973,
@@ -128,7 +127,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "winter"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Holographic Digitalization Hearthstone",
     itemID = 168907,
@@ -137,7 +136,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "holo"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Dominated Hearthstone",
     itemID = 188952,
@@ -146,7 +145,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "dominated"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Enlightened Hearthstone",
     itemID = 190237,
@@ -155,7 +154,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "enlightened"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Broker Translocation Matrix",
     itemID = 190196,
@@ -164,7 +163,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "broker"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Deepdweller's Earthen Hearthstone",
     itemID = 208704,
@@ -173,7 +172,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "earthen"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Hearthstone of the Flame",
     itemID = 209035,
@@ -181,12 +180,12 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "flame"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Draenic Hologem",
     itemID = 210455,
     spellName = "Draenic Hologem",
-    actionType = "item",
+    actionType = "toy",
     category = "Home",
     cooldown = "No CD",
     keywords = {"hologem", "draenic", "draenei"}
@@ -206,7 +205,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "timewalker"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Ohn'ir Windsage's Hearthstone",
     itemID = 200630,
@@ -214,15 +213,15 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "ohn'ir"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Path of the Naaru",
     itemID = 206195,
     spellName = "Path of the Naaru",
-    actionType = "item",
+    actionType = "toy",
     category = "Home",
     cooldown = "No CD",
-    keywords = {"naaru", "path"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Notorious Thread's Hearthstone",
     itemID = 228940,
@@ -230,12 +229,12 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "thread"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Redeployment Module",
     itemID = 235016,
     spellName = "Redeployment Module",
-    actionType = "item",
+    actionType = "toy",
     category = "Home",
     cooldown = "No CD",
     keywords = {"redeployment", "module"}
@@ -246,7 +245,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "explosive"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "P.O.S.T. Master's Express Hearthstone",
     itemID = 245970,
@@ -254,7 +253,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "post"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Cosmic Hearthstone",
     itemID = 246565,
@@ -262,7 +261,7 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "cosmic"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Timerunner's Hearthstone",
     itemID = 250411,
@@ -270,13 +269,13 @@ Hearthstones = {{
     actionType = "toy",
     category = "Home",
     cooldown = "30 min",
-    keywords = {"hearthstone", "hearth", "home", "inn", "timerunner"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }, {
     name = "Naaru's Enfold",
     itemID = 263489,
     spellName = "Naaru's Enfold",
-    actionType = "item",
+    actionType = "toy",
     category = "Home",
     cooldown = "No CD",
-    keywords = {"naaru", "enfold"}
+    keywords = {"hearthstone", "hearth", "home", "inn"}
 }}

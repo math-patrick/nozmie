@@ -6,7 +6,8 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "1 hour",
     destination = "Jeeves",
-    keywords = { "jeeves", "repair", "vendor", "bank" }
+    keywords = { "jeeves", "repair", "vendor", "bank" },
+    requiredProfession = { name = "Engineering" }
 }, {
     name = "Auto-Hammer",
     itemID = 23767,
@@ -15,7 +16,8 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "1 hour",
     destination = "Repair",
-    keywords = { "auto-hammer", "auto hammer", "repair" }
+    keywords = { "auto-hammer", "auto hammer", "repair" },
+    requiredProfession = { name = "Engineering" }
 }, {
     name = "MOLL-E",
     itemID = 40768,
@@ -24,7 +26,8 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "1 hour",
     destination = "Mailbox",
-    keywords = { "moll-e", "molle", "mail", "mailbox" }
+    keywords = { "moll-e", "molle", "mail", "mailbox" },
+    requiredProfession = { name = "Engineering", expansion = "Wrath of the Lich King", rank = 425 }
 }, {
     name = "Katy's Stampwhistle",
     itemID = 156833,
@@ -69,7 +72,8 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "1 hour",
     destination = "Reaves",
-    keywords = { "reaves", "repair" }
+    keywords = { "reaves", "repair" },
+    requiredProfession = { name = "Engineering" }
 }, {
     name = "Reaves Battery",
     itemID = 132523,
@@ -78,7 +82,8 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "1 hour",
     destination = "Reaves",
-    keywords = { "reaves", "repair" }
+    keywords = { "reaves", "repair" },
+    requiredProfession = { name = "Engineering" }
 }, {
     name = "Grand Expedition Yak",
     itemID = 84101,
@@ -140,7 +145,8 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 7000",
-    keywords = { "blingtron", "bling", "blingtron 7000", "7000" }
+    keywords = { "blingtron", "bling", "blingtron 7000", "7000" },
+    requiredProfession = { name = "Engineering" }
 }, {
     name = "Blingtron 6000",
     itemID = 132892,
@@ -149,7 +155,8 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 6000",
-    keywords = { "blingtron", "bling", "blingtron 6000", "6000" }
+    keywords = { "blingtron", "bling", "blingtron 6000", "6000" },
+    requiredProfession = { name = "Engineering" }
 }, {
     name = "Blingtron 5000",
     itemID = 87214,
@@ -158,7 +165,8 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 5000",
-    keywords = { "blingtron", "bling", "blingtron 5000", "5000" }
+    keywords = { "blingtron", "bling", "blingtron 5000", "5000" },
+    requiredProfession = { name = "Engineering" }
 }, {
     name = "Blingtron 4000",
     itemID = 111821,
@@ -167,7 +175,8 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "4 hours",
     destination = "Blingtron 4000",
-    keywords = { "blingtron", "bling", "blingtron 4000", "4000" }
+    keywords = { "blingtron", "bling", "blingtron 4000", "4000" },
+    requiredProfession = { name = "Engineering" }
 }, {
     name = "Thermal Anvil",
     itemID = 87216,
