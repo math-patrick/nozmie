@@ -304,10 +304,12 @@ function SettingsModule.CreatePanel()
         _G.Settings.VarType.Boolean, name, true)
     _G.Settings.CreateCheckbox(category, setting, tooltip)
 
+    -- Prefer Portals Option
     local variable, name, tooltip = "preferPortals", Lstr("settings.preferPortals", "Prefer Portals"), Lstr(
         "settings.preferPortals.tooltip", "Prioritize portals over teleports when both match")
     local setting = _G.Settings.RegisterAddOnSetting(category, "Nozmie_" .. variable, variable, NozmieDB,
         _G.Settings.VarType.Boolean, name, true)
+    _G.Settings.CreateCheckbox(category, setting, tooltip)
 
     -- Announce to Group Option
     local variable, name, tooltip = "announceToGroup", Lstr("settings.announceToGroup", "Announce to Group"), Lstr(

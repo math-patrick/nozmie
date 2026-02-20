@@ -256,14 +256,6 @@ local ClassTeleports = { -- Druid
     category = "Class",
     cooldown = "10 min",
     keywords = {"astral recall", "shaman hearth", "home"}
-}, -- Demon Hunter
-{
-    name = "Fel Hammer",
-    spellID = 189838,
-    spellName = "Fel Hammer",
-    actionType = "spell",
-    category = "Class",
-    keywords = {"fel hammer", "class hall"}
 }, {
     name = "Hall of the Guardian",
     spellID = 193759,
@@ -274,8 +266,7 @@ local ClassTeleports = { -- Druid
 }}
 
 local ClassSpellsData = {}
-for _, tbl in ipairs(
-    {Mage, Warlock, Priest, Warrior, Druid, Shaman, Paladin, Monk, DeathKnight, Evoker, MassRes}) do
+for _, tbl in ipairs({Mage, Warlock, Priest, Warrior, Druid, Shaman, Paladin, Monk, DeathKnight, Evoker, MassRes}) do
     for _, entry in ipairs(tbl) do
         table.insert(ClassSpellsData, entry)
     end

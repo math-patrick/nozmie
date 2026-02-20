@@ -268,12 +268,18 @@ local function CanUseItem(data)
 end
 
 local function CanUseMount(data)
+    if IsIndoors and IsIndoors() then
+        return false
+    end
+
     local mountID = data.mountId or
                         (C_MountJournal and C_MountJournal.GetMountFromItem and
                             C_MountJournal.GetMountFromItem(data.itemID))
+
     if not mountID then
         return false
     end
+
     local _, _, _, _, isUsable = C_MountJournal.GetMountInfoByID(mountID)
     return isUsable
 end
@@ -327,4 +333,3 @@ function Helpers.CanPlayerUseUtility(data)
 end
 
 _G.Nozmie_Helpers = Helpers
- 
