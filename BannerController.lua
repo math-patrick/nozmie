@@ -299,9 +299,10 @@ local function SetItemIcon(banner, data)
 end
 
 local function SetMountIcon(banner, data)
-    local iconTexture = C_Item.GetItemIconByID(data.itemID)
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
+    local name, spellID, icon, isActive, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar,
+        isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
+    if icon then
+        banner.icon:SetTexture(icon)
     end
     banner:SetScript("PreClick", function()
         C_MountJournal.SummonByID(data.mountId)

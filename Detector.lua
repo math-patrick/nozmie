@@ -1,7 +1,3 @@
--- ============================================================================
--- Nozmie - Detector Module
--- Finds matching teleports/utilities from chat messages with smart filtering
--- ============================================================================
 local Helpers = Nozmie_Helpers
 local Detector = {}
 
@@ -172,30 +168,7 @@ function Detector.FindMatchingTeleports(message, sender)
                 elseif IsHearthstone(teleportCopy) then
                     table.insert(hearthstones, teleportCopy)
                 else
-                    -- Portal prioritization: if preferPortals is enabled, prefer portals over teleports with same name
-                    if preferPortals and teleportCopy.spellName and teleportCopy.spellName:find("^Teleport:") then
-                        -- Try to find a matching portal in matches and replace if found
-                        local found = false
-                        for i, t in ipairs(matches) do
-                            if t.spellName and t.spellName:gsub("^Portal:", "Teleport:") ==
-                                teleportCopy.spellName then
-                                -- If t is a portal, keep it; if t is a teleport, replace with portal
-                                if IsPortalSpell(t) then
-                                    found = true
-                                    break
-                                else
-                                    matches[i] = teleportCopy
-                                    found = true
-                                    break
-                                end
-                            end
-                        end
-                        if not found then
-                            table.insert(matches, teleportCopy)
-                        end
-                    else
-                        table.insert(matches, teleportCopy)
-                    end
+                    table.insert(matches, teleportCopy)
                 end
             end
         end
@@ -216,15 +189,22 @@ function Detector.FindMatchingTeleports(message, sender)
         end
     end
 
-    -- Priority sorting: priority=1 first
+    -- Priority sorting: priority=1 first, portals first if preferPortals
     local function sortPriority(a, b)
         local pa = tonumber(a.priority) or 0
         local pb = tonumber(b.priority) or 0
+        if preferPortals then
+            local aPortal = a.spellName and a.spellName:find("^Portal:")
+            local bPortal = b.spellName and b.spellName:find("^Portal:")
+            if aPortal and not bPortal then return true end
+            if bPortal and not aPortal then return false end
+        end
         if pa ~= pb then
             return pa > pb
         end
         return false
     end
+    
     table.sort(ready, sortPriority)
     table.sort(oncd, sortPriority)
 

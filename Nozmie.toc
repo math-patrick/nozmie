@@ -23,6 +23,7 @@ Data\Hearthstones.lua
 Data\Mage.lua
 Data\Portals.lua
 Data\Utility.lua
+Data\Mounts.lua
 Data.lua
 Config.lua
 Helpers.lua

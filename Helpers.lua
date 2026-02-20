@@ -106,7 +106,14 @@ function Helpers.SendMessageForEvent(message, event, sender)
     end
 
     -- Only send if channel is a valid chat type
-    local validChannels = {SAY=true, PARTY=true, RAID=true, GUILD=true, INSTANCE_CHAT=true, YELL=true}
+    local validChannels = {
+        SAY = true,
+        PARTY = true,
+        RAID = true,
+        GUILD = true,
+        INSTANCE_CHAT = true,
+        YELL = true
+    }
     if not validChannels[channel] then
         channel = "SAY"
     end
@@ -130,13 +137,15 @@ end
 function Helpers.GetActionAndNoun(data)
     local actionVerb = Lstr("banner.action.use", "Use")
     local nounForm = data.destination or data.name or "utility"
-    local announceVerb = "Using!"
+    local announceVerb = string.format(Lstr("announce.using", "Using %s!"), nounForm)
 
     if data.actionType == "pet" or data.actionType == "mount" or (data.category == "Utility") then
         actionVerb = Lstr("banner.action.summon", "Summon")
         announceVerb = string.format(Lstr("announce.summoning", "Summoning %s!"), nounForm)
-    elseif data.actionType == "spell" and data.category and (data.category:find("Class") or data.category:find("Class Utility")) then
+    elseif data.actionType == "spell" and data.category and
+        (data.category:find("Class") or data.category:find("Class Utility")) then
         actionVerb = Lstr("banner.action.cast", "Cast")
+        nounForm = data.spellName or data.name
         announceVerb = string.format(Lstr("announce.casting", "Casting %s!"), nounForm)
     elseif data.category and
         (data.category == "M+ Dungeon" or data.category == "Raid" or data.category == "Delve" or data.category == "Toy") then
@@ -259,39 +268,23 @@ local function CanUseItem(data)
 end
 
 local function CanUseMount(data)
-    if data.actionType ~= "mount" or (IsIndoors and IsIndoors()) then
+    if IsIndoors and IsIndoors() then
         return false
     end
+
     local mountID = data.mountId or
                         (C_MountJournal and C_MountJournal.GetMountFromItem and
                             C_MountJournal.GetMountFromItem(data.itemID))
+
     if not mountID then
         return false
     end
-    local _, _, _, _, _, _, _, _, _, _, isCollected = C_MountJournal.GetMountInfoByID(mountID)
-    return isCollected
+
+    local _, _, _, _, isUsable = C_MountJournal.GetMountInfoByID(mountID)
+    return isUsable
 end
 
 local function CanUseToy(data)
-    -- Special case for MOLL-E: requires Engineering skill 425+
-    if data and data.itemID == 40768 then
-        local hasToy = type(PlayerHasToy) == "function" and PlayerHasToy(40768)
-        local hasSkill = false
-        if C_TradeSkillUI and C_TradeSkillUI.GetProfessionInfo then
-            local prof1, prof2 = GetProfessions and GetProfessions()
-            local profs = {prof1, prof2}
-            for _, profIndex in ipairs(profs) do
-                if profIndex then
-                    local name, _, rank = GetProfessionInfo(profIndex)
-                    if name and (name == GetSpellInfo(4036) or name == "Engineering") and rank and rank >= 425 then
-                        hasSkill = true
-                        break
-                    end
-                end
-            end
-        end
-        return hasToy and hasSkill
-    end
     return (type(PlayerHasToy) == "function" and PlayerHasToy(data.itemID))
 end
 
@@ -299,13 +292,32 @@ local function CanUseSpell(data)
     if not data.spellID or type(data.spellID) ~= "number" then
         return false
     end
-    if not IsSpellKnown then
-        return false
+    return IsSpellKnown and IsSpellKnown(data.spellID)
+end
+
+local function CanUseProfession(data)
+    if not data or not data.requiredProfession then
+        return true
     end
-    return IsSpellKnown(data.spellID)
+
+    local prof1, prof2 = GetProfessions()
+    local isPrimary = false
+    local isSecondary = false
+
+    if prof1 then
+        isPrimary = select(1, GetProfessionInfo(prof1)) == data.requiredProfession.name
+    end
+    if prof2 then
+        isSecondary = select(1, GetProfessionInfo(prof2)) == data.requiredProfession.name
+    end
+
+    return isPrimary or isSecondary
 end
 
 function Helpers.CanPlayerUseUtility(data)
+    if not CanUseProfession(data) then
+        return false
+    end
     if data.actionType == "pet" then
         return CanUsePet(data)
     elseif data.actionType == "item" then
