@@ -14,6 +14,7 @@ AddAll(MageTeleports)
 AddAll(TeleportToys)
 AddAll(ServiceToys)
 AddAll(DelveTeleports)
+AddAll(Mounts)
 
 if _G.Nozmie_Locale and _G.Nozmie_Locale.ApplyKeywordAliases then
     _G.Nozmie_Locale.ApplyKeywordAliases(Nozmie_Data)

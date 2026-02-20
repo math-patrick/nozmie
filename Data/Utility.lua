@@ -85,50 +85,6 @@ ServiceToys = { {
     keywords = { "reaves", "repair" },
     requiredProfession = { name = "Engineering" }
 }, {
-    name = "Grand Expedition Yak",
-    itemID = 84101,
-    spellID = 122708,
-    mountId = 460,
-    spellName = "Grand Expedition Yak",
-    actionType = "mount",
-    category = "Utility",
-    cooldown = "No CD",
-    destination = "Repair & Transmog",
-    keywords = { "yak", "expedition", "repair", "vendor", "transmog" }
-}, {
-    name = "Traveler's Tundra Mammoth",
-    itemID = 44234,
-    spellID = 61447,
-    mountId = 284,
-    spellName = "Traveler's Tundra Mammoth",
-    actionType = "mount",
-    category = "Utility",
-    cooldown = "No CD",
-    destination = "Repair & Vendor",
-    keywords = { "mammoth", "tundra", "repair", "vendor" }
-}, {
-    name = "Mighty Caravan Brutosaur",
-    itemID = 163042,
-    spellID = 264058,
-    mountId = 1039,
-    spellName = "Mighty Caravan Brutosaur",
-    actionType = "mount",
-    category = "Utility",
-    cooldown = "No CD",
-    destination = "Auction House & Repair",
-    keywords = { "brutosaur", "bruto", "vendor", "auction", "ah", "longboy" }
-}, {
-    name = "Trader's Gilded Brutosaur",
-    itemID = 229418,
-    spellID = 465235,
-    mountId = 2265,
-    spellName = "Trader's Gilded Brutosaur",
-    actionType = "mount",
-    category = "Utility",
-    cooldown = "No CD",
-    destination = "Auction House & Mailbox",
-    keywords = { "brutosaur", "bruto", "auction", "ah", "gilded", "trader", "mailbox", "mail" }
-}, {
     name = "Ethereal Transmogrifier",
     itemID = 206268,
     spellName = "Ethereal Transmogrifier",

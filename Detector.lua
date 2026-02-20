@@ -225,6 +225,7 @@ function Detector.FindMatchingTeleports(message, sender)
         end
         return false
     end
+    
     table.sort(ready, sortPriority)
     table.sort(oncd, sortPriority)
 
