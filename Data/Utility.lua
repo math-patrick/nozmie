@@ -295,4 +295,4 @@ ServiceToys = { {
     cooldown = "10 min",
     destination = "Bank",
     keywords = { "hobgoblin", "pack", "bank", "goblin" }
-} }
+}}

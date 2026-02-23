@@ -184,6 +184,7 @@ local function Initialize()
 
     if Minimap then
         Minimap.Initialize()
+        Minimap.UpdateVisibility()
     end
 
     -- Register chat event filters

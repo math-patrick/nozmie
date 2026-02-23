@@ -139,7 +139,7 @@ TeleportToys = {{
     destination = "Dragon Isles",
     keywords = {"dragon isles", "wyrmhole", "wormhole", "wyrmhole generator", "dragon isles generator", "valdrakken",
                 "thaldraszus", "the waking shores", "waking shores", "ohn'ahran plains", "ohnahran plains", "ohnahran",
-                "ohn'ahran", "azure span", "the azure span", "forbidden reach", "zaralek caverns", "zaralek", "caverns",
+                "ohn'ahran", "azure span", "the azure span", "forbidden reach", "zaralek",
                 "emerald dream"},
     requiredProfession = { name = "Engineering", rank = 1 }
 }, {
