@@ -260,8 +260,6 @@ local function SetPetIcon(banner, data)
 end
 
 local function SetSpellIcon(banner, data)
-
-
     local iconTexture = C_Spell.GetSpellTexture(data.spellID or data.spellName)
 
     if iconTexture then
@@ -277,15 +275,9 @@ local function SetSpellIcon(banner, data)
         (data.category and data.category:find("Utility")) then
         banner:SetAttribute("type", "macro")
         banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. (spellName or ""))
-    elseif spellName then
-        banner:SetAttribute("type", "macro")
-        banner:SetAttribute("macrotext", "/cast " .. spellName)
-        banner:SetAttribute("spell", spellName)
     else
         banner:SetAttribute("type", "spell")
-        if data.spellID then
-            banner:SetAttribute("spell", data.spellID)
-        end
+        banner:SetAttribute("spell", data.spellID or spellName)
     end
 end
 

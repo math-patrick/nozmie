@@ -4,7 +4,7 @@ local WotLK = {{
     spellName = "Path of the Frozen Halls",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"pit of saron", "pit", "saron"},
+    keywords = {"pit of saron", "pit", "saron", "cu do sarão"},
     priority = 1
 }}
 
@@ -80,7 +80,7 @@ local Dragonflight = {{
     spellName = "Path of the Draconic Diploma",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"algethar", "algeth'ar", "academy"},
+    keywords = {"algethar", "algeth'ar", "academy", "smartfit"},
     priority = 1
 }, {
     name = "Neltharus",
@@ -374,7 +374,7 @@ local WarWithin = {{
 }, {
     name = "Floodgate",
     spellID = 1216786,
-    spellName = "Path of Circuit Breaker",
+    spellName = "Path of the Circuit Breaker",
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"floodgate", "flood gate", "circuit breaker"},
@@ -385,7 +385,7 @@ local WarWithin = {{
     spellName = "Path of the Eco-Dome",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"eco-dome", "eco dome", "ecodome", "aldani"},
+    keywords = {"eco-dome", "eco dome", "ecodome", "aldani", "eco dorme"},
     priority = 1
 }, {
     name = "Cinderbrew Meadery",
@@ -432,7 +432,7 @@ local Midnight = {{
     spellName = "Path of the Maisara",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"maisara", "caverns", "maisara caverns"},
+    keywords = {"maisara", "maisara caverns", "caverna da maisa"},
     priority = 1
 }, {
     name = "Nexus-Point Xenas",
@@ -440,7 +440,7 @@ local Midnight = {{
     spellName = "Path of the Nexus",
     actionType = "spell",
     category = "M+ Dungeon",
-    keywords = {"nexus-point", "xenas", "nexus point xenas"},
+    keywords = {"nexus-point", "xenas", "nexus point xenas", "nexus johnsonn"},
     priority = 1
 }, {
     name = "Windrunner Spire",
