@@ -7,7 +7,7 @@ TeleportToys = {{
     cooldown = "15 min",
     destination = "Quel'Thalas",
     keywords = {"quel'thalas", "quelthalas", "eversong", "ghostlands", "isle of quel'danas", "quel'danas", "silvermoon",
-                "voidstorm", "zul'aman", "void storm", "zulaman", "zul aman"}
+                "voidstorm", "zul'aman", "void storm", "zulaman", "zul aman", "harandar"}
 }, {
     name = "Garrison Hearthstone",
     itemID = 110560,
@@ -232,7 +232,7 @@ TeleportToys = {{
     category = "Toy",
     cooldown = "No CD",
     destination = "Arcantina",
-    keywords = {"arcantina", "silvermoon", "quelthalas", "quel'thalas"}
+    keywords = {"arcantina"}
 }}
 
 DelveTeleports = {{

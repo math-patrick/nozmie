@@ -72,7 +72,7 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "1 hour",
     destination = "Reaves",
-    keywords = { "reaves", "repair" },
+    keywords = { "reaves", "repair", "jeeves" },
     requiredProfession = { name = "Engineering" }
 }, {
     name = "Reaves Battery",
@@ -82,7 +82,7 @@ ServiceToys = { {
     category = "Utility",
     cooldown = "1 hour",
     destination = "Reaves",
-    keywords = { "reaves", "repair" },
+    keywords = { "reaves", "repair", "jeeves" },
     requiredProfession = { name = "Engineering" }
 }, {
     name = "Ethereal Transmogrifier",
