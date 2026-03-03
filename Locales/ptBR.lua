@@ -57,6 +57,7 @@ Nozmie_Locales["ptBR"] = {
         ["popup.blacklist.cancel"] = "Cancelar",
         ["banner.clickToTeleport"] = "Clique para teleportar",
         ["ui.dragToMove"] = "Arraste para mover",
+        ["ui.announce"] = "Anunciar",
         ["ui.close"] = "Fechar",
         ["minimap.title"] = "Nozmie",
         ["minimap.lastBanner"] = "Ultimo banner: %s",
@@ -95,7 +96,7 @@ Nozmie_Locales["ptBR"] = {
         ["banner.titleWithDestination"] = "%s %s?",
         ["banner.subtitlePrefix"] = "Clique para %s%s",
         ["banner.subtitleCount"] = "%d/%d",
-        ["banner.subtitleSuffix"] = "Clique direito para anunciar",
+        ["banner.subtitleSuffix"] = "Clique direito para fechar",
         ["banner.targetInfo"] = " em %s",
         ["banner.cooldownAnnounce"] = "%s em recarga (%s)",
         ["announce.action.use"] = "usar",
@@ -110,7 +111,7 @@ Nozmie_Locales["ptBR"] = {
         ["announce.canUseDestination"] = "Posso usar %s!",
         ["announce.summoning"] = "Invocando %s!",
         ["announce.casting"] = "Lançando %s!",
-        ["announce.teleporting"] = "Teleportando para %s!",
+        ["announce.teleporting"] = "Teleportando para %s!"
     },
     keywordsByName = {
         -- Adicione aliases localizados por nome de item:

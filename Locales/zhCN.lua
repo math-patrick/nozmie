@@ -57,6 +57,7 @@ Nozmie_Locales["zhCN"] = {
         ["popup.blacklist.cancel"] = "取消",
         ["banner.clickToTeleport"] = "点击传送",
         ["ui.dragToMove"] = "拖动移动",
+        ["ui.announce"] = "宣布",
         ["ui.close"] = "关闭",
         ["minimap.title"] = "Nozmie",
         ["minimap.lastBanner"] = "上次横幅：%s",
@@ -95,7 +96,7 @@ Nozmie_Locales["zhCN"] = {
         ["banner.titleWithDestination"] = "%s %s？",
         ["banner.subtitlePrefix"] = "点击以%s%s",
         ["banner.subtitleCount"] = "%d/%d",
-        ["banner.subtitleSuffix"] = "右键通告",
+        ["banner.subtitleSuffix"] = "右键关闭",
         ["banner.targetInfo"] = " 对%s",
         ["banner.cooldownAnnounce"] = "%s 正在冷却（%s）",
         ["announce.action.use"] = "使用",
@@ -110,7 +111,7 @@ Nozmie_Locales["zhCN"] = {
         ["announce.canUseDestination"] = "我可以使用%s！",
         ["announce.summoning"] = "正在召唤%s！",
         ["announce.casting"] = "正在施放%s！",
-        ["announce.teleporting"] = "正在传送到%s！",
+        ["announce.teleporting"] = "正在传送到%s！"
     },
     keywordsByName = {}
 }

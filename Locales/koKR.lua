@@ -57,6 +57,7 @@ Nozmie_Locales["koKR"] = {
         ["popup.blacklist.cancel"] = "취소",
         ["banner.clickToTeleport"] = "클릭하여 텔레포트",
         ["ui.dragToMove"] = "드래그하여 이동",
+        ["ui.announce"] = "알리기",
         ["ui.close"] = "닫기",
         ["minimap.title"] = "Nozmie",
         ["minimap.lastBanner"] = "최근 배너: %s",
@@ -95,7 +96,7 @@ Nozmie_Locales["koKR"] = {
         ["banner.titleWithDestination"] = "%s %s?",
         ["banner.subtitlePrefix"] = "클릭하여 %s%s",
         ["banner.subtitleCount"] = "%d/%d",
-        ["banner.subtitleSuffix"] = "오른쪽 클릭하여 알림",
+        ["banner.subtitleSuffix"] = "오른쪽 클릭하여 닫기",
         ["banner.targetInfo"] = " 대상 %s",
         ["banner.cooldownAnnounce"] = "%s 재사용 대기 (%s)",
         ["announce.action.use"] = "사용",
@@ -110,7 +111,7 @@ Nozmie_Locales["koKR"] = {
         ["announce.canUseDestination"] = "%s을(를) 사용할 수 있습니다!",
         ["announce.summoning"] = "%s 소환 중!",
         ["announce.casting"] = "%s 시전 중!",
-        ["announce.teleporting"] = "%s로 이동 중!",
+        ["announce.teleporting"] = "%s로 이동 중!"
     },
     keywordsByName = {}
 }

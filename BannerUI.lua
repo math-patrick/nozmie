@@ -195,6 +195,17 @@ function BannerUI.CreateBanner()
     end)
     banner.dragButton = dragButton
 
+    local announceBtn = CreateButton(banner, 16, {"TOPRIGHT", -34, -10}, {
+        normal = "Interface\\Buttons\\UI-GuildButton-MOTD-Up",
+        highlight = "Interface\\Buttons\\UI-GuildButton-MOTD-Highlight",
+        pushed = "Interface\\Buttons\\UI-GuildButton-MOTD-Down"
+    }, Lstr("ui.announce", "Announce"), function()
+        if banner.HandleAnnounce then
+            banner:HandleAnnounce()
+        end
+    end)
+    banner.announceButton = announceBtn
+
     CreateButton(banner, 16, {"TOPRIGHT", -10, -10}, {
         normal = "Interface\\Buttons\\UI-Panel-MinimizeButton-Up",
         highlight = "Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight",
