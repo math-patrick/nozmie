@@ -57,6 +57,7 @@ Nozmie_Locales["frFR"] = {
         ["popup.blacklist.cancel"] = "Annuler",
         ["banner.clickToTeleport"] = "Cliquer pour se teleporter",
         ["ui.dragToMove"] = "Glisser pour deplacer",
+        ["ui.announce"] = "Annoncer",
         ["ui.close"] = "Fermer",
         ["minimap.title"] = "Nozmie",
         ["minimap.lastBanner"] = "Derniere banniere : %s",
@@ -95,7 +96,7 @@ Nozmie_Locales["frFR"] = {
         ["banner.titleWithDestination"] = "%s %s ?",
         ["banner.subtitlePrefix"] = "Cliquer pour %s%s",
         ["banner.subtitleCount"] = "%d/%d",
-        ["banner.subtitleSuffix"] = "Clic droit pour annoncer",
+        ["banner.subtitleSuffix"] = "Clic droit pour fermer",
         ["banner.targetInfo"] = " sur %s",
         ["banner.cooldownAnnounce"] = "%s est en recharge (%s)",
         ["announce.action.use"] = "utiliser",
@@ -110,7 +111,7 @@ Nozmie_Locales["frFR"] = {
         ["announce.canUseDestination"] = "Je peux utiliser %s !",
         ["announce.summoning"] = "Invocation de %s!",
         ["announce.casting"] = "Incantation de %s!",
-        ["announce.teleporting"] = "Téléportation vers %s!",
+        ["announce.teleporting"] = "Téléportation vers %s!"
     },
     keywordsByName = {}
 }

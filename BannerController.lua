@@ -237,12 +237,12 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     if totalOptions > 1 then
         local prefix = string.format(Lstr("banner.subtitlePrefix", "Click to %s%s"), actionText, targetInfo)
         local count = string.format(Lstr("banner.subtitleCount", "%d/%d"), currentIndex, totalOptions)
-        local suffix = Lstr("banner.subtitleSuffix", "Right-click to announce")
+        local suffix = Lstr("banner.subtitleSuffix", "Right-click to close")
         banner.subtitle:SetText(
             "|cff888888" .. prefix .. " • |r|cff00ff00" .. count .. "|r |cff888888• " .. suffix .. "|r")
     else
         local prefix = string.format(Lstr("banner.subtitlePrefix", "Click to %s%s"), actionText, targetInfo)
-        local suffix = Lstr("banner.subtitleSuffix", "Right-click to announce")
+        local suffix = Lstr("banner.subtitleSuffix", "Right-click to close")
         banner.subtitle:SetText("|cff888888" .. prefix .. " • " .. suffix .. "|r")
     end
 end
@@ -389,6 +389,13 @@ local function CreateNavigationArrows(banner)
     end
 end
 
+local function CloseBanner(banner)
+    UIFrameFadeOut(banner, 0.2, 1, 0)
+    C_Timer.After(0.2, function()
+        banner:Hide()
+    end)
+end
+
 function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, allowStack)
     lastOptions = teleportOptions
     if allowStack == nil then
@@ -443,28 +450,36 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
             self.autoHideTimer:Cancel()
         end
 
-        local data = self.options[self.currentIndex]
-        local Settings = _G.Nozmie_Settings
-        local announceToGroup = Settings and Settings.Get and Settings.Get("announceToGroup")
-        local now = GetTime()
+        -- Right-click closes the banner without using the action
         if button == "RightButton" then
-            -- Always announce to the original detected chat context, not group, for right-click
-            if data and data.sourceEvent and (not self.lastAnnounceTime or now - self.lastAnnounceTime > 1) then
-                Helpers.AnnounceUtility(data, data.sourceEvent, data.sourceSender)
-                self.lastAnnounceTime = now
-            end
+            CloseBanner(self)
             return
         end
-        -- Announce to group on left click if setting enabled
-        if button == "LeftButton" and announceToGroup and data and (not self.lastAnnounceTime or now - self.lastAnnounceTime > 1) then
-            Helpers.AnnounceUtility(data)
+        
+        -- Left-click uses the action and closes the banner
+        if button == "LeftButton" then
+            local data = self.options[self.currentIndex]
+            local Settings = _G.Nozmie_Settings
+            local announceToGroup = Settings and Settings.Get and Settings.Get("announceToGroup")
+            
+            -- Announce to group on left click if setting enabled
+            if announceToGroup and data and (not self.lastAnnounceTime or GetTime() - self.lastAnnounceTime > 1) then
+                Helpers.AnnounceUtility(data)
+                self.lastAnnounceTime = GetTime()
+            end
+            
+            CloseBanner(self)
+        end
+    end)
+
+    banner.HandleAnnounce = function(self)
+        local data = self.options[self.currentIndex]
+        local now = GetTime()
+        if data and (not self.lastAnnounceTime or now - self.lastAnnounceTime > 1) then
+            Helpers.AnnounceUtility(data, data.sourceEvent, data.sourceSender)
             self.lastAnnounceTime = now
         end
-        UIFrameFadeOut(self, 0.2, 1, 0)
-        C_Timer.After(0.2, function()
-            self:Hide()
-        end)
-    end)
+    end
 
     banner:SetScript("OnHide", function(self)
         if self.ignoreHide then
