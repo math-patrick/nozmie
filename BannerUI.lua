@@ -1,9 +1,6 @@
--- ============================================================================
--- Nozmie - Banner UI Module
--- Creates and styles the notification banner frame
--- ============================================================================
 local Config = Nozmie_Config
 local Helpers = Nozmie_Helpers
+local IconRenderer = _G.Nozmie_IconRenderer
 
 local BannerUI = {}
 
@@ -51,59 +48,14 @@ local function CreateButton(parent, size, point, textures, tooltip, onClick)
 end
 
 local function CreateBannerIcon(parent)
-    local frame = CreateFrame("Frame", nil, parent)
-    frame:SetSize(44, 44)
-    frame:SetPoint("LEFT", 14, 0)
-    frame:EnableMouse(true)
-
-    local background = frame:CreateTexture(nil, "BACKGROUND")
-    background:SetSize(38, 38)
-    background:SetPoint("CENTER")
-    background:SetTexture("Interface\\Buttons\\WHITE8x8")
-    background:SetVertexColor(0, 0, 0, 0.35)
-
-    local iconBorder = frame:CreateTexture(nil, "BORDER")
-    iconBorder:SetSize(36, 36)
-    iconBorder:SetPoint("CENTER")
-    iconBorder:SetTexture("Interface\\Buttons\\WHITE8x8")
-    iconBorder:SetVertexColor(0, 0, 0, 0.8)
-
-    local texture = frame:CreateTexture(nil, "ARTWORK")
+    local iconFrame = IconRenderer.CreateIconFrame(parent, 32)
+    iconFrame:SetPoint("LEFT", 14, 0)
+    local texture = iconFrame.icon
     texture:SetSize(32, 32)
-    texture:SetPoint("CENTER")
-    texture:SetTexture("Interface\\Icons\\Spell_Arcane_TeleportDalaran")
-    texture:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 
-    local border = frame:CreateTexture(nil, "OVERLAY")
-    border:SetSize(52, 52)
-    border:SetPoint("CENTER")
-    border:SetTexture("Interface\\Buttons\\UI-Quickslot2")
-    border:SetAlpha(0.85)
+    IconRenderer.ApplyTooltip(iconFrame)
 
-    frame:SetScript("OnEnter", function(self)
-        local banner = self:GetParent()
-        local data = banner and banner.activeData or nil
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        if data then
-            if data.preferItem and data.itemID then
-                GameTooltip:SetItemByID(data.itemID)
-            elseif data.spellID then
-                GameTooltip:SetSpellByID(data.spellID)
-            elseif data.itemID then
-                GameTooltip:SetItemByID(data.itemID)
-            else
-                GameTooltip:SetText(data.spellName or data.name or Lstr("minimap.title", "Nozmie"))
-            end
-        else
-            GameTooltip:SetText(Lstr("minimap.title", "Nozmie"))
-        end
-        GameTooltip:Show()
-    end)
-    frame:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-    end)
-
-    return texture, frame
+    return texture, iconFrame
 end
 
 local function CreateBannerText(parent, iconFrame)
@@ -112,7 +64,7 @@ local function CreateBannerText(parent, iconFrame)
     title:SetFont(title:GetFont(), 14)
     title:SetPoint("LEFT", iconFrame, "RIGHT", 14, 8)
     title:SetPoint("RIGHT", -46, 8)
-    title:SetTextColor(0.9, 0.9, 0.95) -- Subtle light color
+    title:SetTextColor(0.9, 0.9, 0.95)
     title:SetJustifyH("LEFT")
     title:SetShadowColor(0, 0, 0, 1)
     title:SetShadowOffset(1, -1)

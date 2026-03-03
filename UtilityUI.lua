@@ -8,6 +8,7 @@ local ConfigHelpers = _G.Nozmie_ConfigHelpers
 local Helpers = _G.Nozmie_Helpers
 local BannerController = _G.Nozmie_BannerController
 local ClickBehavior = _G.Nozmie_ClickBehavior
+local IconHandling = _G.Nozmie_IconHandling
 
 local Locale = _G.Nozmie_Locale
 local function Lstr(key, fallback)
@@ -212,7 +213,6 @@ end
 
 
 local function LayoutButtons()
-
     if not content or not scrollFrame then return end
     local width = scrollFrame:GetWidth() or 0
     if width <= 0 then
@@ -237,7 +237,11 @@ local function LayoutButtons()
             button.name:SetText(ConfigHelpers.GetEntryName(data))
         end
         button.category:SetText(GetEntryDescription(data))
-        button.icon:SetTexture(ConfigHelpers.GetIconForEntry(data))
+        if IconHandling and IconHandling.ApplyIcon then
+            IconHandling.ApplyIcon(button.icon, data)
+        else
+            button.icon:SetTexture(ConfigHelpers.GetIconForEntry(data))
+        end
         ApplyActionAttributes(button, data)
         if ClickBehavior and ClickBehavior.Apply then
             button.data = data
@@ -269,36 +273,8 @@ local function LayoutButtons()
         end
 
         -- Cooldown logic
-        local isOnCooldown, start, duration, enable = false, 0, 0, 0
-        if data.itemID and C_Item and C_Item.GetItemCooldown then
-            start, duration, enable = C_Item.GetItemCooldown(data.itemID)
-        elseif data.spellID and C_Spell and C_Spell.GetSpellCooldown then
-            start, duration, enable = C_Spell.GetSpellCooldown(data.spellID)
-        end
-        if enable and enable ~= 0 and duration and duration > 0 then
-            isOnCooldown = true
-        end
-        if isOnCooldown then
-            button.icon:SetDesaturated(true)
-            button.cooldown:SetCooldown(start, duration)
-            button.cooldown:Show()
-            local remaining = (start + duration - GetTime())
-            if button.cooldownText then
-                if remaining > 0 then
-                    button.cooldownText:SetText(math.ceil(remaining))
-                    button.cooldownText:Show()
-                else
-                    button.cooldownText:SetText("")
-                    button.cooldownText:Hide()
-                end
-            end
-        else
-            button.icon:SetDesaturated(false)
-            button.cooldown:Hide()
-            if button.cooldownText then
-                button.cooldownText:SetText("")
-                button.cooldownText:Hide()
-            end
+        if IconHandling and IconHandling.ApplyCooldownVisual then
+            IconHandling.ApplyCooldownVisual(button.icon, button.cooldown, button.cooldownText, data)
         end
         local x = col * (width / columns)
         local y = row * (ROW_HEIGHT + GRID_PADDING)
@@ -464,6 +440,7 @@ EnsureFrame = function()
 
     content = CreateFrame("Frame", nil, scrollFrame)
     content:SetSize(1, 1)
+    content:SetClipsChildren(false)
     scrollFrame:SetScrollChild(content)
 
     scrollFrame:SetScript("OnSizeChanged", function()

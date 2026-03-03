@@ -1,5 +1,4 @@
--- Utility/Button.lua
--- DRY, KISS, Clean button creation for UtilityUI
+local IconRenderer = _G.Nozmie_IconRenderer
 
 local Button = {}
 
@@ -11,20 +10,11 @@ function Button.Create(parent, iconSize, rowHeight)
         button:GetHighlightTexture():SetBlendMode("ADD")
         button:GetHighlightTexture():SetAllPoints(button)
     end
-    button.icon = button.Icon or button.icon
-    if not button.icon then
-        button.icon = button:CreateTexture(nil, "ARTWORK")
-    end
-    button.icon:SetSize(iconSize, iconSize)
-    button.icon:SetPoint("LEFT", button, "LEFT", 14, 0)
-    button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-    button.border = button.IconBorder or button.Border
-    if not button.border then
-        button.border = button:CreateTexture(nil, "OVERLAY")
-        button.border:SetTexture("Interface\\Buttons\\UI-Quickslot2")
-    end
-    button.border:SetSize(iconSize + 22, iconSize + 22)
-    button.border:SetPoint("CENTER", button.icon, "CENTER", 0, 0)
+    button:SetClipsChildren(false)
+
+    local iconFrame = IconRenderer.CreateIconFrame(button, iconSize)
+    iconFrame:SetPoint("LEFT", button, "LEFT", 14, 0)
+    button.icon = iconFrame.icon
     button.name = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     button.name:SetPoint("TOPLEFT", button.icon, "TOPRIGHT", 12, -4)
     button.name:SetPoint("RIGHT", button, "RIGHT", -10, 0)

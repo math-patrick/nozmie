@@ -2,6 +2,7 @@ local Config = Nozmie_Config
 local Helpers = Nozmie_Helpers
 local BannerUI = Nozmie_BannerUI
 local ClickBehavior = _G.Nozmie_ClickBehavior
+local IconHandling = _G.Nozmie_IconHandling
 
 local BannerController = {}
 local ConfigHelpers = _G.Nozmie_ConfigHelpers
@@ -21,28 +22,6 @@ _G.Lstr = Lstr
 
 local STACK_GAP = 8
 local lastOptions
-
-local petIconCache = {}
-local function GetPetIconByName(petName)
-    if not petName or not C_PetJournal or not C_PetJournal.GetNumPets then
-        return nil
-    end
-    if petIconCache[petName] ~= nil then
-        return petIconCache[petName]
-    end
-
-    local numPets = C_PetJournal.GetNumPets()
-    for index = 1, numPets do
-        local _, _, _, customName, _, _, _, petNameFromJournal, icon = C_PetJournal.GetPetInfoByIndex(index)
-        if petNameFromJournal == petName or customName == petName then
-            petIconCache[petName] = icon
-            return icon
-        end
-    end
-
-    petIconCache[petName] = nil
-    return nil
-end
 
 local function GetOptionKey(data)
     local target = data.targetPlayer and ("@" .. data.targetPlayer) or ""
@@ -177,7 +156,11 @@ local function PromoteNextBanner(root)
 end
 
 local function UpdateBannerForCooldown(banner, data, remaining)
-    banner.icon:SetDesaturated(true)
+    if IconHandling and IconHandling.SetDesaturation then
+        IconHandling.SetDesaturation(banner.icon, true)
+    else
+        banner.icon:SetDesaturated(true)
+    end
     banner.title:SetTextColor(unpack(Config.COLORS.TEXT_COOLDOWN))
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_COOLDOWN))
     banner.isOnCooldown = true
@@ -199,7 +182,11 @@ local function UpdateBannerForCooldown(banner, data, remaining)
 end
 
 local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
-    banner.icon:SetDesaturated(false)
+    if IconHandling and IconHandling.SetDesaturation then
+        IconHandling.SetDesaturation(banner.icon, false)
+    else
+        banner.icon:SetDesaturated(false)
+    end
     banner.title:SetTextColor(unpack(Config.COLORS.TEXT_NORMAL))
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_NORMAL))
     banner.isOnCooldown = false
@@ -249,57 +236,9 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     end
 end
 
-local function SetPetIcon(banner, data)
-    local iconTexture = data.iconTexture
-    if not iconTexture and data.petName then
-        iconTexture = GetPetIconByName(data.petName)
-    end
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
-    end
-end
-
-local function SetSpellIcon(banner, data)
-    local iconTexture = C_Spell.GetSpellTexture(data.spellID or data.spellName)
-
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
-    end
-end
-
-local function SetItemIcon(banner, data)
-    local iconTexture = C_Item.GetItemIconByID(data.itemID)
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
-    end
-end
-
-local function SetMountIcon(banner, data)
-    local name, spellID, icon, isActive, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar,
-        isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
-    if icon then
-        banner.icon:SetTexture(icon)
-    end
-end
-
-local function SetToyIcon(banner, data)
-    local iconTexture = C_Item.GetItemIconByID(data.itemID)
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
-    end
-end
-
 local function UpdateBannerIcon(banner, data)
-    if data.actionType == "pet" then
-        SetPetIcon(banner, data)
-    elseif data.actionType == "spell" and data.spellID then
-        SetSpellIcon(banner, data)
-    elseif data.actionType == "item" and data.itemID then
-        SetItemIcon(banner, data)
-    elseif data.actionType == "mount" and data.mountId then
-        SetMountIcon(banner, data)
-    elseif data.actionType == "toy" and data.itemID then
-        SetToyIcon(banner, data)
+    if IconHandling and IconHandling.ApplyIcon then
+        IconHandling.ApplyIcon(banner.icon, data)
     end
 
     if ClickBehavior and ClickBehavior.ApplyActionAttributes then
