@@ -33,6 +33,7 @@ local content
 local searchBox
 local scrollFrame
 local dataCache = {}
+local IsHearthstoneEntry
 local EnsureFrame
 
 local function IsUtilityEntry(item)
@@ -161,7 +162,7 @@ local function BuildDataCache()
         return
     end
     for _, item in ipairs(_G.Nozmie_Data) do
-        if (IsUtilityEntry(item) or IsTeleportEntry(item)) and IsUsableUtility(item) then
+        if (IsUtilityEntry(item) or IsTeleportEntry(item) or IsHearthstoneEntry(item)) and IsUsableUtility(item) then
             table.insert(dataCache, item)
         end
     end 
@@ -171,18 +172,9 @@ local function BuildDataCache()
     end)
 end
 
-local function IsHearthstoneEntry(item)
+IsHearthstoneEntry = function(item)
     if not item then return false end
-    if item.category and item.category:lower():find("hearth") then return true end
-    if item.name and item.name:lower():find("hearthstone") then return true end
-    if item.spellName and item.spellName:lower():find("hearthstone") then return true end
-    if item.keywords then
-        for _, k in ipairs(item.keywords) do
-            if type(k) == "string" and (k:lower():find("hearth") or k:lower():find("home") or k:lower():find("inn")) then
-                return true
-            end
-        end
-    end
+    if item.category == "Home" then return true end
     return false
 end
 
@@ -198,26 +190,12 @@ local function BuildFilteredData()
 
     filteredData = {}
     if not dataCache then return end
-    if selectedTab == TAB_TELEPORT then
-        -- Group by destination
-        local byDest = {}
-        for _, item in ipairs(dataCache) do
-            if IsTeleportEntry(item) and not IsHearthstoneEntry(item) and MatchesFilter(item) and MatchesSearch(item, query) then
-                local dest = item.destination or item.name or item.spellName or "?"
-                byDest[dest] = byDest[dest] or {}
-                table.insert(byDest[dest], item)
-            end
-        end
-        for dest, group in pairs(byDest) do
-            table.insert(filteredData, { destination = dest, options = group, currentIndex = 1 })
-        end
-    else
-        for _, item in ipairs(dataCache) do
-            local matchesTab = (selectedTab == TAB_UTILITY and IsUtilityEntry(item))
-                or (selectedTab == TAB_HEARTHSTONE and IsHearthstoneEntry(item))
-            if matchesTab and MatchesFilter(item) and MatchesSearch(item, query) then
-                table.insert(filteredData, item)
-            end
+    for _, item in ipairs(dataCache) do
+        local matchesTab = (selectedTab == TAB_TELEPORT and IsTeleportEntry(item) and not IsHearthstoneEntry(item)) or
+            (selectedTab == TAB_UTILITY and IsUtilityEntry(item)) or
+            (selectedTab == TAB_HEARTHSTONE and IsHearthstoneEntry(item))
+        if matchesTab and MatchesFilter(item) and MatchesSearch(item, query) then
+            table.insert(filteredData, item)
         end
     end
 end
@@ -260,7 +238,7 @@ local function LayoutButtons()
 
     for index, entry in ipairs(filteredData) do
         local button = EnsureButton(index)
-        local data = entry.options and entry.options[entry.currentIndex or 1] or entry
+        local data = entry
         button.data = data
         if SharedUI and SharedUI.GetEntryLabel then
             button.name:SetText(SharedUI.GetEntryLabel(data))
@@ -270,56 +248,32 @@ local function LayoutButtons()
         button.category:SetText(GetEntryDescription(data))
         button.icon:SetTexture(ConfigHelpers.GetIconForEntry(data))
         ApplyActionAttributes(button, data)
+        if BannerController and BannerController.ApplyClickBehavior then
+            button.data = data
+            BannerController.ApplyClickBehavior(button, {
+                closeOnRight = false,
+                closeOnLeft = false,
+                cancelAutoHide = false
+            })
+        end
 
-        -- Navigation arrows for grouped entries
-        if entry.options then
-            if not button.leftArrow then
-                button.leftArrow = CreateFrame("Button", nil, button)
-                button.leftArrow:SetSize(18, 18)
-                button.leftArrow:SetPoint("LEFT", button, "LEFT", 2, 0)
-                button.leftArrow:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
-                button.leftArrow:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-                button.leftArrow:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
-                button.leftArrow:SetScript("OnClick", function()
-                    entry.currentIndex = ((entry.currentIndex or 1) - 2) % #entry.options + 1
-                    LayoutButtons()
-                end)
-            end
-            if not button.rightArrow then
-                button.rightArrow = CreateFrame("Button", nil, button)
-                button.rightArrow:SetSize(18, 18)
-                button.rightArrow:SetPoint("LEFT", button.leftArrow, "RIGHT", 2, 0)
-                button.rightArrow:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
-                button.rightArrow:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
-                button.rightArrow:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down")
-                button.rightArrow:SetScript("OnClick", function()
-                    entry.currentIndex = ((entry.currentIndex or 1) % #entry.options) + 1
-                    LayoutButtons()
-                end)
-            end
-            button.leftArrow:Show()
-            button.rightArrow:Show()
-            if button.hotkey then button.hotkey:Hide() end
-        else
-            if button.leftArrow then button.leftArrow:Hide() end
-            if button.rightArrow then button.rightArrow:Hide() end
-            -- Hotkey label
-            if button.hotkey then
-                local key, btnName = nil, button:GetName()
-                if btnName then
-                    if data.itemID then
-                        key = GetBindingKey("CLICK " .. btnName .. ":LeftButton")
-                    elseif data.spellID then
-                        key = GetBindingKey("CLICK " .. btnName .. ":LeftButton")
-                    end
+        if button.leftArrow then button.leftArrow:Hide() end
+        if button.rightArrow then button.rightArrow:Hide() end
+        if button.hotkey then
+            local key, btnName = nil, button:GetName()
+            if btnName then
+                if data.itemID then
+                    key = GetBindingKey("CLICK " .. btnName .. ":LeftButton")
+                elseif data.spellID then
+                    key = GetBindingKey("CLICK " .. btnName .. ":LeftButton")
                 end
-                if key then
-                    button.hotkey:SetText(key)
-                    button.hotkey:Show()
-                else
-                    button.hotkey:SetText("")
-                    button.hotkey:Hide()
-                end
+            end
+            if key then
+                button.hotkey:SetText(key)
+                button.hotkey:Show()
+            else
+                button.hotkey:SetText("")
+                button.hotkey:Hide()
             end
         end
 
@@ -355,7 +309,6 @@ local function LayoutButtons()
                 button.cooldownText:Hide()
             end
         end
-        button:SetScript("OnClick", nil)
         local x = col * (width / columns)
         local y = row * (ROW_HEIGHT + GRID_PADDING)
         button:ClearAllPoints()
@@ -475,7 +428,7 @@ EnsureFrame = function()
         frame.TitleText:SetJustifyH("LEFT")
         frame.TitleText:Show()
     end
-    local icon = MINIMAP_ICON_TEXTURE or "Interface\\Icons\\INV_Misc_QuestionMark"
+    local icon = "Interface\\Icons\\Spell_Holy_BorrowedTime"
     if frame.Portrait then
         frame.Portrait:SetTexture(icon)
     elseif frame.PortraitContainer and frame.PortraitContainer.portrait then
