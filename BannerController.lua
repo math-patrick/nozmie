@@ -264,6 +264,7 @@ local function CreateNavigationArrows(banner)
     if not banner.leftArrow then
         banner.leftArrow = CreateFrame("Button", nil, banner)
         banner.leftArrow:SetSize(20, 20)
+        banner.leftArrow:SetToplevel(true)
         banner.leftArrow:SetPoint("TOP", banner.icon, "BOTTOM", -11, 2)
         banner.leftArrow:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
         banner.leftArrow:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
@@ -276,6 +277,7 @@ local function CreateNavigationArrows(banner)
 
     if not banner.rightArrow then
         banner.rightArrow = CreateFrame("Button", nil, banner)
+        banner.rightArrow:SetToplevel(true)
         banner.rightArrow:SetSize(20, 20)
         banner.rightArrow:SetPoint("LEFT", banner.leftArrow, "RIGHT", 2, 0)
         banner.rightArrow:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")

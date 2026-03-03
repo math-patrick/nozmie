@@ -1,6 +1,3 @@
--- Utility/ConfigHelpers.lua
--- Shared helpers for icon, macro/cast, and name config for both Banner and Utility UI
-
 local ConfigHelpers = {}
 
 -- Icon helpers

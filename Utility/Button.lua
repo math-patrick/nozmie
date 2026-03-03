@@ -34,22 +34,9 @@ function Button.Create(parent, iconSize, rowHeight)
     button.cooldownText:SetPoint("CENTER", button.icon, "CENTER", 0, 0)
     button.cooldownText:SetText("")
     button.cooldownText:Hide()
-    button:SetScript("OnEnter", function(self)
-        local data = self.data
-        if not data then return end
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        if data.itemID then
-            GameTooltip:SetItemByID(data.itemID)
-        elseif data.spellID then
-            GameTooltip:SetSpellByID(data.spellID)
-        else
-            GameTooltip:SetText(data.name or "")
-        end
-        GameTooltip:Show()
-    end)
-    button:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-    end)
+
+    IconRenderer.ApplyTooltip(button)
+    
     return button
 end
 

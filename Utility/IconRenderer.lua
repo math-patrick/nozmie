@@ -38,7 +38,7 @@ function IconRenderer.ApplyTooltip(iconFrame)
     
     iconFrame:SetScript("OnEnter", function(self)
         local parent = self:GetParent()
-        local data = parent.activeData or parent.data
+        local data = parent.activeData or parent.data or self.data
         if not data then return end
         
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -47,7 +47,11 @@ function IconRenderer.ApplyTooltip(iconFrame)
         elseif data.spellID then
             GameTooltip:SetSpellByID(data.spellID)
         elseif data.itemID then
-            GameTooltip:SetItemByID(data.itemID)
+            if data.actionType == "toy" then
+                GameTooltip:SetToyByItemID(data.itemID)
+            else
+                GameTooltip:SetItemByID(data.itemID)
+            end
         else
             GameTooltip:SetText(data.spellName or data.name or Lstr("minimap.title", "Nozmie"))
         end
