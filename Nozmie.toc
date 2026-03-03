@@ -30,6 +30,7 @@ Config.lua
 Helpers.lua
 BannerUI.lua
 Utility\ConfigHelpers.lua
+Utility\ClickBehavior.lua
 BannerController.lua
 UtilityUI.lua
 Minimap.lua

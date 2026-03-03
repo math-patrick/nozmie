@@ -1,10 +1,7 @@
--- ============================================================================
--- Nozmie - Banner Controller Module
--- Manages banner behavior, navigation, cooldown updates, and click handling
--- ============================================================================
 local Config = Nozmie_Config
 local Helpers = Nozmie_Helpers
 local BannerUI = Nozmie_BannerUI
+local ClickBehavior = _G.Nozmie_ClickBehavior
 
 local BannerController = {}
 local ConfigHelpers = _G.Nozmie_ConfigHelpers
@@ -292,96 +289,7 @@ local function SetToyIcon(banner, data)
     end
 end
 
-local function ConfigureActionAttributes(frame, data)
-    if not frame or not data then
-        return
-    end
-
-    frame:SetScript("PreClick", nil)
-    frame:SetAttribute("type", nil)
-    frame:SetAttribute("type1", nil)
-    frame:SetAttribute("type2", nil)
-    frame:SetAttribute("macrotext", nil)
-    frame:SetAttribute("macrotext1", nil)
-    frame:SetAttribute("macrotext2", nil)
-    frame:SetAttribute("spell", nil)
-    frame:SetAttribute("spell1", nil)
-    frame:SetAttribute("spell2", nil)
-    frame:SetAttribute("item", nil)
-    frame:SetAttribute("item1", nil)
-    frame:SetAttribute("item2", nil)
-
-    if data.actionType == "mount" and data.mountId and C_MountJournal and C_MountJournal.SummonByID then
-        frame:SetScript("PreClick", function()
-            C_MountJournal.SummonByID(data.mountId)
-        end)
-        return
-    end
-
-    if data.actionType == "spell" and data.spellID then
-        local spellName = data.spellName or (data.spellID and GetSpellInfo(data.spellID))
-        if data.targetPlayer and data.targetPlayer ~= UnitName("player") and data.category and data.category:find("Utility") then
-            local macro = "/cast [@" .. data.targetPlayer .. "] " .. (spellName or "")
-            frame:SetAttribute("type", "macro")
-            frame:SetAttribute("type1", "macro")
-            frame:SetAttribute("macrotext", macro)
-            frame:SetAttribute("macrotext1", macro)
-        else
-            frame:SetAttribute("type", "spell")
-            frame:SetAttribute("type1", "spell")
-            frame:SetAttribute("spell", data.spellID or spellName)
-            frame:SetAttribute("spell1", data.spellID or spellName)
-        end
-        return
-    end
-
-    if (data.actionType == "item" or data.actionType == "toy") and data.itemID then
-        local macro = "/use item:" .. tostring(data.itemID)
-        frame:SetAttribute("type", "macro")
-        frame:SetAttribute("type1", "macro")
-        frame:SetAttribute("macrotext", macro)
-        frame:SetAttribute("macrotext1", macro)
-        return
-    end
-
-    if data.actionType == "pet" then
-        frame:SetAttribute("type", "macro")
-        frame:SetAttribute("type1", "macro")
-        frame:SetAttribute("macrotext", data.macrotext or "")
-        frame:SetAttribute("macrotext1", data.macrotext or "")
-        return
-    end
-
-    if data.macrotext then
-        frame:SetAttribute("type", "macro")
-        frame:SetAttribute("type1", "macro")
-        frame:SetAttribute("macrotext", data.macrotext)
-        frame:SetAttribute("macrotext1", data.macrotext)
-    end
-end
-
-local function ClearBannerAttributes(banner)
-    banner:SetScript("PreClick", nil)
-    banner:SetAttribute("type", nil)
-    banner:SetAttribute("macrotext", nil)
-    banner:SetAttribute("spell", nil)
-    banner:SetAttribute("item", nil)
-    banner:SetAttribute("type2", nil)
-    banner:SetAttribute("macrotext2", nil)
-    banner:SetAttribute("spell2", nil)
-    banner:SetAttribute("item2", nil)
-end
-
-local function PreventRightClickAction(banner)
-    banner:SetAttribute("type2", "none")
-    banner:SetAttribute("macrotext2", nil)
-    banner:SetAttribute("spell2", nil)
-    banner:SetAttribute("item2", nil)
-end
-
 local function UpdateBannerIcon(banner, data)
-    ClearBannerAttributes(banner)
-
     if data.actionType == "pet" then
         SetPetIcon(banner, data)
     elseif data.actionType == "spell" and data.spellID then
@@ -394,13 +302,9 @@ local function UpdateBannerIcon(banner, data)
         SetToyIcon(banner, data)
     end
 
-    ConfigureActionAttributes(banner, data)
-
-    PreventRightClickAction(banner)
-end
-
-local function ApplyActionAttributes(button, data)
-    ConfigureActionAttributes(button, data)
+    if ClickBehavior and ClickBehavior.ApplyActionAttributes then
+        ClickBehavior.ApplyActionAttributes(banner, data)
+    end
 end
 
 RefreshBannerDisplay = function(banner)
@@ -429,7 +333,7 @@ local function CreateNavigationArrows(banner)
             banner.currentIndex = (banner.currentIndex - 2) % #banner.options + 1
             RefreshBannerDisplay(banner)
         end)
-    end
+    end 
 
     if not banner.rightArrow then
         banner.rightArrow = CreateFrame("Button", nil, banner)
@@ -442,77 +346,6 @@ local function CreateNavigationArrows(banner)
             banner.currentIndex = banner.currentIndex % #banner.options + 1
             RefreshBannerDisplay(banner)
         end)
-    end
-end
-
-local function CloseBanner(banner)
-    UIFrameFadeOut(banner, 0.2, 1, 0)
-    C_Timer.After(0.2, function()
-        banner:Hide()
-    end)
-end
-
-local function GetFrameActionData(frame)
-    if not frame then
-        return nil
-    end
-    if frame.activeData then
-        return frame.activeData
-    end
-    if frame.options and frame.currentIndex then
-        return frame.options[frame.currentIndex]
-    end
-    return frame.data
-end
-
-local function ApplyClickBehavior(frame, opts)
-    if not frame then
-        return
-    end
-
-    opts = opts or {}
-    local closeOnRight = opts.closeOnRight == true
-    local closeOnLeft = opts.closeOnLeft == true
-    local cancelAutoHide = opts.cancelAutoHide ~= false
-
-    frame.lastAnnounceTime = frame.lastAnnounceTime or 0
-
-    frame:SetScript("PostClick", function(self, button)
-        if cancelAutoHide and self.autoHideTimer then
-            self.autoHideTimer:Cancel()
-        end
-
-        local data = GetFrameActionData(self)
-
-        if button == "RightButton" then
-            if closeOnRight then
-                CloseBanner(self)
-            end
-            return
-        end
-
-        if button == "LeftButton" then
-            local Settings = _G.Nozmie_Settings
-            local announceToGroup = Settings and Settings.Get and Settings.Get("announceToGroup")
-
-            if announceToGroup and data and (not self.lastAnnounceTime or GetTime() - self.lastAnnounceTime > 1) then
-                Helpers.AnnounceUtility(data)
-                self.lastAnnounceTime = GetTime()
-            end
-
-            if closeOnLeft then
-                CloseBanner(self)
-            end
-        end
-    end)
-
-    frame.HandleAnnounce = function(self)
-        local data = GetFrameActionData(self)
-        local now = GetTime()
-        if data and (not self.lastAnnounceTime or now - self.lastAnnounceTime > 1) then
-            Helpers.AnnounceUtility(data, data.sourceEvent, data.sourceSender)
-            self.lastAnnounceTime = now
-        end
     end
 end
 
@@ -562,7 +395,7 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
         RefreshBannerDisplay(banner)
     end)
 
-    ApplyClickBehavior(banner, {
+    ClickBehavior.Apply(banner, {
         closeOnRight = true,
         closeOnLeft = true,
         cancelAutoHide = true
@@ -657,5 +490,5 @@ function BannerController.GetLastOptions()
 end
 
 _G.Nozmie_BannerController = BannerController
-BannerController.ApplyActionAttributes = ApplyActionAttributes
-BannerController.ApplyClickBehavior = ApplyClickBehavior
+BannerController.ApplyActionAttributes = ClickBehavior and ClickBehavior.ApplyActionAttributes
+BannerController.ApplyClickBehavior = ClickBehavior and ClickBehavior.Apply

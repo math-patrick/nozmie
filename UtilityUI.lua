@@ -7,6 +7,7 @@ local SharedUI = _G.Nozmie_SharedUI
 local ConfigHelpers = _G.Nozmie_ConfigHelpers
 local Helpers = _G.Nozmie_Helpers
 local BannerController = _G.Nozmie_BannerController
+local ClickBehavior = _G.Nozmie_ClickBehavior
 
 local Locale = _G.Nozmie_Locale
 local function Lstr(key, fallback)
@@ -202,20 +203,10 @@ end
 
 
 local function ApplyActionAttributes(button, item)
-    if BannerController and BannerController.ApplyActionAttributes then
+    if ClickBehavior and ClickBehavior.ApplyActionAttributes then
+        ClickBehavior.ApplyActionAttributes(button, item)
+    elseif BannerController and BannerController.ApplyActionAttributes then
         BannerController.ApplyActionAttributes(button, item)
-        return
-    end
-    if SharedUI and SharedUI.ApplyActionAttributes then
-        SharedUI.ApplyActionAttributes(button, item)
-        return
-    end
-    if item.spellID then
-        button:SetAttribute("type", "spell")
-        button:SetAttribute("spell", item.spellID)
-    elseif item.itemID then
-        button:SetAttribute("type", "macro")
-        button:SetAttribute("macrotext", "/use item:" .. tostring(item.itemID))
     end
 end
 
@@ -248,9 +239,9 @@ local function LayoutButtons()
         button.category:SetText(GetEntryDescription(data))
         button.icon:SetTexture(ConfigHelpers.GetIconForEntry(data))
         ApplyActionAttributes(button, data)
-        if BannerController and BannerController.ApplyClickBehavior then
+        if ClickBehavior and ClickBehavior.Apply then
             button.data = data
-            BannerController.ApplyClickBehavior(button, {
+            ClickBehavior.Apply(button, {
                 closeOnRight = false,
                 closeOnLeft = false,
                 cancelAutoHide = false
