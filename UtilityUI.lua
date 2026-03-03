@@ -17,9 +17,11 @@ local function Lstr(key, fallback)
     return fallback or key
 end
 
-local selectedTab = "TELEPORT"
+local selectedTab = "CURRENT_DUNGEONS"
+local TAB_CURRENT_DUNGEONS = "CURRENT_DUNGEONS"
+local TAB_LEGACY_DUNGEONS = "LEGACY_DUNGEONS"
+local TAB_TELEPORTS = "TELEPORTS"
 local TAB_UTILITY = "UTILITY"
-local TAB_TELEPORT = "TELEPORT"
 local TAB_HEARTHSTONE = "HEARTHSTONE"
 
 local UtilityUI = {}
@@ -194,10 +196,25 @@ local function BuildFilteredData()
     if not dataCache then
         return
     end
+    
     for _, item in ipairs(dataCache) do
-        local matchesTab = (selectedTab == TAB_TELEPORT and IsTeleportEntry(item) and not IsHearthstoneEntry(item)) or
-                               (selectedTab == TAB_UTILITY and IsUtilityEntry(item)) or
-                               (selectedTab == TAB_HEARTHSTONE and IsHearthstoneEntry(item))
+        local matchesTab = false
+        
+        if selectedTab == TAB_CURRENT_DUNGEONS then
+            -- Current dungeons = M+ Dungeons with priority = 1
+            matchesTab = item.category == "M+ Dungeon" and item.priority and tonumber(item.priority) == 1
+        elseif selectedTab == TAB_LEGACY_DUNGEONS then
+            -- Legacy dungeons = M+ Dungeons without priority = 1
+            matchesTab = item.category == "M+ Dungeon" and (not item.priority or tonumber(item.priority) ~= 1)
+        elseif selectedTab == TAB_TELEPORTS then
+            -- Teleports = non-dungeon teleports (Raids, Delves, Toys)
+            matchesTab = IsTeleportEntry(item) and item.category ~= "M+ Dungeon" and not IsHearthstoneEntry(item)
+        elseif selectedTab == TAB_UTILITY then
+            matchesTab = IsUtilityEntry(item)
+        elseif selectedTab == TAB_HEARTHSTONE then
+            matchesTab = IsHearthstoneEntry(item)
+        end
+        
         if matchesTab and MatchesFilter(item) and MatchesSearch(item, query) then
             table.insert(filteredData, item)
         end
@@ -235,6 +252,23 @@ local function LayoutButtons()
         local button = EnsureButton(index)
         local data = entry
         button.data = data
+        
+        -- Configure button
+        button:SetAlpha(1)
+        button:EnableMouse(true)
+        button:SetHighlightTexture("Interface\\Buttons\\UI-Listbox-Highlight2")
+        local highlightTexture = button:GetHighlightTexture()
+        if highlightTexture then
+            highlightTexture:SetBlendMode("ADD")
+            highlightTexture:SetAlpha(1)
+        end
+        button.icon:SetAlpha(1)
+        
+        button.name:SetFont(button.name:GetFont(), 12, "")
+        button.name:ClearAllPoints()
+        button.name:SetPoint("TOPLEFT", button.icon, "TOPRIGHT", 12, -2)
+        button.name:SetPoint("RIGHT", button, "RIGHT", -10, 0)
+        
         if SharedUI and SharedUI.GetEntryLabel then
             button.name:SetText(SharedUI.GetEntryLabel(data))
         else
@@ -308,80 +342,103 @@ local function RefreshLayout()
     LayoutButtons()
 end
 
-local function UpdateTabSelection(value, teleportTab, utilityTab, hearthTab)
-    selectedTab = value or TAB_UTILITY
+local function UpdateTabSelection(value, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
+    selectedTab = value or TAB_CURRENT_DUNGEONS
     RefreshLayout()
     if PanelTemplates_SetTab then
         local tabIdx = 1
-        if value == TAB_TELEPORT then
+        if value == TAB_CURRENT_DUNGEONS then
             tabIdx = 1
-        end
-        if value == TAB_UTILITY then
+        elseif value == TAB_LEGACY_DUNGEONS then
             tabIdx = 2
-        end
-        if value == TAB_HEARTHSTONE then
+        elseif value == TAB_TELEPORTS then
             tabIdx = 3
-        end
-        PanelTemplates_SetTab(teleportTab:GetParent(), tabIdx)
-    else
-        local active, inactive1, inactive2
-        if value == TAB_TELEPORT then
-            active, inactive1, inactive2 = teleportTab, utilityTab, hearthTab
+        elseif value == TAB_UTILITY then
+            tabIdx = 4
         elseif value == TAB_HEARTHSTONE then
-            active, inactive1, inactive2 = hearthTab, utilityTab, teleportTab
-        else
-            active, inactive1, inactive2 = utilityTab, teleportTab, hearthTab
+            tabIdx = 5
         end
-        if active and active.GetFontString then
-            active:GetFontString():SetTextColor(1, 0.82, 0)
+        PanelTemplates_SetTab(currentDungeonsTab:GetParent(), tabIdx)
+    else
+        local allTabs = {currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab}
+        local activeTab
+        
+        if value == TAB_CURRENT_DUNGEONS then
+            activeTab = currentDungeonsTab
+        elseif value == TAB_LEGACY_DUNGEONS then
+            activeTab = legacyDungeonsTab
+        elseif value == TAB_TELEPORTS then
+            activeTab = teleportsTab
+        elseif value == TAB_UTILITY then
+            activeTab = utilityTab
+        elseif value == TAB_HEARTHSTONE then
+            activeTab = hearthTab
         end
-        if inactive1 and inactive1.GetFontString then
-            inactive1:GetFontString():SetTextColor(0.7, 0.7, 0.7)
-        end
-        if inactive2 and inactive2.GetFontString then
-            inactive2:GetFontString():SetTextColor(0.7, 0.7, 0.7)
-        end
-        if active and active.SetButtonState then
-            active:SetButtonState("PUSHED", true)
-        end
-        if inactive1 and inactive1.SetButtonState then
-            inactive1:SetButtonState("NORMAL", false)
-        end
-        if inactive2 and inactive2.SetButtonState then
-            inactive2:SetButtonState("NORMAL", false)
+        
+        for _, tab in ipairs(allTabs) do
+            if tab == activeTab then
+                if tab and tab.GetFontString then
+                    tab:GetFontString():SetTextColor(1, 0.82, 0)
+                end
+                if tab and tab.SetButtonState then
+                    tab:SetButtonState("PUSHED", true)
+                end
+            else
+                if tab and tab.GetFontString then
+                    tab:GetFontString():SetTextColor(0.7, 0.7, 0.7)
+                end
+                if tab and tab.SetButtonState then
+                    tab:SetButtonState("NORMAL", false)
+                end
+            end
         end
     end
     RefreshLayout()
 end
 
 local function CreateTabButtons(parent, anchor)
-    local teleportTab = CreateFrame("Button", "$parentTab1", parent, "PanelTabButtonTemplate")
-    local utilityTab = CreateFrame("Button", "$parentTab2", parent, "PanelTabButtonTemplate")
-    local hearthTab = CreateFrame("Button", "$parentTab3", parent, "PanelTabButtonTemplate")
+    local currentDungeonsTab = CreateFrame("Button", "$parentTab1", parent, "PanelTabButtonTemplate")
+    local legacyDungeonsTab = CreateFrame("Button", "$parentTab2", parent, "PanelTabButtonTemplate")
+    local teleportsTab = CreateFrame("Button", "$parentTab3", parent, "PanelTabButtonTemplate")
+    local utilityTab = CreateFrame("Button", "$parentTab4", parent, "PanelTabButtonTemplate")
+    local hearthTab = CreateFrame("Button", "$parentTab5", parent, "PanelTabButtonTemplate")
 
-    teleportTab:SetPoint("TOPLEFT", parent, "BOTTOMLEFT", 12, 2)
-    utilityTab:SetPoint("LEFT", teleportTab, "RIGHT", -16, 0)
+    currentDungeonsTab:SetPoint("TOPLEFT", parent, "BOTTOMLEFT", 12, 2)
+    legacyDungeonsTab:SetPoint("LEFT", currentDungeonsTab, "RIGHT", -16, 0)
+    teleportsTab:SetPoint("LEFT", legacyDungeonsTab, "RIGHT", -16, 0)
+    utilityTab:SetPoint("LEFT", teleportsTab, "RIGHT", -16, 0)
     hearthTab:SetPoint("LEFT", utilityTab, "RIGHT", -16, 0)
 
     if PanelTemplates_SetNumTabs then
-        PanelTemplates_SetNumTabs(parent, 3)
+        PanelTemplates_SetNumTabs(parent, 5)
     end
-    teleportTab:SetText(Lstr("utility.tab.teleport", "Teleports"))
-    teleportTab:SetScript("OnClick", function()
-        UpdateTabSelection(TAB_TELEPORT, teleportTab, utilityTab, hearthTab)
+    
+    currentDungeonsTab:SetText(Lstr("utility.tab.currentdungeons", "Current"))
+    currentDungeonsTab:SetScript("OnClick", function()
+        UpdateTabSelection(TAB_CURRENT_DUNGEONS, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
+    end)
+
+    legacyDungeonsTab:SetText(Lstr("utility.tab.legacydungeons", "Legacy"))
+    legacyDungeonsTab:SetScript("OnClick", function()
+        UpdateTabSelection(TAB_LEGACY_DUNGEONS, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
+    end)
+
+    teleportsTab:SetText(Lstr("utility.tab.teleports", "Teleports"))
+    teleportsTab:SetScript("OnClick", function()
+        UpdateTabSelection(TAB_TELEPORTS, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
     end)
 
     utilityTab:SetText(Lstr("utility.tab.utility", "Utility"))
     utilityTab:SetScript("OnClick", function()
-        UpdateTabSelection(TAB_UTILITY, teleportTab, utilityTab, hearthTab)
+        UpdateTabSelection(TAB_UTILITY, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
     end)
 
     hearthTab:SetText(Lstr("utility.tab.hearthstone", "Hearthstones"))
     hearthTab:SetScript("OnClick", function()
-        UpdateTabSelection(TAB_HEARTHSTONE, teleportTab, utilityTab, hearthTab)
+        UpdateTabSelection(TAB_HEARTHSTONE, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
     end)
 
-    UpdateTabSelection(selectedTab, teleportTab, utilityTab, hearthTab)
+    UpdateTabSelection(selectedTab, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
 end
 
 EnsureFrame = function()
