@@ -144,6 +144,14 @@ function SettingsModule.InitializeDB()
         end
     end
 
+    if type(NozmieDB.minimap) ~= "table" then
+        NozmieDB.minimap = {}
+    end
+    if NozmieDB.minimap.minimapPos == nil then
+        NozmieDB.minimap.minimapPos = 220
+    end
+    NozmieDB.minimap.hide = not NozmieDB.minimapIcon
+
     do
         local list = {}
         local migration = {

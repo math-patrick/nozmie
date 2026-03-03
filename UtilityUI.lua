@@ -1,12 +1,22 @@
 -- ============================================================================
 -- Nozmie - Utility UI Module
--- Main utility frame with tabs, item grid, search, favorites, compact view
+-- Main utility frame with tabs, item grid, and search
 -- ============================================================================
 
 local SharedUI = _G.Nozmie_SharedUI
 local ConfigHelpers = _G.Nozmie_ConfigHelpers
+local Helpers = _G.Nozmie_Helpers
+local BannerController = _G.Nozmie_BannerController
 
-local selectedTab = "UTILITY"
+local Locale = _G.Nozmie_Locale
+local function Lstr(key, fallback)
+    if Locale and Locale.GetString then
+        return Locale.GetString(key, fallback)
+    end
+    return fallback or key
+end
+
+local selectedTab = "TELEPORT"
 local TAB_UTILITY = "UTILITY"
 local TAB_TELEPORT = "TELEPORT"
 local TAB_HEARTHSTONE = "HEARTHSTONE"
@@ -14,26 +24,105 @@ local TAB_HEARTHSTONE = "HEARTHSTONE"
 local UtilityUI = {}
 _G.Nozmie_UtilityUI = UtilityUI
 local filteredData = {}
-local pinnedFavorite = nil
-local compactView = false
 local buttons = {}
 local GRID_PADDING = 8
 local ROW_HEIGHT = 44
 local ICON_SIZE = 36
 local frame
 local content
+local searchBox
+local scrollFrame
+local dataCache = {}
+local EnsureFrame
 
--- (Restore all previous logic for tabs, item grid, search, favorites, compact view, frame creation, and event handlers)
+local function IsUtilityEntry(item)
+    return item and item.category == "Utility"
+end
+
+local function IsTeleportEntry(item)
+    if not item then
+        return false
+    end
+    return item.category == "M+ Dungeon" or item.category == "Raid" or item.category == "Delve" or item.category == "Toy"
+end
+
+local function MatchesFilter(item)
+    return item ~= nil
+end
+
+local function MatchesSearch(item, query)
+    if not query or query == "" then
+        return true
+    end
+    local text = string.lower(table.concat({
+        tostring(item.name or ""),
+        tostring(item.spellName or ""),
+        tostring(item.destination or ""),
+        tostring(item.category or "")
+    }, " "))
+    if text:find(query, 1, true) then
+        return true
+    end
+    if item.keywords then
+        for _, keyword in ipairs(item.keywords) do
+            if type(keyword) == "string" and string.lower(keyword):find(query, 1, true) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function GetEntryDescription(data)
+    return data.destination or data.category or ""
+end
+
+local function EnsureButton(index)
+    if buttons[index] then
+        return buttons[index]
+    end
+    local utilityButtonModule = _G.Nozmie_UtilityButton
+    local button = utilityButtonModule and utilityButtonModule.Create and
+                       utilityButtonModule.Create(content, ICON_SIZE, ROW_HEIGHT) or
+                       CreateFrame("Button", nil, content, "SecureActionButtonTemplate")
+    if not button.icon then
+        button.icon = button:CreateTexture(nil, "ARTWORK")
+        button.icon:SetSize(ICON_SIZE, ICON_SIZE)
+        button.icon:SetPoint("LEFT", button, "LEFT", 14, 0)
+    end
+    if not button.name then
+        button.name = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        button.name:SetPoint("TOPLEFT", button.icon, "TOPRIGHT", 12, -4)
+        button.name:SetPoint("RIGHT", button, "RIGHT", -10, 0)
+        button.name:SetJustifyH("LEFT")
+    end
+    if not button.category then
+        button.category = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        button.category:SetPoint("TOPLEFT", button.name, "BOTTOMLEFT", 0, -2)
+        button.category:SetPoint("RIGHT", button.name, "RIGHT", 0, 0)
+        button.category:SetJustifyH("LEFT")
+    end
+    if not button.cooldown then
+        button.cooldown = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+        button.cooldown:SetAllPoints(button.icon)
+        button.cooldown:Hide()
+    end
+    if not button.cooldownText then
+        button.cooldownText = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        button.cooldownText:SetPoint("CENTER", button.icon, "CENTER", 0, 0)
+        button.cooldownText:Hide()
+    end
+    button:EnableMouse(true)
+    button:RegisterForClicks("AnyUp", "AnyDown")
+    buttons[index] = button
+    return button
+end
 
 function UtilityUI.Toggle()
-    print("[Nozmie] UtilityUI.Toggle called.")
     local host = EnsureFrame()
-    print("[Nozmie] UtilityUI frame IsShown:", host:IsShown())
     if host:IsShown() then
-        print("[Nozmie] Hiding UtilityUI frame.")
         host:Hide()
     else
-        print("[Nozmie] Showing UtilityUI frame.")
         host:Show()
     end
 end
@@ -46,12 +135,11 @@ function UtilityUI.Hide()
     if frame then
         frame:Hide()
     end
-    return false
 end
 
 local function IsUsableUtility(item)
-    if Helpers and Helpers.CanPlayerUseTeleport then
-        return Helpers.CanPlayerUseTeleport(item)
+    if Helpers and Helpers.CanPlayerUseUtility then
+        return Helpers.CanPlayerUseUtility(item)
     end
     if item.itemID then
         if PlayerHasToy and PlayerHasToy(item.itemID) then
@@ -67,24 +155,6 @@ local function IsUsableUtility(item)
     return false
 end
 
-local function GetFavoriteKey(item)
-    if item.itemID then return "item:"..item.itemID end
-    if item.spellID then return "spell:"..item.spellID end
-    if item.petName then return "pet:"..item.petName end
-    return item.name or "?"
-end
-
-local function IsFavorite(item)
-    if not NozmieDB or not NozmieDB.favorites then return false end
-    return NozmieDB.favorites[GetFavoriteKey(item)]
-end
-
-local function SetFavorite(item, value)
-    if not NozmieDB then NozmieDB = {} end
-    if not NozmieDB.favorites then NozmieDB.favorites = {} end
-    NozmieDB.favorites[GetFavoriteKey(item)] = value and true or nil
-end
-
 local function BuildDataCache()
     dataCache = {}
     if not _G.Nozmie_Data then
@@ -95,11 +165,8 @@ local function BuildDataCache()
             table.insert(dataCache, item)
         end
     end 
-    -- Sort: favorites first, then by name
+    -- Sort by name
     table.sort(dataCache, function(a, b)
-        local fa, fb = IsFavorite(a), IsFavorite(b)
-        if fa and not fb then return true end
-        if not fa and fb then return false end
         return ConfigHelpers.GetEntryName(a) < ConfigHelpers.GetEntryName(b)
     end)
 end
@@ -120,12 +187,6 @@ local function IsHearthstoneEntry(item)
 end
 
 local function BuildFilteredData()
-    -- Pin favorite logic
-    if NozmieDB and NozmieDB.pinnedFavorite then
-        pinnedFavorite = NozmieDB.pinnedFavorite
-    else
-        pinnedFavorite = nil
-    end
     local query = ""
     if searchBox and searchBox.GetText then
         query = searchBox:GetText() or ""
@@ -147,51 +208,41 @@ local function BuildFilteredData()
                 table.insert(byDest[dest], item)
             end
         end
-        -- Pin favorite at the top if it matches
-        if pinnedFavorite then
-            for dest, group in pairs(byDest) do
-                for _, item in ipairs(group) do
-                    if GetFavoriteKey(item) == pinnedFavorite then
-                        table.insert(filteredData, { destination = dest, options = group, currentIndex = 1 })
-                        byDest[dest] = nil
-                        break
-                    end
-                end
-            end
-        end
         for dest, group in pairs(byDest) do
             table.insert(filteredData, { destination = dest, options = group, currentIndex = 1 })
         end
     else
-        local others = {}
-        local pinned = nil
         for _, item in ipairs(dataCache) do
             local matchesTab = (selectedTab == TAB_UTILITY and IsUtilityEntry(item))
                 or (selectedTab == TAB_HEARTHSTONE and IsHearthstoneEntry(item))
             if matchesTab and MatchesFilter(item) and MatchesSearch(item, query) then
-                if pinnedFavorite and GetFavoriteKey(item) == pinnedFavorite then
-                    pinned = item
-                else
-                    table.insert(others, item)
-                end
+                table.insert(filteredData, item)
             end
-        end
-        if pinned then
-            table.insert(filteredData, pinned)
-        end
-        for _, item in ipairs(others) do
-            table.insert(filteredData, item)
         end
     end
 end
 
 
 local function ApplyActionAttributes(button, item)
+    if BannerController and BannerController.ApplyActionAttributes then
+        BannerController.ApplyActionAttributes(button, item)
+        return
+    end
     if SharedUI and SharedUI.ApplyActionAttributes then
         SharedUI.ApplyActionAttributes(button, item)
+        return
+    end
+    if item.spellID then
+        button:SetAttribute("type", "spell")
+        button:SetAttribute("spell", item.spellID)
+    elseif item.itemID then
+        button:SetAttribute("type", "macro")
+        button:SetAttribute("macrotext", "/use item:" .. tostring(item.itemID))
     end
 end
 
+
+local function LayoutButtons()
 
     if not content or not scrollFrame then return end
     local width = scrollFrame:GetWidth() or 0
@@ -272,35 +323,6 @@ end
             end
         end
 
-        -- Favorite star
-        if not button.favoriteStar then
-            button.favoriteStar = button:CreateTexture(nil, "OVERLAY")
-            button.favoriteStar:SetSize(18, 18)
-            button.favoriteStar:SetPoint("RIGHT", button, "RIGHT", -4, 0)
-            button.favoriteStar:SetTexture("Interface\\COMMON\\ReputationStar")
-        end
-        if IsFavorite(data) then
-            button.favoriteStar:Show()
-        else
-            button.favoriteStar:Hide()
-        end
-        -- Right-click to toggle favorite
-        if not button.favoriteBtn then
-            button.favoriteBtn = CreateFrame("Button", nil, button)
-            button.favoriteBtn:SetSize(24, 24)
-            button.favoriteBtn:SetPoint("RIGHT", button, "RIGHT", -2, 0)
-            button.favoriteBtn:SetAlpha(0.01)
-            button.favoriteBtn:RegisterForClicks("AnyUp", "AnyDown")
-            button.favoriteBtn:SetScript("OnClick", function(self, btn)
-                if btn == "RightButton" then
-                    local isFav = IsFavorite(data)
-                    SetFavorite(data, not isFav)
-                    if RefreshLayout then RefreshLayout() end
-                end
-            end)
-        end
-        button.favoriteBtn:Show()
-
         -- Cooldown logic
         local isOnCooldown, start, duration, enable = false, 0, 0, 0
         if data.itemID and C_Item and C_Item.GetItemCooldown then
@@ -349,6 +371,7 @@ end
     local rows = math.max(1, row + (col > 0 and 1 or 0))
 
     content:SetHeight(rows * (ROW_HEIGHT + GRID_PADDING))
+end
 
 local function RefreshLayout()
     BuildFilteredData()
@@ -360,7 +383,8 @@ local function UpdateTabSelection(value, teleportTab, utilityTab, hearthTab)
     RefreshLayout()
     if PanelTemplates_SetTab then
         local tabIdx = 1
-        if value == TAB_TELEPORT then tabIdx = 2 end
+        if value == TAB_TELEPORT then tabIdx = 1 end
+        if value == TAB_UTILITY then tabIdx = 2 end
         if value == TAB_HEARTHSTONE then tabIdx = 3 end
         PanelTemplates_SetTab(teleportTab:GetParent(), tabIdx)
     else
@@ -424,14 +448,11 @@ local function CreateTabButtons(parent, anchor)
     UpdateTabSelection(selectedTab, teleportTab, utilityTab, hearthTab)
 end
 
-local function EnsureFrame()
-    print("[Nozmie] EnsureFrame called. Frame exists:", frame ~= nil)
+EnsureFrame = function()
     if frame then
-        print("[Nozmie] Returning existing UtilityUI frame.")
         return frame
     end
 
-    print("[Nozmie] Creating UtilityUI frame.")
     frame = CreateFrame("Frame", "NozmieUtilityFrame", UIParent, "PortraitFrameTemplate")
     frame:SetSize(700, 470)
     frame:SetPoint("CENTER")
@@ -446,7 +467,6 @@ local function EnsureFrame()
         self:StopMovingOrSizing()
     end)
 
-    -- Set the frame title on the title bar, aligned with the close button
     if frame.TitleText then
         frame.TitleText:SetText(Lstr("utility.title", "Utility"))
         frame.TitleText:ClearAllPoints()
@@ -454,62 +474,6 @@ local function EnsureFrame()
         frame.TitleText:SetPoint("RIGHT", frame.CloseButton, "LEFT", -120, 0)
         frame.TitleText:SetJustifyH("LEFT")
         frame.TitleText:Show()
-        -- Add compact/list view toggle button
-        if not frame.CompactToggle then
-            frame.CompactToggle = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-            frame.CompactToggle:SetSize(24, 24)
-            frame.CompactToggle:SetPoint("RIGHT", frame.CloseButton, "LEFT", -36, 0)
-            frame.CompactToggle:SetText("≡")
-            frame.CompactToggle:SetScript("OnClick", function()
-                compactView = not compactView
-                if compactView then
-                    ROW_HEIGHT = 28
-                    ICON_SIZE = 20
-                else
-                    ROW_HEIGHT = 44
-                    ICON_SIZE = 36
-                end
-                -- Clear buttons to force recreation
-                for i, btn in ipairs(buttons) do
-                    btn:Hide()
-                    buttons[i] = nil
-                end
-                RefreshLayout()
-            end)
-            frame.CompactToggle:SetScript("OnEnter", function(self)
-                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                GameTooltip:SetText(compactView and "Switch to Grid View" or "Switch to List View", 1, 1, 1)
-                GameTooltip:Show()
-            end)
-            frame.CompactToggle:SetScript("OnLeave", function() GameTooltip:Hide() end)
-        end
-        -- Add help/info button
-        if not frame.InfoButton then
-            frame.InfoButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-            frame.InfoButton:SetSize(24, 24)
-            frame.InfoButton:SetPoint("RIGHT", frame.CloseButton, "LEFT", -6, 0)
-            frame.InfoButton:SetText("?")
-            frame.InfoButton:SetScript("OnClick", function()
-                StaticPopup_Show("NOZMIE_UTILITY_HELP")
-            end)
-            frame.InfoButton:SetScript("OnEnter", function(self)
-                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                GameTooltip:SetText(Lstr("utility.help.tooltip", "How to use the Utility page"), 1, 1, 1)
-                GameTooltip:AddLine("- Double-click star to pin favorite\n- ≡ toggles compact/list view\n- Search: Filter utilities\n- Drag to move window", 1, 1, 1)
-                GameTooltip:Show()
-            end)
-            frame.InfoButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
-        end
-        -- Register help popup
-        if not StaticPopupDialogs["NOZMIE_UTILITY_HELP"] then
-            StaticPopupDialogs["NOZMIE_UTILITY_HELP"] = {
-                text = Lstr("utility.help.text", "\124cffffd200Nozmie Utility Page\124r\n\n- Double-click star to pin favorite\n- ≡ toggles compact/list view\n- Search: Filter utilities\n- Drag to move window"),
-                button1 = OKAY,
-                timeout = 0,
-                whileDead = true,
-                hideOnEscape = true,
-            }
-        end
     end
     local icon = MINIMAP_ICON_TEXTURE or "Interface\\Icons\\INV_Misc_QuestionMark"
     if frame.Portrait then
@@ -523,7 +487,6 @@ local function EnsureFrame()
         end)
     end
 
-    -- Reduce header size since only search remains
     frame.Inset = CreateFrame("Frame", nil, frame, "InsetFrameTemplate3")
     frame.Inset:SetPoint("TOPLEFT", 4, -56)
     frame.Inset:SetPoint("BOTTOMRIGHT", -6, 28)
@@ -580,15 +543,8 @@ local function EnsureFrame()
     return frame
 end
 
-
-function UtilityUI.Toggle()
-    local host = EnsureFrame()
-    host:Show()
-end
-
 SLASH_NOZUI1 = "/nozui"
 SlashCmdList["NOZUI"] = function()
-    print("[Nozmie] SlashCmdList NOZUI handler called.")
     UtilityUI.Show()
 end
 

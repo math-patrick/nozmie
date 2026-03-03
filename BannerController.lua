@@ -25,6 +25,28 @@ _G.Lstr = Lstr
 local STACK_GAP = 8
 local lastOptions
 
+local petIconCache = {}
+local function GetPetIconByName(petName)
+    if not petName or not C_PetJournal or not C_PetJournal.GetNumPets then
+        return nil
+    end
+    if petIconCache[petName] ~= nil then
+        return petIconCache[petName]
+    end
+
+    local numPets = C_PetJournal.GetNumPets()
+    for index = 1, numPets do
+        local _, _, _, customName, _, _, _, petNameFromJournal, icon = C_PetJournal.GetPetInfoByIndex(index)
+        if petNameFromJournal == petName or customName == petName then
+            petIconCache[petName] = icon
+            return icon
+        end
+    end
+
+    petIconCache[petName] = nil
+    return nil
+end
+
 local function GetOptionKey(data)
     local target = data.targetPlayer and ("@" .. data.targetPlayer) or ""
     if data.spellID then
@@ -238,8 +260,6 @@ local function SetPetIcon(banner, data)
     if iconTexture then
         banner.icon:SetTexture(iconTexture)
     end
-    banner:SetAttribute("type", "macro")
-    banner:SetAttribute("macrotext", data.macrotext or "")
 end
 
 local function SetSpellIcon(banner, data)
@@ -248,27 +268,13 @@ local function SetSpellIcon(banner, data)
     if iconTexture then
         banner.icon:SetTexture(iconTexture)
     end
+end
 
-    local spellName = data.spellName or (data.spellID and GetSpellInfo(data.spellID))
-    if not spellName and data.spellID then
-        spellName = tostring(data.spellID)
+local function SetItemIcon(banner, data)
+    local iconTexture = C_Item.GetItemIconByID(data.itemID)
+    if iconTexture then
+        banner.icon:SetTexture(iconTexture)
     end
-
-    if data.targetPlayer and data.targetPlayer ~= UnitName("player") and
-        (data.category and data.category:find("Utility")) then
-        banner:SetAttribute("type", "macro")
-        banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. (spellName or ""))
-    else
-        banner:SetAttribute("type", "spell")
-        banner:SetAttribute("spell", data.spellID or spellName)
-    end
-    if data.mountId then
-        banner:SetScript("PreClick", function()
-            C_MountJournal.SummonByID(data.mountId)
-        end)
-    end
-    banner:SetAttribute("type", "macro")
-    banner:SetAttribute("macrotext", "/use item:" .. tostring(data.itemID))
 end
 
 local function SetMountIcon(banner, data)
@@ -277,9 +283,6 @@ local function SetMountIcon(banner, data)
     if icon then
         banner.icon:SetTexture(icon)
     end
-    banner:SetScript("PreClick", function()
-        C_MountJournal.SummonByID(data.mountId)
-    end)
 end
 
 local function SetToyIcon(banner, data)
@@ -287,8 +290,53 @@ local function SetToyIcon(banner, data)
     if iconTexture then
         banner.icon:SetTexture(iconTexture)
     end
-    banner:SetAttribute("type", "macro")
-    banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
+end
+
+local function ConfigureActionAttributes(frame, data)
+    if not frame or not data then
+        return
+    end
+
+    frame:SetScript("PreClick", nil)
+    frame:SetAttribute("type", nil)
+    frame:SetAttribute("macrotext", nil)
+    frame:SetAttribute("spell", nil)
+
+    if data.actionType == "mount" and data.mountId and C_MountJournal and C_MountJournal.SummonByID then
+        frame:SetScript("PreClick", function()
+            C_MountJournal.SummonByID(data.mountId)
+        end)
+        return
+    end
+
+    if data.actionType == "spell" and data.spellID then
+        local spellName = data.spellName or (data.spellID and GetSpellInfo(data.spellID))
+        if data.targetPlayer and data.targetPlayer ~= UnitName("player") and data.category and data.category:find("Utility") then
+            frame:SetAttribute("type", "macro")
+            frame:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. (spellName or ""))
+        else
+            frame:SetAttribute("type", "spell")
+            frame:SetAttribute("spell", data.spellID or spellName)
+        end
+        return
+    end
+
+    if (data.actionType == "item" or data.actionType == "toy") and data.itemID then
+        frame:SetAttribute("type", "macro")
+        frame:SetAttribute("macrotext", "/use item:" .. tostring(data.itemID))
+        return
+    end
+
+    if data.actionType == "pet" then
+        frame:SetAttribute("type", "macro")
+        frame:SetAttribute("macrotext", data.macrotext or "")
+        return
+    end
+
+    if data.macrotext then
+        frame:SetAttribute("type", "macro")
+        frame:SetAttribute("macrotext", data.macrotext)
+    end
 end
 
 local function ClearBannerAttributes(banner)
@@ -311,9 +359,27 @@ local function PreventRightClickAction(banner)
 end
 
 local function UpdateBannerIcon(banner, data)
-    SetBannerIcon(banner, data)
-    SetBannerAttributes(banner, data)
+    ClearBannerAttributes(banner)
+
+    if data.actionType == "pet" then
+        SetPetIcon(banner, data)
+    elseif data.actionType == "spell" and data.spellID then
+        SetSpellIcon(banner, data)
+    elseif data.actionType == "item" and data.itemID then
+        SetItemIcon(banner, data)
+    elseif data.actionType == "mount" and data.mountId then
+        SetMountIcon(banner, data)
+    elseif data.actionType == "toy" and data.itemID then
+        SetToyIcon(banner, data)
+    end
+
+    ConfigureActionAttributes(banner, data)
+
     PreventRightClickAction(banner)
+end
+
+local function ApplyActionAttributes(button, data)
+    ConfigureActionAttributes(button, data)
 end
 
 RefreshBannerDisplay = function(banner)

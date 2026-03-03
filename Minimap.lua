@@ -6,7 +6,9 @@ local dataobj = ldb:NewDataObject("Nozmie", {
     text = "Nozmie",
     icon = "Interface\\Icons\\Spell_Holy_BorrowedTime",
     OnClick = function(self, button)
-        if button == "LeftButton" and _G.Nozmie_ShowLastBanner then
+        if button == "LeftButton" and _G.Nozmie_UtilityUI and _G.Nozmie_UtilityUI.Toggle then
+            _G.Nozmie_UtilityUI.Toggle()
+        elseif button == "MiddleButton" and _G.Nozmie_ShowLastBanner then
             _G.Nozmie_ShowLastBanner()
         elseif button == "RightButton" and _G.Nozmie_Settings then
             _G.Nozmie_Settings.Show()
@@ -14,17 +16,23 @@ local dataobj = ldb:NewDataObject("Nozmie", {
     end,
     OnTooltipShow = function(tooltip)
         tooltip:AddLine("Nozmie")
-        tooltip:AddLine("Left-click: Show last banner", 1, 1, 1)
+        tooltip:AddLine("Left-click: Open utility page", 1, 1, 1)
+        tooltip:AddLine("Middle-click: Show last banner", 1, 1, 1)
         tooltip:AddLine("Right-click: Open settings", 1, 1, 1)
     end
 })
 
 local Minimap = {}
+local isRegistered = false
 
 function Minimap.UpdateVisibility()
     if not icon then
         return
     end
+
+    NozmieDB = NozmieDB or {}
+    NozmieDB.minimap = NozmieDB.minimap or {}
+    NozmieDB.minimap.hide = not NozmieDB.minimapIcon
 
     if NozmieDB.minimapIcon then
         icon:Show("Nozmie")
@@ -34,13 +42,23 @@ function Minimap.UpdateVisibility()
 end
 
 function Minimap.Initialize()
-    if NozmieDB.minimapIcon and icon and dataobj then
-        icon:Register("Nozmie", dataobj, NozmieDB.minimapIcon)
+    if not icon or not dataobj then
+        return
+    end
+
+    NozmieDB = NozmieDB or {}
+    NozmieDB.minimap = NozmieDB.minimap or {}
+    NozmieDB.minimap.hide = not NozmieDB.minimapIcon
+
+    if not isRegistered then
+        icon:Register("Nozmie", dataobj, NozmieDB.minimap)
         icon:RegisterCallback("onMinimapIconMoved", function(event, name, position)
             if name == "Nozmie" then
-                NozmieDB.minimap.position = position
+                NozmieDB.minimap = NozmieDB.minimap or {}
+                NozmieDB.minimap.minimapPos = position
             end
         end)
+        isRegistered = true
     end
 
     Minimap.UpdateVisibility()
