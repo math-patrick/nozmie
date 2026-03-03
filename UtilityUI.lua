@@ -197,26 +197,35 @@ local function BuildFilteredData()
         return
     end
     
-    for _, item in ipairs(dataCache) do
-        local matchesTab = false
-        
-        if selectedTab == TAB_CURRENT_DUNGEONS then
-            -- Current dungeons = M+ Dungeons with priority = 1
-            matchesTab = item.category == "M+ Dungeon" and item.priority and tonumber(item.priority) == 1
-        elseif selectedTab == TAB_LEGACY_DUNGEONS then
-            -- Legacy dungeons = M+ Dungeons without priority = 1
-            matchesTab = item.category == "M+ Dungeon" and (not item.priority or tonumber(item.priority) ~= 1)
-        elseif selectedTab == TAB_TELEPORTS then
-            -- Teleports = non-dungeon teleports (Raids, Delves, Toys)
-            matchesTab = IsTeleportEntry(item) and item.category ~= "M+ Dungeon" and not IsHearthstoneEntry(item)
-        elseif selectedTab == TAB_UTILITY then
-            matchesTab = IsUtilityEntry(item)
-        elseif selectedTab == TAB_HEARTHSTONE then
-            matchesTab = IsHearthstoneEntry(item)
+    -- If searching, search across all items; otherwise filter by tab
+    if query and query ~= "" then
+        for _, item in ipairs(dataCache) do
+            if MatchesFilter(item) and MatchesSearch(item, query) then
+                table.insert(filteredData, item)
+            end
         end
-        
-        if matchesTab and MatchesFilter(item) and MatchesSearch(item, query) then
-            table.insert(filteredData, item)
+    else
+        for _, item in ipairs(dataCache) do
+            local matchesTab = false
+            
+            if selectedTab == TAB_CURRENT_DUNGEONS then
+                -- Current dungeons = M+ Dungeons with priority = 1
+                matchesTab = item.category == "M+ Dungeon" and item.priority and tonumber(item.priority) == 1
+            elseif selectedTab == TAB_LEGACY_DUNGEONS then
+                -- Legacy dungeons = M+ Dungeons without priority = 1
+                matchesTab = item.category == "M+ Dungeon" and (not item.priority or tonumber(item.priority) ~= 1)
+            elseif selectedTab == TAB_TELEPORTS then
+                -- Teleports = non-dungeon teleports (Raids, Delves, Toys)
+                matchesTab = IsTeleportEntry(item) and item.category ~= "M+ Dungeon" and not IsHearthstoneEntry(item)
+            elseif selectedTab == TAB_UTILITY then
+                matchesTab = IsUtilityEntry(item)
+            elseif selectedTab == TAB_HEARTHSTONE then
+                matchesTab = IsHearthstoneEntry(item)
+            end
+            
+            if matchesTab and MatchesFilter(item) then
+                table.insert(filteredData, item)
+            end
         end
     end
 end
@@ -340,6 +349,17 @@ end
 local function RefreshLayout()
     BuildFilteredData()
     LayoutButtons()
+end
+
+local function UpdateCooldowns()
+    if not buttons then
+        return
+    end
+    for _, button in ipairs(buttons) do
+        if button:IsShown() and button.data and IconHandling and IconHandling.ApplyCooldownVisual then
+            IconHandling.ApplyCooldownVisual(button.icon, button.cooldown, button.cooldownText, button.data)
+        end
+    end
 end
 
 local function UpdateTabSelection(value, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
@@ -522,6 +542,10 @@ EnsureFrame = function()
     frame:SetScript("OnShow", function()
         BuildDataCache()
         RefreshLayout()
+    end)
+
+    frame:SetScript("OnUpdate", function(self, elapsed)
+        UpdateCooldowns()
     end)
 
     frame.Inset:SetScript("OnSizeChanged", function()
