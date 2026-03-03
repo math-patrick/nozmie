@@ -2,7 +2,6 @@
 -- Nozmie - Utility UI Module
 -- Main utility frame with tabs, item grid, and search
 -- ============================================================================
-
 local SharedUI = _G.Nozmie_SharedUI
 local ConfigHelpers = _G.Nozmie_ConfigHelpers
 local Helpers = _G.Nozmie_Helpers
@@ -39,14 +38,15 @@ local IsHearthstoneEntry
 local EnsureFrame
 
 local function IsUtilityEntry(item)
-    return item and item.category == "Utility"
+    return item and item.category == "Utility" and not item.easterEgg
 end
 
 local function IsTeleportEntry(item)
     if not item then
         return false
     end
-    return item.category == "M+ Dungeon" or item.category == "Raid" or item.category == "Delve" or item.category == "Toy"
+    return item.category == "M+ Dungeon" or item.category == "Raid" or item.category == "Delve" or item.category ==
+               "Toy"
 end
 
 local function MatchesFilter(item)
@@ -57,12 +57,8 @@ local function MatchesSearch(item, query)
     if not query or query == "" then
         return true
     end
-    local text = string.lower(table.concat({
-        tostring(item.name or ""),
-        tostring(item.spellName or ""),
-        tostring(item.destination or ""),
-        tostring(item.category or "")
-    }, " "))
+    local text = string.lower(table.concat({tostring(item.name or ""), tostring(item.spellName or ""),
+                                            tostring(item.destination or ""), tostring(item.category or "")}, " "))
     if text:find(query, 1, true) then
         return true
     end
@@ -167,7 +163,7 @@ local function BuildDataCache()
         if (IsUtilityEntry(item) or IsTeleportEntry(item) or IsHearthstoneEntry(item)) and IsUsableUtility(item) then
             table.insert(dataCache, item)
         end
-    end 
+    end
     -- Sort by name
     table.sort(dataCache, function(a, b)
         return ConfigHelpers.GetEntryName(a) < ConfigHelpers.GetEntryName(b)
@@ -175,8 +171,12 @@ local function BuildDataCache()
 end
 
 IsHearthstoneEntry = function(item)
-    if not item then return false end
-    if item.category == "Home" then return true end
+    if not item then
+        return false
+    end
+    if item.category == "Home" then
+        return true
+    end
     return false
 end
 
@@ -191,17 +191,18 @@ local function BuildFilteredData()
     end
 
     filteredData = {}
-    if not dataCache then return end
+    if not dataCache then
+        return
+    end
     for _, item in ipairs(dataCache) do
         local matchesTab = (selectedTab == TAB_TELEPORT and IsTeleportEntry(item) and not IsHearthstoneEntry(item)) or
-            (selectedTab == TAB_UTILITY and IsUtilityEntry(item)) or
-            (selectedTab == TAB_HEARTHSTONE and IsHearthstoneEntry(item))
+                               (selectedTab == TAB_UTILITY and IsUtilityEntry(item)) or
+                               (selectedTab == TAB_HEARTHSTONE and IsHearthstoneEntry(item))
         if matchesTab and MatchesFilter(item) and MatchesSearch(item, query) then
             table.insert(filteredData, item)
         end
     end
 end
-
 
 local function ApplyActionAttributes(button, item)
     if ClickBehavior and ClickBehavior.ApplyActionAttributes then
@@ -211,9 +212,10 @@ local function ApplyActionAttributes(button, item)
     end
 end
 
-
 local function LayoutButtons()
-    if not content or not scrollFrame then return end
+    if not content or not scrollFrame then
+        return
+    end
     local width = scrollFrame:GetWidth() or 0
     if width <= 0 then
         width = frame and frame.Inset and frame.Inset:GetWidth() or 520
@@ -224,7 +226,9 @@ local function LayoutButtons()
     for i, button in ipairs(buttons) do
         button:Hide()
     end
-    if not filteredData then return end
+    if not filteredData then
+        return
+    end
     local col, row = 0, 0
 
     for index, entry in ipairs(filteredData) do
@@ -242,6 +246,7 @@ local function LayoutButtons()
         else
             button.icon:SetTexture(ConfigHelpers.GetIconForEntry(data))
         end
+
         ApplyActionAttributes(button, data)
         if ClickBehavior and ClickBehavior.Apply then
             button.data = data
@@ -252,8 +257,13 @@ local function LayoutButtons()
             })
         end
 
-        if button.leftArrow then button.leftArrow:Hide() end
-        if button.rightArrow then button.rightArrow:Hide() end
+        if button.leftArrow then
+            button.leftArrow:Hide()
+        end
+        if button.rightArrow then
+            button.rightArrow:Hide()
+        end
+
         if button.hotkey then
             local key, btnName = nil, button:GetName()
             if btnName then
@@ -303,9 +313,15 @@ local function UpdateTabSelection(value, teleportTab, utilityTab, hearthTab)
     RefreshLayout()
     if PanelTemplates_SetTab then
         local tabIdx = 1
-        if value == TAB_TELEPORT then tabIdx = 1 end
-        if value == TAB_UTILITY then tabIdx = 2 end
-        if value == TAB_HEARTHSTONE then tabIdx = 3 end
+        if value == TAB_TELEPORT then
+            tabIdx = 1
+        end
+        if value == TAB_UTILITY then
+            tabIdx = 2
+        end
+        if value == TAB_HEARTHSTONE then
+            tabIdx = 3
+        end
         PanelTemplates_SetTab(teleportTab:GetParent(), tabIdx)
     else
         local active, inactive1, inactive2
@@ -433,7 +449,6 @@ EnsureFrame = function()
 
     CreateTabButtons(frame, searchBox)
 
-
     scrollFrame = CreateFrame("ScrollFrame", nil, frame.Inset, "UIPanelScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 6, -6)
     scrollFrame:SetPoint("BOTTOMRIGHT", -28, 6)
@@ -468,7 +483,6 @@ SLASH_NOZUI1 = "/nozui"
 SlashCmdList["NOZUI"] = function()
     UtilityUI.Show()
 end
-
 
 function UtilityUI.Show()
     EnsureFrame():Show()

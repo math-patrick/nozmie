@@ -92,6 +92,7 @@ function BannerUI.CreateBanner()
     banner:SetClampedToScreen(true)
     banner:SetUserPlaced(true)
     banner:EnableMouse(true)
+    banner:SetClipsChildren(false)
     banner:Hide()
 
     banner:SetBackdrop({

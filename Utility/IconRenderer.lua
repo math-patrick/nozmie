@@ -10,26 +10,24 @@ local IconRenderer = {}
 
 function IconRenderer.CreateIconFrame(parent, iconSize)
     iconSize = iconSize or 36
-    local frameSize = iconSize + 20
+    local frameSize = iconSize + 30
     
     local frame = CreateFrame("Frame", nil, parent)
     frame:SetSize(frameSize, frameSize)
     frame:SetClipsChildren(false)
-    frame:EnableMouse(false)
 
-    -- Inner icon texture (what gets replaced at runtime)
     local icon = frame:CreateTexture(nil, "ARTWORK")
     icon:SetSize(iconSize, iconSize)
     icon:SetPoint("CENTER")
     icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-    frame.icon = icon
-
-    -- Border frame (for texture replacements)
+    
     local border = frame:CreateTexture(nil, "OVERLAY")
     border:SetSize(frameSize, frameSize)
     border:SetPoint("CENTER")
     border:SetTexture("Interface\\Buttons\\UI-Quickslot2")
     border:SetAlpha(0.85)
+    
+    frame.icon = icon
     frame.border = border
 
     return frame

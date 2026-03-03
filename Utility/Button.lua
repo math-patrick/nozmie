@@ -13,14 +13,16 @@ function Button.Create(parent, iconSize, rowHeight)
     button:SetClipsChildren(false)
 
     local iconFrame = IconRenderer.CreateIconFrame(button, iconSize)
-    iconFrame:SetPoint("LEFT", button, "LEFT", 14, 0)
+    iconFrame:SetPoint("LEFT", button, "LEFT", 0, 0)
     button.icon = iconFrame.icon
+    
     button.name = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    button.name:SetPoint("TOPLEFT", button.icon, "TOPRIGHT", 12, -4)
+    button.name:SetPoint("TOPLEFT", button.icon, "TOPRIGHT", 12, -2)
     button.name:SetPoint("RIGHT", button, "RIGHT", -10, 0)
     button.name:SetJustifyH("LEFT")
+    
     button.category = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    button.category:SetPoint("TOPLEFT", button.name, "BOTTOMLEFT", 0, -2)
+    button.category:SetPoint("TOPLEFT", button.name, "BOTTOMLEFT", 0, -4)
     button.category:SetPoint("RIGHT", button.name, "RIGHT", 0, 0)
     button.category:SetJustifyH("LEFT")
     button:EnableMouse(true)

@@ -6,6 +6,7 @@ EasterEggs = {{
     category = "Utility",
     cooldown = "10 min",
     destination = "Bremem",
+    easterEgg = true,
     keywords = {"bremem", "calvo"}
 }, {
     name = "Reins of Anu'relos, Flame's Guidance",
@@ -17,6 +18,7 @@ EasterEggs = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Camilo",
+    easterEgg = true,
     keywords = {"camilo", "gosch"}
 }, {
     name = "Soaring Spelltome",
@@ -28,6 +30,7 @@ EasterEggs = {{
     category = "Utility",
     cooldown = "No CD",
     destination = "Tymora",
+    easterEgg = true,
     keywords = {"tymora"}
 }, {
     name = "Unbound Star-Eater",
@@ -40,5 +43,6 @@ EasterEggs = {{
     cooldown = "No CD",
     destination = "Bremem",
     keywords = {"bremem", "calvo"},
+    easterEgg = true,
     priority = 1
 }}
