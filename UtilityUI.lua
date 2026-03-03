@@ -41,6 +41,39 @@ local scrollFrame
 local dataCache = {}
 local IsHearthstoneEntry
 local EnsureFrame
+local tabButtons = {}
+local tabIndexById = {}
+local tabOrder = {TAB_CURRENT_DUNGEONS, TAB_LEGACY_DUNGEONS, TAB_TELEPORTS, TAB_UTILITY, TAB_HEARTHSTONE}
+
+local function IsCombatLocked()
+    return InCombatLockdown and InCombatLockdown()
+end
+
+local function ApplyUtilityButtonCombatState(button)
+    if not button then
+        return
+    end
+
+    if IsCombatLocked() then
+        button:EnableMouse(false)
+        button:SetAlpha(0.5)
+    else
+        button:EnableMouse(true)
+        button:SetAlpha(1)
+    end
+end
+
+local function RefreshCombatButtonState()
+    if not buttons then
+        return
+    end
+
+    for _, button in ipairs(buttons) do
+        if button:IsShown() then
+            ApplyUtilityButtonCombatState(button)
+        end
+    end
+end
 
 local function IsUtilityEntry(item)
     return item and (item.category == "Utility" or item.category == "Class Utility") and not item.easterEgg
@@ -79,6 +112,89 @@ end
 
 local function GetEntryDescription(data)
     return data.destination or data.category or ""
+end
+
+local function ItemMatchesTab(item, tabId)
+    if not item then
+        return false
+    end
+
+    if tabId == TAB_CURRENT_DUNGEONS then
+        return item.category == "M+ Dungeon" and item.priority and tonumber(item.priority) == 1
+    elseif tabId == TAB_LEGACY_DUNGEONS then
+        return item.category == "M+ Dungeon" and (not item.priority or tonumber(item.priority) ~= 1)
+    elseif tabId == TAB_TELEPORTS then
+        return IsTeleportEntry(item) and item.category ~= "M+ Dungeon" and not IsHearthstoneEntry(item)
+    elseif tabId == TAB_UTILITY then
+        return IsUtilityEntry(item)
+    elseif tabId == TAB_HEARTHSTONE then
+        return IsHearthstoneEntry(item)
+    end
+
+    return false
+end
+
+local function TabHasContent(tabId)
+    if not dataCache then
+        return false
+    end
+
+    for _, item in ipairs(dataCache) do
+        if MatchesFilter(item) and ItemMatchesTab(item, tabId) then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function GetFirstVisibleTabId()
+    for _, tabId in ipairs(tabOrder) do
+        if tabIndexById[tabId] then
+            return tabId
+        end
+    end
+    return nil
+end
+
+local function UpdateTabVisibility(parent)
+    if not parent then
+        return
+    end
+
+    local prevTab
+    local visibleCount = 0
+    tabIndexById = {}
+
+    for _, tabId in ipairs(tabOrder) do
+        local tab = tabButtons[tabId]
+        if tab then
+            if TabHasContent(tabId) then
+                visibleCount = visibleCount + 1
+                tabIndexById[tabId] = visibleCount
+                tab:SetID(visibleCount)
+                tab:ClearAllPoints()
+                if prevTab then
+                    tab:SetPoint("LEFT", prevTab, "RIGHT", 4, 0)
+                else
+                    tab:SetPoint("TOPLEFT", parent, "BOTTOMLEFT", 12, 2)
+                end
+                tab:Show()
+                prevTab = tab
+            else
+                tabIndexById[tabId] = nil
+                tab:Hide()
+            end
+        end
+    end
+
+    if PanelTemplates_SetNumTabs then
+        PanelTemplates_SetNumTabs(parent, visibleCount)
+    end
+
+    if not tabIndexById[selectedTab] then
+        selectedTab = GetFirstVisibleTabId() or TAB_CURRENT_DUNGEONS
+    end
 end
 
 local function EnsureButton(index)
@@ -209,22 +325,7 @@ local function BuildFilteredData()
         end
     else
         for _, item in ipairs(dataCache) do
-            local matchesTab = false
-
-            if selectedTab == TAB_CURRENT_DUNGEONS then
-                -- Current dungeons = M+ Dungeons with priority = 1
-                matchesTab = item.category == "M+ Dungeon" and item.priority and tonumber(item.priority) == 1
-            elseif selectedTab == TAB_LEGACY_DUNGEONS then
-                -- Legacy dungeons = M+ Dungeons without priority = 1
-                matchesTab = item.category == "M+ Dungeon" and (not item.priority or tonumber(item.priority) ~= 1)
-            elseif selectedTab == TAB_TELEPORTS then
-                -- Teleports = non-dungeon teleports (Raids, Delves, Toys)
-                matchesTab = IsTeleportEntry(item) and item.category ~= "M+ Dungeon" and not IsHearthstoneEntry(item)
-            elseif selectedTab == TAB_UTILITY then
-                matchesTab = IsUtilityEntry(item)
-            elseif selectedTab == TAB_HEARTHSTONE then
-                matchesTab = IsHearthstoneEntry(item)
-            end
+            local matchesTab = ItemMatchesTab(item, selectedTab)
 
             if matchesTab and MatchesFilter(item) then
                 table.insert(filteredData, item)
@@ -293,14 +394,16 @@ local function LayoutButtons()
             button.icon:SetTexture(ConfigHelpers.GetIconForEntry(data))
         end
 
-        ApplyActionAttributes(button, data)
-        if ClickBehavior and ClickBehavior.Apply then
-            button.data = data
-            ClickBehavior.Apply(button, {
-                closeOnRight = false,
-                closeOnLeft = false,
-                cancelAutoHide = false
-            })
+        if not IsCombatLocked() then
+            ApplyActionAttributes(button, data)
+            if ClickBehavior and ClickBehavior.Apply then
+                button.data = data
+                ClickBehavior.Apply(button, {
+                    closeOnRight = false,
+                    closeOnLeft = false,
+                    cancelAutoHide = false
+                })
+            end
         end
 
         if button.leftArrow then
@@ -337,6 +440,7 @@ local function LayoutButtons()
         button:ClearAllPoints()
         button:SetPoint("TOPLEFT", content, "TOPLEFT", x, -y)
         button:SetWidth((width / columns) - GRID_PADDING)
+        ApplyUtilityButtonCombatState(button)
         button:Show()
         col = col + 1
         if col >= columns then
@@ -350,6 +454,9 @@ local function LayoutButtons()
 end
 
 local function RefreshLayout()
+    if frame then
+        UpdateTabVisibility(frame)
+    end
     BuildFilteredData()
     LayoutButtons()
 end
@@ -366,21 +473,14 @@ local function UpdateCooldowns()
 end
 
 local function UpdateTabSelection(value, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
+    UpdateTabVisibility(currentDungeonsTab:GetParent())
+    if not tabIndexById[value] then
+        value = GetFirstVisibleTabId() or TAB_CURRENT_DUNGEONS
+    end
     selectedTab = value or TAB_CURRENT_DUNGEONS
     RefreshLayout()
     if PanelTemplates_SetTab then
-        local tabIdx = 1
-        if value == TAB_CURRENT_DUNGEONS then
-            tabIdx = 1
-        elseif value == TAB_LEGACY_DUNGEONS then
-            tabIdx = 2
-        elseif value == TAB_TELEPORTS then
-            tabIdx = 3
-        elseif value == TAB_UTILITY then
-            tabIdx = 4
-        elseif value == TAB_HEARTHSTONE then
-            tabIdx = 5
-        end
+        local tabIdx = tabIndexById[value] or 1
         PanelTemplates_SetTab(currentDungeonsTab:GetParent(), tabIdx)
     else
         local allTabs = {currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab}
@@ -426,15 +526,11 @@ local function CreateTabButtons(parent, anchor)
     local utilityTab = CreateFrame("Button", "$parentTab4", parent, "PanelTabButtonTemplate")
     local hearthTab = CreateFrame("Button", "$parentTab5", parent, "PanelTabButtonTemplate")
 
-    currentDungeonsTab:SetPoint("TOPLEFT", parent, "BOTTOMLEFT", 12, 2)
-    legacyDungeonsTab:SetPoint("LEFT", currentDungeonsTab, "RIGHT", -16, 0)
-    teleportsTab:SetPoint("LEFT", legacyDungeonsTab, "RIGHT", -16, 0)
-    utilityTab:SetPoint("LEFT", teleportsTab, "RIGHT", -16, 0)
-    hearthTab:SetPoint("LEFT", utilityTab, "RIGHT", -16, 0)
-
-    if PanelTemplates_SetNumTabs then
-        PanelTemplates_SetNumTabs(parent, 5)
-    end
+    tabButtons[TAB_CURRENT_DUNGEONS] = currentDungeonsTab
+    tabButtons[TAB_LEGACY_DUNGEONS] = legacyDungeonsTab
+    tabButtons[TAB_TELEPORTS] = teleportsTab
+    tabButtons[TAB_UTILITY] = utilityTab
+    tabButtons[TAB_HEARTHSTONE] = hearthTab
 
     currentDungeonsTab:SetText(Lstr("utility.tab.currentdungeons", "Current"))
     currentDungeonsTab:SetScript("OnClick", function()
@@ -463,6 +559,7 @@ local function CreateTabButtons(parent, anchor)
         UpdateTabSelection(TAB_HEARTHSTONE, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
     end)
 
+    UpdateTabVisibility(parent)
     UpdateTabSelection(selectedTab, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
 end
 
@@ -554,6 +651,7 @@ EnsureFrame = function()
     frame:SetScript("OnShow", function()
         BuildDataCache()
         RefreshLayout()
+        RefreshCombatButtonState()
     end)
 
     frame:SetScript("OnUpdate", function(self, elapsed)
@@ -562,6 +660,12 @@ EnsureFrame = function()
 
     frame.Inset:SetScript("OnSizeChanged", function()
         LayoutButtons()
+    end)
+
+    frame:RegisterEvent("PLAYER_REGEN_DISABLED")
+    frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+    frame:SetScript("OnEvent", function(self, event)
+        RefreshCombatButtonState()
     end)
 
     if type(UISpecialFrames) == "table" then

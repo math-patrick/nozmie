@@ -22,6 +22,71 @@ _G.Lstr = Lstr
 
 local STACK_GAP = 8
 local lastOptions
+local trackedBanners = {}
+local combatWatcher
+
+local function IsCombatLocked()
+    return InCombatLockdown and InCombatLockdown()
+end
+
+local function SetBannerInteractiveState(banner, enabled)
+    if not banner then
+        return
+    end
+
+    banner:EnableMouse(enabled)
+    if banner.leftArrow then
+        banner.leftArrow:EnableMouse(enabled)
+    end
+    if banner.rightArrow then
+        banner.rightArrow:EnableMouse(enabled)
+    end
+    if banner.announceButton then
+        banner.announceButton:EnableMouse(enabled)
+    end
+    if banner.dragButton then
+        banner.dragButton:EnableMouse(enabled)
+    end
+end
+
+local function ApplyBannerCombatState(banner)
+    if not banner or not banner:IsShown() then
+        return
+    end
+
+    if IsCombatLocked() then
+        SetBannerInteractiveState(banner, false)
+        banner:SetAlpha(0.2)
+        banner.nozmieCombatDimmed = true
+    else
+        SetBannerInteractiveState(banner, true)
+        if banner.nozmieCombatDimmed then
+            banner:SetAlpha(1)
+            banner.nozmieCombatDimmed = false
+        end
+    end
+end
+
+local function RefreshTrackedBannerCombatState()
+    for banner in pairs(trackedBanners) do
+        if banner and banner:IsShown() then
+            ApplyBannerCombatState(banner)
+        end
+    end
+end
+
+local function EnsureCombatWatcher()
+    if combatWatcher then
+        return
+    end
+
+    combatWatcher = CreateFrame("Frame")
+    combatWatcher:RegisterEvent("PLAYER_REGEN_DISABLED")
+    combatWatcher:RegisterEvent("PLAYER_REGEN_ENABLED")
+    combatWatcher:SetScript("OnEvent", function()
+        RefreshTrackedBannerCombatState()
+    end)
+end
 
 local function GetOptionKey(data)
     local target = data.targetPlayer and ("@" .. data.targetPlayer) or ""
@@ -291,6 +356,7 @@ local function CreateNavigationArrows(banner)
 end
 
 function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, allowStack)
+    EnsureCombatWatcher()
     lastOptions = teleportOptions
     if allowStack == nil then
         allowStack = true
@@ -385,8 +451,15 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
     else
         banner:SetAlpha(0)
         banner:Show()
-        UIFrameFadeIn(banner, 0.4, 0, 1)
+        if IsCombatLocked() then
+            banner:SetAlpha(0.2)
+        else
+            UIFrameFadeIn(banner, 0.4, 0, 1)
+        end
     end
+
+    trackedBanners[banner] = true
+    ApplyBannerCombatState(banner)
 
     local Settings = Nozmie_Settings
     if Settings.Get("autoHideBanner") then
@@ -402,6 +475,13 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
                 end)
             end
         end)
+    end
+
+    if not banner.nozmieTrackedHooked then
+        banner:HookScript("OnHide", function(self)
+            trackedBanners[self] = nil
+        end)
+        banner.nozmieTrackedHooked = true
     end
 end
 

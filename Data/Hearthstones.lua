@@ -1,9 +1,8 @@
 Hearthstones = {{
     name = "Hearthstone",
     itemID = 6948,
-    spellID = 8690,
     spellName = "Hearthstone",
-    actionType = "toy",
+    actionType = "item",
     category = "Home",
     cooldown = "30 min",
     keywords = {"hearthstone", "hearth", "inn"}

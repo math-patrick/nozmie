@@ -49,7 +49,7 @@ end
 
 local function CreateBannerIcon(parent)
     local iconFrame = IconRenderer.CreateIconFrame(parent, 32)
-    iconFrame:SetPoint("LEFT", 14, 0)
+    iconFrame:SetPoint("LEFT", 4, 0)
     local texture = iconFrame.icon
     texture:SetSize(32, 32)
 
@@ -62,8 +62,8 @@ local function CreateBannerText(parent, iconFrame)
     local title = parent:CreateFontString(nil, "OVERLAY")
     title:SetFontObject("SystemFont_Shadow_Large")
     title:SetFont(title:GetFont(), 14)
-    title:SetPoint("LEFT", iconFrame, "RIGHT", 14, 8)
-    title:SetPoint("RIGHT", -46, 8)
+    title:SetPoint("LEFT", iconFrame, "RIGHT", -6, 8
+)
     title:SetTextColor(0.9, 0.9, 0.95)
     title:SetJustifyH("LEFT")
     title:SetShadowColor(0, 0, 0, 1)
@@ -73,7 +73,7 @@ local function CreateBannerText(parent, iconFrame)
     subtitle:SetFontObject("GameFontHighlightSmall")
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -4)
     subtitle:SetPoint("RIGHT", -40, 0)
-    subtitle:SetText("|cff999999" .. Lstr("banner.clickToTeleport", "Click to teleport") .. "|r") -- Subtle gray
+    subtitle:SetText("|cff999999" .. Lstr("banner.clickToTeleport", "Click to teleport") .. "|r")
     subtitle:SetJustifyH("LEFT")
     subtitle:SetShadowColor(0, 0, 0, 1)
     subtitle:SetShadowOffset(1, -1)
