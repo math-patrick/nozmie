@@ -10,6 +10,9 @@ local ClickBehavior = _G.Nozmie_ClickBehavior
 local IconHandling = _G.Nozmie_IconHandling
 
 local Locale = _G.Nozmie_Locale
+local addon = _G.Nozmie_Addon or {
+    name = "Nozmie"
+}
 local function Lstr(key, fallback)
     if Locale and Locale.GetString then
         return Locale.GetString(key, fallback)
@@ -40,7 +43,7 @@ local IsHearthstoneEntry
 local EnsureFrame
 
 local function IsUtilityEntry(item)
-    return item and item.category == "Utility" and not item.easterEgg
+    return item and (item.category == "Utility" or item.category == "Class Utility") and not item.easterEgg
 end
 
 local function IsTeleportEntry(item)
@@ -196,7 +199,7 @@ local function BuildFilteredData()
     if not dataCache then
         return
     end
-    
+
     -- If searching, search across all items; otherwise filter by tab
     if query and query ~= "" then
         for _, item in ipairs(dataCache) do
@@ -207,7 +210,7 @@ local function BuildFilteredData()
     else
         for _, item in ipairs(dataCache) do
             local matchesTab = false
-            
+
             if selectedTab == TAB_CURRENT_DUNGEONS then
                 -- Current dungeons = M+ Dungeons with priority = 1
                 matchesTab = item.category == "M+ Dungeon" and item.priority and tonumber(item.priority) == 1
@@ -222,7 +225,7 @@ local function BuildFilteredData()
             elseif selectedTab == TAB_HEARTHSTONE then
                 matchesTab = IsHearthstoneEntry(item)
             end
-            
+
             if matchesTab and MatchesFilter(item) then
                 table.insert(filteredData, item)
             end
@@ -261,7 +264,7 @@ local function LayoutButtons()
         local button = EnsureButton(index)
         local data = entry
         button.data = data
-        
+
         -- Configure button
         button:SetAlpha(1)
         button:EnableMouse(true)
@@ -272,12 +275,12 @@ local function LayoutButtons()
             highlightTexture:SetAlpha(1)
         end
         button.icon:SetAlpha(1)
-        
+
         button.name:SetFont(button.name:GetFont(), 12, "")
         button.name:ClearAllPoints()
         button.name:SetPoint("TOPLEFT", button.icon, "TOPRIGHT", 12, -2)
         button.name:SetPoint("RIGHT", button, "RIGHT", -10, 0)
-        
+
         if SharedUI and SharedUI.GetEntryLabel then
             button.name:SetText(SharedUI.GetEntryLabel(data))
         else
@@ -382,7 +385,7 @@ local function UpdateTabSelection(value, currentDungeonsTab, legacyDungeonsTab, 
     else
         local allTabs = {currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab}
         local activeTab
-        
+
         if value == TAB_CURRENT_DUNGEONS then
             activeTab = currentDungeonsTab
         elseif value == TAB_LEGACY_DUNGEONS then
@@ -394,7 +397,7 @@ local function UpdateTabSelection(value, currentDungeonsTab, legacyDungeonsTab, 
         elseif value == TAB_HEARTHSTONE then
             activeTab = hearthTab
         end
-        
+
         for _, tab in ipairs(allTabs) do
             if tab == activeTab then
                 if tab and tab.GetFontString then
@@ -432,15 +435,17 @@ local function CreateTabButtons(parent, anchor)
     if PanelTemplates_SetNumTabs then
         PanelTemplates_SetNumTabs(parent, 5)
     end
-    
+
     currentDungeonsTab:SetText(Lstr("utility.tab.currentdungeons", "Current"))
     currentDungeonsTab:SetScript("OnClick", function()
-        UpdateTabSelection(TAB_CURRENT_DUNGEONS, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
+        UpdateTabSelection(TAB_CURRENT_DUNGEONS, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab,
+            hearthTab)
     end)
 
     legacyDungeonsTab:SetText(Lstr("utility.tab.legacydungeons", "Legacy"))
     legacyDungeonsTab:SetScript("OnClick", function()
-        UpdateTabSelection(TAB_LEGACY_DUNGEONS, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab, hearthTab)
+        UpdateTabSelection(TAB_LEGACY_DUNGEONS, currentDungeonsTab, legacyDungeonsTab, teleportsTab, utilityTab,
+            hearthTab)
     end)
 
     teleportsTab:SetText(Lstr("utility.tab.teleports", "Teleports"))
@@ -480,14 +485,21 @@ EnsureFrame = function()
         self:StopMovingOrSizing()
     end)
 
-    if frame.TitleText then
-        frame.TitleText:SetText(Lstr("utility.title", "Utility"))
-        frame.TitleText:ClearAllPoints()
-        frame.TitleText:SetPoint("LEFT", frame, "TOPLEFT", 60, -4)
-        frame.TitleText:SetPoint("RIGHT", frame.CloseButton, "LEFT", -120, 0)
-        frame.TitleText:SetJustifyH("LEFT")
-        frame.TitleText:Show()
+    local title = Lstr("utility.title", addon.name)
+
+    if frame.SetTitle then
+        frame:SetTitle(title)
     end
+    if frame.TitleBg and frame.TitleBg.Text then
+        frame.TitleBg.Text:SetText(title)
+    end
+    if frame.TitleText then
+        frame.TitleText:SetText(title)
+    end
+    if frame.TitleContainer and frame.TitleContainer.TitleText then
+        frame.TitleContainer.TitleText:SetText(title)
+    end
+
     local icon = "Interface\\Icons\\Spell_Holy_BorrowedTime"
     if frame.Portrait then
         frame.Portrait:SetTexture(icon)
