@@ -141,7 +141,6 @@ local Shadowlands = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"halls", "halls of atonement", "hoa", "atonement"},
-    priority = 1
 }, {
     name = "Plaguefall",
     spellID = 354463,
@@ -198,7 +197,6 @@ local Shadowlands = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"tazavesh", "taza", "veiled market", "streets", "gambit"},
-    priority = 1
 }, -- Raids
 {
     name = "Castle Nathria",
@@ -333,7 +331,6 @@ local WarWithin = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"ara-kara", "ara kara", "arakara", "city of echoes", "ara"},
-    priority = 1
 }, {
     name = "City of Threads",
     spellID = 445416,
@@ -355,7 +352,6 @@ local WarWithin = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"dawnbreaker", "dawn breaker", "arathi flagship", "db"},
-    priority = 1
 }, {
     name = "Priory of the Sacred Flame",
     spellID = 445444,
@@ -363,7 +359,6 @@ local WarWithin = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"priory", "sacred flame", "lights reverence"},
-    priority = 1
 }, {
     name = "The Rookery",
     spellID = 445443,
@@ -378,7 +373,6 @@ local WarWithin = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"floodgate", "flood gate", "circuit breaker"},
-    priority = 1
 }, {
     name = "Eco-Dome Al'dani",
     spellID = 1237215,
@@ -386,7 +380,6 @@ local WarWithin = {{
     actionType = "spell",
     category = "M+ Dungeon",
     keywords = {"eco-dome", "eco dome", "ecodome", "aldani", "eco dorme"},
-    priority = 1
 }, {
     name = "Cinderbrew Meadery",
     spellID = 445440,

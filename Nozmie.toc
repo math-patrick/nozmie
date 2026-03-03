@@ -28,9 +28,15 @@ Data\EasterEggs.lua
 Data.lua
 Config.lua
 Helpers.lua
+Utility\ConfigHelpers.lua
+Utility\IconRenderer.lua
+Utility\ClickBehavior.lua
+Utility\IconHandling.lua
 BannerUI.lua
 BannerController.lua
+UtilityUI.lua
 Minimap.lua
+Utility\Button.lua
 SettingsMixins.lua
 SettingsTemplates.xml
 Settings.lua

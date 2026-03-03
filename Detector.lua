@@ -16,8 +16,10 @@ local function MatchesKeyword(message, keyword)
     if not message or not keyword or keyword == "" then
         return false
     end
-    local pattern = "%f[%w]" .. EscapePattern(keyword) .. "%f[%W]"
-    return message:find(pattern) ~= nil
+    local normalizedMessage = message:lower()
+    local normalizedKeyword = tostring(keyword):lower()
+    local pattern = "%f[%w]" .. EscapePattern(normalizedKeyword) .. "%f[%W]"
+    return normalizedMessage:find(pattern) ~= nil
 end
 
 local function HasSuppression(list, key)

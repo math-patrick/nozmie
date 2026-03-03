@@ -1,12 +1,11 @@
--- ============================================================================
--- Nozmie - Banner Controller Module
--- Manages banner behavior, navigation, cooldown updates, and click handling
--- ============================================================================
 local Config = Nozmie_Config
 local Helpers = Nozmie_Helpers
 local BannerUI = Nozmie_BannerUI
+local ClickBehavior = _G.Nozmie_ClickBehavior
+local IconHandling = _G.Nozmie_IconHandling
 
 local BannerController = {}
+local ConfigHelpers = _G.Nozmie_ConfigHelpers
 local RefreshBannerDisplay
 
 local Locale = _G.Nozmie_Locale
@@ -17,30 +16,77 @@ local function Lstr(key, fallback)
     return fallback or key
 end
 
-local petIconCache = {}
-local function GetPetIconByName(petName)
-    if not petName or not C_PetJournal or not C_PetJournal.GetNumPets then
-        return nil
-    end
-    if petIconCache[petName] ~= nil then
-        return petIconCache[petName]
-    end
+_G.Lstr = Lstr
 
-    local numPets = C_PetJournal.GetNumPets()
-    for index = 1, numPets do
-        local _, _, _, customName, _, _, _, petNameFromJournal, icon = C_PetJournal.GetPetInfoByIndex(index)
-        if petNameFromJournal == petName or customName == petName then
-            petIconCache[petName] = icon
-            return icon
-        end
-    end
 
-    petIconCache[petName] = nil
-    return nil
-end
 
 local STACK_GAP = 8
 local lastOptions
+local trackedBanners = {}
+local combatWatcher
+
+local function IsCombatLocked()
+    return InCombatLockdown and InCombatLockdown()
+end
+
+local function SetBannerInteractiveState(banner, enabled)
+    if not banner then
+        return
+    end
+
+    banner:EnableMouse(enabled)
+    if banner.leftArrow then
+        banner.leftArrow:EnableMouse(enabled)
+    end
+    if banner.rightArrow then
+        banner.rightArrow:EnableMouse(enabled)
+    end
+    if banner.announceButton then
+        banner.announceButton:EnableMouse(enabled)
+    end
+    if banner.dragButton then
+        banner.dragButton:EnableMouse(enabled)
+    end
+end
+
+local function ApplyBannerCombatState(banner)
+    if not banner or not banner:IsShown() then
+        return
+    end
+
+    if IsCombatLocked() then
+        SetBannerInteractiveState(banner, false)
+        banner:SetAlpha(0.2)
+        banner.nozmieCombatDimmed = true
+    else
+        SetBannerInteractiveState(banner, true)
+        if banner.nozmieCombatDimmed then
+            banner:SetAlpha(1)
+            banner.nozmieCombatDimmed = false
+        end
+    end
+end
+
+local function RefreshTrackedBannerCombatState()
+    for banner in pairs(trackedBanners) do
+        if banner and banner:IsShown() then
+            ApplyBannerCombatState(banner)
+        end
+    end
+end
+
+local function EnsureCombatWatcher()
+    if combatWatcher then
+        return
+    end
+
+    combatWatcher = CreateFrame("Frame")
+    combatWatcher:RegisterEvent("PLAYER_REGEN_DISABLED")
+    combatWatcher:RegisterEvent("PLAYER_REGEN_ENABLED")
+    combatWatcher:SetScript("OnEvent", function()
+        RefreshTrackedBannerCombatState()
+    end)
+end
 
 local function GetOptionKey(data)
     local target = data.targetPlayer and ("@" .. data.targetPlayer) or ""
@@ -175,7 +221,11 @@ local function PromoteNextBanner(root)
 end
 
 local function UpdateBannerForCooldown(banner, data, remaining)
-    banner.icon:SetDesaturated(true)
+    if IconHandling and IconHandling.SetDesaturation then
+        IconHandling.SetDesaturation(banner.icon, true)
+    else
+        banner.icon:SetDesaturated(true)
+    end
     banner.title:SetTextColor(unpack(Config.COLORS.TEXT_COOLDOWN))
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_COOLDOWN))
     banner.isOnCooldown = true
@@ -184,7 +234,7 @@ local function UpdateBannerForCooldown(banner, data, remaining)
         data = data
     }
 
-    local cooldownTitle = string.format(Lstr("banner.cooldownTitle", "%s is on cooldown"), data.spellName or data.name)
+    local cooldownTitle = string.format(Lstr("banner.cooldownTitle", "%s is on cooldown"), ConfigHelpers.GetEntryName(data))
     banner.title:SetText(cooldownTitle)
 
     local timeText = Helpers.FormatCooldownTime(remaining)
@@ -197,7 +247,11 @@ local function UpdateBannerForCooldown(banner, data, remaining)
 end
 
 local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
-    banner.icon:SetDesaturated(false)
+    if IconHandling and IconHandling.SetDesaturation then
+        IconHandling.SetDesaturation(banner.icon, false)
+    else
+        banner.icon:SetDesaturated(false)
+    end
     banner.title:SetTextColor(unpack(Config.COLORS.TEXT_NORMAL))
     banner:SetBackdropColor(unpack(Config.COLORS.BACKDROP_NORMAL))
     banner.isOnCooldown = false
@@ -247,104 +301,14 @@ local function UpdateBannerForReady(banner, data, totalOptions, currentIndex)
     end
 end
 
-local function SetPetIcon(banner, data)
-    local iconTexture = data.iconTexture
-    if not iconTexture and data.petName then
-        iconTexture = GetPetIconByName(data.petName)
-    end
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
-    end
-    banner:SetAttribute("type", "macro")
-    banner:SetAttribute("macrotext", data.macrotext or "")
-end
-
-local function SetSpellIcon(banner, data)
-    local iconTexture = C_Spell.GetSpellTexture(data.spellID or data.spellName)
-
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
-    end
-
-    local spellName = data.spellName or (data.spellID and GetSpellInfo(data.spellID))
-    if not spellName and data.spellID then
-        spellName = tostring(data.spellID)
-    end
-
-    if data.targetPlayer and data.targetPlayer ~= UnitName("player") and
-        (data.category and data.category:find("Utility")) then
-        banner:SetAttribute("type", "macro")
-        banner:SetAttribute("macrotext", "/cast [@" .. data.targetPlayer .. "] " .. (spellName or ""))
-    else
-        banner:SetAttribute("type", "spell")
-        banner:SetAttribute("spell", data.spellID or spellName)
-    end
-end
-
-local function SetItemIcon(banner, data)
-    local iconTexture = C_Item.GetItemIconByID(data.itemID)
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
-    end
-    banner:SetAttribute("type", "macro")
-    banner:SetAttribute("macrotext", "/use item:" .. tostring(data.itemID))
-end
-
-local function SetMountIcon(banner, data)
-    local name, spellID, icon, isActive, isUsable, sourceType, isFavorite, isFactionSpecific, faction, hideOnChar,
-        isCollected = C_MountJournal.GetMountInfoByID(data.mountId)
-    if icon then
-        banner.icon:SetTexture(icon)
-    end
-    banner:SetScript("PreClick", function()
-        C_MountJournal.SummonByID(data.mountId)
-    end)
-end
-
-local function SetToyIcon(banner, data)
-    local iconTexture = C_Item.GetItemIconByID(data.itemID)
-    if iconTexture then
-        banner.icon:SetTexture(iconTexture)
-    end
-    banner:SetAttribute("type", "macro")
-    banner:SetAttribute("macrotext", "/use item:" .. data.itemID)
-end
-
-local function ClearBannerAttributes(banner)
-    banner:SetScript("PreClick", nil)
-    banner:SetAttribute("type", nil)
-    banner:SetAttribute("macrotext", nil)
-    banner:SetAttribute("spell", nil)
-    banner:SetAttribute("item", nil)
-    banner:SetAttribute("type2", nil)
-    banner:SetAttribute("macrotext2", nil)
-    banner:SetAttribute("spell2", nil)
-    banner:SetAttribute("item2", nil)
-end
-
-local function PreventRightClickAction(banner)
-    banner:SetAttribute("type2", "none")
-    banner:SetAttribute("macrotext2", nil)
-    banner:SetAttribute("spell2", nil)
-    banner:SetAttribute("item2", nil)
-end
-
 local function UpdateBannerIcon(banner, data)
-    ClearBannerAttributes(banner)
-
-    if data.actionType == "pet" then
-        SetPetIcon(banner, data)
-    elseif data.actionType == "spell" and data.spellID then
-        SetSpellIcon(banner, data)
-    elseif data.actionType == "item" and data.itemID then
-        SetItemIcon(banner, data)
-    elseif data.actionType == "mount" and data.mountId then
-        SetMountIcon(banner, data)
-    elseif data.actionType == "toy" and data.itemID then
-        SetToyIcon(banner, data)
+    if IconHandling and IconHandling.ApplyIcon then
+        IconHandling.ApplyIcon(banner.icon, data)
     end
 
-    PreventRightClickAction(banner)
+    if ClickBehavior and ClickBehavior.ApplyActionAttributes then
+        ClickBehavior.ApplyActionAttributes(banner, data)
+    end
 end
 
 RefreshBannerDisplay = function(banner)
@@ -365,6 +329,7 @@ local function CreateNavigationArrows(banner)
     if not banner.leftArrow then
         banner.leftArrow = CreateFrame("Button", nil, banner)
         banner.leftArrow:SetSize(20, 20)
+        banner.leftArrow:SetToplevel(true)
         banner.leftArrow:SetPoint("TOP", banner.icon, "BOTTOM", -11, 2)
         banner.leftArrow:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up")
         banner.leftArrow:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight")
@@ -373,10 +338,11 @@ local function CreateNavigationArrows(banner)
             banner.currentIndex = (banner.currentIndex - 2) % #banner.options + 1
             RefreshBannerDisplay(banner)
         end)
-    end
+    end 
 
     if not banner.rightArrow then
         banner.rightArrow = CreateFrame("Button", nil, banner)
+        banner.rightArrow:SetToplevel(true)
         banner.rightArrow:SetSize(20, 20)
         banner.rightArrow:SetPoint("LEFT", banner.leftArrow, "RIGHT", 2, 0)
         banner.rightArrow:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up")
@@ -389,14 +355,8 @@ local function CreateNavigationArrows(banner)
     end
 end
 
-local function CloseBanner(banner)
-    UIFrameFadeOut(banner, 0.2, 1, 0)
-    C_Timer.After(0.2, function()
-        banner:Hide()
-    end)
-end
-
 function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, allowStack)
+    EnsureCombatWatcher()
     lastOptions = teleportOptions
     if allowStack == nil then
         allowStack = true
@@ -442,44 +402,11 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
         RefreshBannerDisplay(banner)
     end)
 
-    banner.lastAnnounceTime = 0 -- Initialize announce debounce
-
-    banner:SetScript("PostClick", function(self, button)
-        -- Cancel auto-hide timer when user interacts with banner
-        if self.autoHideTimer then
-            self.autoHideTimer:Cancel()
-        end
-
-        -- Right-click closes the banner without using the action
-        if button == "RightButton" then
-            CloseBanner(self)
-            return
-        end
-        
-        -- Left-click uses the action and closes the banner
-        if button == "LeftButton" then
-            local data = self.options[self.currentIndex]
-            local Settings = _G.Nozmie_Settings
-            local announceToGroup = Settings and Settings.Get and Settings.Get("announceToGroup")
-            
-            -- Announce to group on left click if setting enabled
-            if announceToGroup and data and (not self.lastAnnounceTime or GetTime() - self.lastAnnounceTime > 1) then
-                Helpers.AnnounceUtility(data)
-                self.lastAnnounceTime = GetTime()
-            end
-            
-            CloseBanner(self)
-        end
-    end)
-
-    banner.HandleAnnounce = function(self)
-        local data = self.options[self.currentIndex]
-        local now = GetTime()
-        if data and (not self.lastAnnounceTime or now - self.lastAnnounceTime > 1) then
-            Helpers.AnnounceUtility(data, data.sourceEvent, data.sourceSender)
-            self.lastAnnounceTime = now
-        end
-    end
+    ClickBehavior.Apply(banner, {
+        closeOnRight = true,
+        closeOnLeft = true,
+        cancelAutoHide = true
+    })
 
     banner:SetScript("OnHide", function(self)
         if self.ignoreHide then
@@ -524,8 +451,15 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
     else
         banner:SetAlpha(0)
         banner:Show()
-        UIFrameFadeIn(banner, 0.4, 0, 1)
+        if IsCombatLocked() then
+            banner:SetAlpha(0.2)
+        else
+            UIFrameFadeIn(banner, 0.4, 0, 1)
+        end
     end
+
+    trackedBanners[banner] = true
+    ApplyBannerCombatState(banner)
 
     local Settings = Nozmie_Settings
     if Settings.Get("autoHideBanner") then
@@ -541,6 +475,13 @@ function BannerController.ShowWithOptions(banner, teleportOptions, isStacked, al
                 end)
             end
         end)
+    end
+
+    if not banner.nozmieTrackedHooked then
+        banner:HookScript("OnHide", function(self)
+            trackedBanners[self] = nil
+        end)
+        banner.nozmieTrackedHooked = true
     end
 end
 
@@ -570,3 +511,5 @@ function BannerController.GetLastOptions()
 end
 
 _G.Nozmie_BannerController = BannerController
+BannerController.ApplyActionAttributes = ClickBehavior and ClickBehavior.ApplyActionAttributes
+BannerController.ApplyClickBehavior = ClickBehavior and ClickBehavior.Apply
