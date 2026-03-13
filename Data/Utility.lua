@@ -56,6 +56,15 @@ ServiceToys = { {
     destination = "Mailbox",
     keywords = { "mail", "mailbox" }
 }, {
+    name = "Interdimensional Parcel Signal",
+    itemID = 264695,
+    spellName = "Interdimensional Parcel Signal",
+    actionType = "toy",
+    category = "Utility",
+    cooldown = "20 min",
+    destination = "Mailbox",
+    keywords = { "mail", "mailbox" }
+}, {
     name = "Flight Master's Whistle",
     itemID = 141605,
     spellName = "Flight Master's Whistle",

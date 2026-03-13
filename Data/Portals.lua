@@ -232,7 +232,7 @@ TeleportToys = {{
     category = "Toy",
     cooldown = "No CD",
     destination = "Arcantina",
-    keywords = {"arcantina"}
+    keywords = {"arcantina", "quel'thalas", "quelthalas", "silvermoon"}
 }}
 
 DelveTeleports = {{
