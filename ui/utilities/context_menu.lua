@@ -116,10 +116,24 @@ local function OpenContextMenuWithDropDown(menuFrame, entries)
     return true
 end
 
+-- Modern Menu API (11.0+); EasyMenu/UIDropDownMenu are legacy in 12.x
+local function OpenContextMenuWithMenuUtil(owner, entries)
+    if not (MenuUtil and MenuUtil.CreateContextMenu) then return false end
+    MenuUtil.CreateContextMenu(owner, function(_, rootDescription)
+        for _, entry in ipairs(entries) do
+            rootDescription:CreateButton(entry.text, function()
+                if entry.action then entry.action() end
+            end)
+        end
+    end)
+    return true
+end
+
 -- Show a context menu for a button. menuEntries is a list of { text, action }.
 -- fallbackAction is called when no dropdown API is available.
 function ContextMenu.ShowMenu(button, menuEntries, fallbackAction)
     if not button or not menuEntries then return end
+    if OpenContextMenuWithMenuUtil(button, menuEntries) then return end
     local menuFrame = EnsureContextMenuFrame()
     if OpenContextMenuWithEasyMenu(menuFrame, menuEntries) then return end
     if OpenContextMenuWithDropDown(menuFrame, menuEntries) then return end

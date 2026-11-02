@@ -12,17 +12,25 @@ local Cooldowns = {}
 -- Minimum duration to be considered a real cooldown (filters out GCD ~1.5s)
 local GCD_THRESHOLD = 1.5
 
+-- Cooldown values can be secret in restricted content (12.x); treat as unknown
+local function readableCooldown(start, duration)
+    if issecretvalue and (issecretvalue(start) or issecretvalue(duration)) then
+        return nil, nil
+    end
+    return start, duration
+end
+
 local function getItemCooldown(itemID)
     if not itemID then
         return nil, nil
     end
 
     if C_Item and C_Item.GetItemCooldown then
-        return C_Item.GetItemCooldown(itemID)
+        return readableCooldown(C_Item.GetItemCooldown(itemID))
     end
 
     if GetItemCooldown then
-        return GetItemCooldown(itemID)
+        return readableCooldown(GetItemCooldown(itemID))
     end
 
     return nil, nil
@@ -36,16 +44,43 @@ local function getSpellCooldown(spellID)
     if C_Spell and C_Spell.GetSpellCooldown then
         local info = C_Spell.GetSpellCooldown(spellID)
         if info then
-            return info.startTime, info.duration
+            return readableCooldown(info.startTime, info.duration)
         end
     end
 
     if GetSpellCooldown then
-        return GetSpellCooldown(spellID)
+        return readableCooldown(GetSpellCooldown(spellID))
     end
 
     return nil, nil
 end
+
+-- GetItemCount / IsSpellKnown globals are gone in 12.x; prefer the C_ namespaces
+local function getItemCount(itemID)
+    if C_Item and C_Item.GetItemCount then
+        return C_Item.GetItemCount(itemID, false, false) or 0
+    end
+    if GetItemCount then
+        return GetItemCount(itemID, false, false) or 0
+    end
+    return 0
+end
+
+local function isSpellKnown(spellID)
+    if C_SpellBook and C_SpellBook.IsSpellKnown then
+        return C_SpellBook.IsSpellKnown(spellID) == true
+    end
+    if IsSpellKnown then
+        return IsSpellKnown(spellID) == true
+    end
+    if IsPlayerSpell then
+        return IsPlayerSpell(spellID) == true
+    end
+    return false
+end
+
+Cooldowns.GetItemCount = getItemCount
+Cooldowns.IsSpellKnown = isSpellKnown
 
 -- Get remaining cooldown for a utility (spell, item, or both if applicable)
 function Cooldowns.GetRemaining(data)
@@ -178,7 +213,7 @@ end
 
 -- Check if player has an item in bags
 local function canUseItem(data)
-    return data.itemID and GetItemCount and GetItemCount(data.itemID, false, false) > 0
+    return data.itemID and getItemCount(data.itemID) > 0
 end
 
 -- Check if player has collected a mount
@@ -218,7 +253,7 @@ local function canUseRandomHearthstone()
         end
     end
     
-    return GetItemCount and GetItemCount(6948, false, false) > 0
+    return getItemCount(6948) > 0
 end
 
 -- Check if player knows a spell
@@ -226,7 +261,7 @@ local function canUseSpell(data)
     if not data.spellID or type(data.spellID) ~= "number" then
         return false
     end
-    return IsSpellKnown and IsSpellKnown(data.spellID)
+    return isSpellKnown(data.spellID)
 end
 
 -- Check if player has required profession
@@ -296,7 +331,7 @@ function Cooldowns.GetRandomHearthstoneMacro()
     end
     
     -- Add basic hearthstone if available
-    if GetItemCount and GetItemCount(6948, false, false) > 0 then
+    if getItemCount(6948) > 0 then
         local hs = { itemID = 6948 }
         if Cooldowns.GetRemaining(hs) == 0 then
             table.insert(candidates, hs)

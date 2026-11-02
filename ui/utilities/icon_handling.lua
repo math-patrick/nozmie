@@ -25,6 +25,9 @@ local function getSpellCooldown(spellID)
 
     if C_Spell and C_Spell.GetSpellCooldown then
         local info = C_Spell.GetSpellCooldown(spellID)
+        if info and issecretvalue and (issecretvalue(info.startTime) or issecretvalue(info.duration) or issecretvalue(info.isEnabled)) then
+            return info.startTime, info.duration, info.isEnabled
+        end
         if info then
             local enable = (info.enable ~= nil and info.enable) or ((info.isEnabled == false) and 0 or 1)
             return info.startTime or 0, info.duration or 0, enable
@@ -65,6 +68,11 @@ function IconHandling.GetActiveCooldown(data)
         start, duration, enable = getItemCooldown(data.itemID)
     elseif data.spellID then
         start, duration, enable = getSpellCooldown(data.spellID)
+    end
+
+    -- Secret cooldowns (12.x restricted content) can't be compared; show none
+    if issecretvalue and (issecretvalue(start) or issecretvalue(duration) or issecretvalue(enable)) then
+        return false, 0, 0, 0
     end
 
     local remaining = 0

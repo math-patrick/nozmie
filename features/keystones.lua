@@ -15,6 +15,7 @@ local mapNameByIDCache = {}
 -- ============================================================================
 
 local function normalizePlayerName(name)
+    if issecretvalue and issecretvalue(name) then return nil end
     if not name or name == "" then return nil end
     return name:match("([^-]+)") or name
 end
@@ -441,7 +442,12 @@ function Keystones.SendOwnedKeystoneToChannel(channel)
     if not channel or channel == "" then
         return false
     end
-    
+
+    local Helpers = require("utils.helpers")
+    if Helpers and Helpers.IsAnnounceToChatEnabled and not Helpers.IsAnnounceToChatEnabled() then
+        return false
+    end
+
     local keyInfo = Keystones.GetOwnedKeystone()
     local message
     if keyInfo and keyInfo.level and keyInfo.level > 0 then

@@ -62,6 +62,7 @@ local tabButtons = {}
 local tabHasContentById = {}
 local tabOrder = {TAB_CURRENT_DUNGEONS, TAB_LEGACY_DUNGEONS, TAB_TELEPORTS, TAB_UTILITY, TAB_HEARTHSTONE}
 local showAllEntriesToggle
+local announceToChatToggle
 local resultSummaryText
 local activeSearchQuery = ""
 local cooldownUpdateElapsed = 0
@@ -70,6 +71,7 @@ local shouldRestoreAfterCombat = false
 
 local SHOW_ALL_ENTRIES_DB_KEY = "showAllEntriesInUtilityUI"
 local SHOW_ALL_TOYS_LEGACY_DB_KEY = "showAllToysInUtilityUI"
+local ANNOUNCE_TO_CHAT_DB_KEY = "announceToChat"
 
 local function IsCombatLocked()
     return InCombatLockdown and InCombatLockdown()
@@ -114,6 +116,26 @@ local function SetShowAllEntriesEnabled(enabled)
 
     State.SetSetting(SHOW_ALL_ENTRIES_DB_KEY, enabled == true)
     State.SetSetting(SHOW_ALL_TOYS_LEGACY_DB_KEY, enabled == true)
+end
+
+-- Defaults to on: Nozmie has always posted to chat
+local function GetAnnounceToChatEnabled()
+    local Settings = GetSettings()
+    if Settings and Settings.Get then
+        return Settings.Get(ANNOUNCE_TO_CHAT_DB_KEY) ~= false
+    end
+
+    return State.GetSetting(ANNOUNCE_TO_CHAT_DB_KEY) ~= false
+end
+
+local function SetAnnounceToChatEnabled(enabled)
+    local Settings = GetSettings()
+    if Settings and Settings.Set then
+        Settings.Set(ANNOUNCE_TO_CHAT_DB_KEY, enabled == true)
+        return
+    end
+
+    State.SetSetting(ANNOUNCE_TO_CHAT_DB_KEY, enabled == true)
 end
 
 local function ApplyUtilityButtonCombatState(button)
@@ -579,13 +601,13 @@ IsUsableUtility = function(item)
         return Cooldowns.CanPlayerUseUtility(item)
     end
     if item.itemID then
-        if GetItemCount then
-            return GetItemCount(item.itemID, false, false) > 0
+        if C_Item and C_Item.GetItemCount then
+            return (C_Item.GetItemCount(item.itemID, false, false) or 0) > 0
         end
         return false
     end
-    if item.spellID and (IsSpellKnown(item.spellID) or IsPlayerSpell(item.spellID)) then
-        return true
+    if item.spellID and C_SpellBook and C_SpellBook.IsSpellKnown then
+        return C_SpellBook.IsSpellKnown(item.spellID) == true
     end
     return false
 end
@@ -1147,6 +1169,26 @@ EnsureFrame = function()
         GameTooltip:Hide()
     end)
 
+    announceToChatToggle = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
+    announceToChatToggle:SetPoint("LEFT", showAllEntriesToggle.label, "RIGHT", 12, 0)
+    announceToChatToggle:SetScript("OnClick", function(self)
+        SetAnnounceToChatEnabled(self:GetChecked())
+    end)
+
+    announceToChatToggle.label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    announceToChatToggle.label:SetPoint("LEFT", announceToChatToggle, "RIGHT", -2, 0)
+    announceToChatToggle.label:SetText(Lstr("utility.announceToChat.toggle", "Announce on chat"))
+    announceToChatToggle.label:SetTextColor(0.9, 0.9, 0.9)
+
+    announceToChatToggle:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_TOP")
+        GameTooltip:SetText(Lstr("utility.announceToChat.tooltip", "Let Nozmie post to chat."), 1, 1, 1)
+        GameTooltip:Show()
+    end)
+    announceToChatToggle:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+
     CreateTabButtons(frame)
 
     scrollFrame = CreateFrame("ScrollFrame", nil, frame.Inset, "UIPanelScrollFrameTemplate")
@@ -1173,6 +1215,9 @@ EnsureFrame = function()
     frame:SetScript("OnShow", function()
         if showAllEntriesToggle then
             showAllEntriesToggle:SetChecked(GetShowAllEntriesEnabled())
+        end
+        if announceToChatToggle then
+            announceToChatToggle:SetChecked(GetAnnounceToChatEnabled())
         end
         BuildDataCache()
         RefreshLayout()

@@ -157,6 +157,11 @@ function Init.OnChatMessage(self, event, message, sender)
         return false
     end
 
+    -- Chat text and senders can be secret values in restricted content
+    if Helpers.IsSecret(message) or Helpers.IsSecret(sender) then
+        return false
+    end
+
     -- Handle group key coordination
     if handleGroupKeyMessage(event, message, sender) then
         return false
@@ -411,8 +416,9 @@ function Init.Initialize()
     end
     
     -- Register chat event filters
+    local addMessageEventFilter = (ChatFrameUtil and ChatFrameUtil.AddMessageEventFilter) or ChatFrame_AddMessageEventFilter
     for event, _ in pairs(Constants.CHAT_EVENT_KEYS) do
-        ChatFrame_AddMessageEventFilter(event, Init.OnChatMessage)
+        addMessageEventFilter(event, Init.OnChatMessage)
     end
    
     -- Register slash commands
