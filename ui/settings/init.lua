@@ -77,7 +77,6 @@ function SettingsUI.InitializeDB()
         disableAutoKeyResponse = false,
         showKeystoneIndicators = true,
         announceToGroup = false,
-        announceToChat = true,
         showAllEntriesInUtilityUI = false,
         showAllToysInUtilityUI = false,
         bannerPosition = { x = 0, y = 0, width = 300, height = 100, point = "CENTER" },

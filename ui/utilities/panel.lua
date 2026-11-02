@@ -71,7 +71,7 @@ local shouldRestoreAfterCombat = false
 
 local SHOW_ALL_ENTRIES_DB_KEY = "showAllEntriesInUtilityUI"
 local SHOW_ALL_TOYS_LEGACY_DB_KEY = "showAllToysInUtilityUI"
-local ANNOUNCE_TO_CHAT_DB_KEY = "announceToChat"
+local ANNOUNCE_TO_GROUP_DB_KEY = "announceToGroup"
 
 local function IsCombatLocked()
     return InCombatLockdown and InCombatLockdown()
@@ -118,24 +118,24 @@ local function SetShowAllEntriesEnabled(enabled)
     State.SetSetting(SHOW_ALL_TOYS_LEGACY_DB_KEY, enabled == true)
 end
 
--- Defaults to on: Nozmie has always posted to chat
-local function GetAnnounceToChatEnabled()
+-- Quick access to the "Announce to Group" setting
+local function GetAnnounceToGroupEnabled()
     local Settings = GetSettings()
     if Settings and Settings.Get then
-        return Settings.Get(ANNOUNCE_TO_CHAT_DB_KEY) ~= false
+        return Settings.Get(ANNOUNCE_TO_GROUP_DB_KEY) == true
     end
 
-    return State.GetSetting(ANNOUNCE_TO_CHAT_DB_KEY) ~= false
+    return State.GetSetting(ANNOUNCE_TO_GROUP_DB_KEY) == true
 end
 
-local function SetAnnounceToChatEnabled(enabled)
+local function SetAnnounceToGroupEnabled(enabled)
     local Settings = GetSettings()
     if Settings and Settings.Set then
-        Settings.Set(ANNOUNCE_TO_CHAT_DB_KEY, enabled == true)
+        Settings.Set(ANNOUNCE_TO_GROUP_DB_KEY, enabled == true)
         return
     end
 
-    State.SetSetting(ANNOUNCE_TO_CHAT_DB_KEY, enabled == true)
+    State.SetSetting(ANNOUNCE_TO_GROUP_DB_KEY, enabled == true)
 end
 
 local function ApplyUtilityButtonCombatState(button)
@@ -1172,7 +1172,7 @@ EnsureFrame = function()
     announceToChatToggle = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
     announceToChatToggle:SetPoint("LEFT", showAllEntriesToggle.label, "RIGHT", 12, 0)
     announceToChatToggle:SetScript("OnClick", function(self)
-        SetAnnounceToChatEnabled(self:GetChecked())
+        SetAnnounceToGroupEnabled(self:GetChecked())
     end)
 
     announceToChatToggle.label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -1182,7 +1182,7 @@ EnsureFrame = function()
 
     announceToChatToggle:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_TOP")
-        GameTooltip:SetText(Lstr("utility.announceToChat.tooltip", "Let Nozmie post to chat."), 1, 1, 1)
+        GameTooltip:SetText(Lstr("settings.announceToGroup.tooltip", "Announce to group when you click a utility"), 1, 1, 1, true)
         GameTooltip:Show()
     end)
     announceToChatToggle:SetScript("OnLeave", function()
@@ -1217,7 +1217,7 @@ EnsureFrame = function()
             showAllEntriesToggle:SetChecked(GetShowAllEntriesEnabled())
         end
         if announceToChatToggle then
-            announceToChatToggle:SetChecked(GetAnnounceToChatEnabled())
+            announceToChatToggle:SetChecked(GetAnnounceToGroupEnabled())
         end
         BuildDataCache()
         RefreshLayout()

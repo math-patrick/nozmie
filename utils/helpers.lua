@@ -94,18 +94,8 @@ function Helpers.IsSecret(value)
     return issecretvalue ~= nil and issecretvalue(value) == true
 end
 
--- Master switch for everything Nozmie posts to chat (panel "Announce on chat").
-function Helpers.IsAnnounceToChatEnabled()
-    local Settings = _G.Nozmie_Settings
-    if Settings and Settings.Get then
-        return Settings.Get("announceToChat") ~= false
-    end
-    return true
-end
-
 function Helpers.SendChatMessage(message, event, sender)
     if not message then return false end
-    if not Helpers.IsAnnounceToChatEnabled() then return false end
 
     -- Ignore non-channel events
     if event == "LEFT_CLICK" or event == "RIGHT_CLICK" then

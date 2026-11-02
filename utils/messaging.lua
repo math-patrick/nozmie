@@ -85,7 +85,6 @@ end
 -- Send a message to appropriate channel based on group status
 function Messaging.SendMessageForEvent(eventName, action, noun)
     local Helpers = require("utils.helpers")
-    if not Helpers.IsAnnounceToChatEnabled() then return false end
     local message = Messaging.CreateAnnouncementMessage(action, noun, eventName)
 
     if Helpers.IsInAnyGroup() then
@@ -170,7 +169,6 @@ function Messaging.AnnounceUtility(data)
 
     local Helpers = require("utils.helpers")
     local Cooldowns = require("features.cooldowns")
-    if not Helpers.IsAnnounceToChatEnabled() then return false end
     if not Helpers.IsInAnyGroup() then return false end
 
     if Cooldowns and Cooldowns.IsOnCooldown and Cooldowns.IsOnCooldown(data) then
